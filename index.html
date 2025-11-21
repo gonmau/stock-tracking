@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Journal (Supabase Edition)</title>
+    <!-- Tailwind CSS CDN 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN 로드 -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase JavaScript SDK CDN 로드 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Inter 폰트 사용 설정 */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            color-scheme: dark;
+        }
+        /* 스크롤바 커스터마이징 */
+        .custom-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #4b5563; /* gray-600 */
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #1f2937; /* gray-800 */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 min-h-screen">
+    <header class="bg-gray-800 border-b border-gray-700 sticky top-0 z-10">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="activity" class="w-6 h-6 text-blue-400"></i>
+                <h1 class="text-xl font-bold text-white">StockLog (Supabase) <span class="text-xs font-normal text-gray-400 ml-1">매매일지</span></h1>
+            </div>
+            <div id="connection-status" class="text-xs text-gray-400 bg-gray-700 px-2 py-1 rounded">
+                연결 중...
+            </div>
+        </div>
+    </header>
+
+    <main id="app-main" class="max-w-6xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Dashboard & Form Area (Left Column) -->
+        <div class="lg:col-span-1 space-y-6">
+            
+            <!-- Dashboard Cards -->
+            <div id="dashboard-cards" class="grid grid-cols-2 gap-4">
+                <!-- Cards will be dynamically inserted here -->
+                <div class="col-span-2 bg-gray-800 p-4 rounded-xl border border-gray-700 h-28 flex items-center justify-center text-gray-500">데이터 로딩 중...</div>
+            </div>
+
+            <!-- Trade Input Form -->
+            <div id="trade-form-container" class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+                <div class="p-4 border-b border-gray-700 flex items-center">
+                    <i data-lucide="plus-circle" class="w-4 h-4 mr-2 text-blue-400"></i>
+                    <h2 id="form-title" class="font-semibold text-white">새 기록 추가</h2>
+                </div>
+                <form id="trade-form" class="p-4 space-y-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1 flex items-center">
+                            <i data-lucide="calendar" class="w-3 h-3 mr-1"></i> 날짜
+                        </label>
+                        <input type="date" id="trade-date" required class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white focus:border-blue-500 focus:outline-none" style="color-scheme: dark;">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">종목명 (Ticker)</label>
+                            <input type="text" id="trade-ticker" required placeholder="예: 삼성전자, 005930" class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white placeholder-gray-600 focus:border-blue-500 focus:outline-none uppercase">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">거래 종류</label>
+                            <div class="flex bg-gray-900 rounded border border-gray-600 p-1">
+                                <button type="button" id="type-buy" data-type="BUY" class="flex-1 text-sm py-1 rounded bg-red-500/20 text-red-400 font-bold">매수</button>
+                                <button type="button" id="type-sell" data-type="SELL" class="flex-1 text-sm py-1 rounded text-gray-400">매도</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">단가 (Price)</label>
+                            <input type="number" step="any" id="trade-price" required placeholder="0" class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white focus:border-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">수량 (Qty)</label>
+                            <input type="number" step="1" id="trade-quantity" required placeholder="0" class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white focus:border-blue-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-button" class="w-full py-3 rounded font-bold transition-colors bg-red-600 hover:bg-red-700 text-white">매수 기록하기</button>
+                    <button type="button" id="cancel-edit-button" class="w-full py-3 rounded font-bold transition-colors bg-gray-600 hover:bg-gray-700 text-white hidden">수정 취소</button>
+                </form>
+            </div>
+
+            <!-- Current Holdings Summary -->
+            <div id="holdings-summary" class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+                <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+                    <h3 class="font-semibold text-white text-sm">보유 종목 현황</h3>
+                    <span class="text-[10px] text-gray-500">현재가 수동입력</span>
+                </div>
+                <div class="p-0 max-h-96 overflow-y-auto custom-scroll">
+                    <!-- Holdings table will be dynamically inserted here -->
+                    <div class="p-4 text-center text-gray-500 text-sm">보유 종목 로딩 중...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History List Area (Right Column) -->
+        <div class="lg:col-span-2 flex flex-col h-full space-y-4">
+            <div class="bg-gray-800 rounded-xl border border-gray-700 flex-1 flex flex-col overflow-hidden">
+                <div class="p-4 border-b border-gray-700 flex items-center justify-between">
+                    <h2 class="font-semibold text-white flex items-center">
+                        <i data-lucide="list" class="w-4 h-4 mr-2 text-gray-400"></i> 매매 기록 (<span id="trade-count">0</span>)
+                    </h2>
+                    <span class="text-xs text-gray-500">최신순</span>
+                </div>
+                
+                <div id="trade-history-list" class="flex-1 overflow-y-auto custom-scroll">
+                    <div class="h-full flex flex-col items-center justify-center text-gray-500 space-y-2 p-8">
+                        <i data-lucide="activity" class="w-8 h-8 text-gray-600"></i>
+                        <p>거래 기록 로딩 중...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // -------------------------------------------------------------------
+        // ⚠️ 사용자님의 실제 Supabase 정보를 여기에 입력하세요! ⚠️
+        // -------------------------------------------------------------------
+        const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL'; // 예: 'https://abcd123.supabase.co'
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_PUBLIC_KEY'; // 예: 'eyJhbGciOiJIUzI1NiI...'
+
+        let supabase = null;
+        let currentUserId = '';
+        let tradesData = [];
+        let pricesData = {};
+        let editingTradeId = null;
+
+        // --- 초기 설정 및 인증 ---
+        function getOrCreateUserId() {
+            let userId = localStorage.getItem('stock_journal_user_id');
+            if (!userId) {
+                userId = crypto.randomUUID();
+                localStorage.setItem('stock_journal_user_id', userId);
+            }
+            return userId;
+        }
+
+        async function initializeApp() {
+            // Supabase 초기화
+            try {
+                if (SUPABASE_URL === 'YOUR_SUPABASE_PROJECT_URL' || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_PUBLIC_KEY') {
+                    throw new Error("Supabase URL 또는 API 키가 설정되지 않았습니다. 코드를 수정해주세요.");
+                }
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                currentUserId = getOrCreateUserId();
+                document.getElementById('connection-status').textContent = 'Supabase 연결 됨';
+                document.getElementById('connection-status').classList.add('bg-green-600/30', 'text-green-300');
+                
+                // 데이터 실시간 로딩 시작
+                await fetchAndRenderAllData();
+                setupRealtimeListeners();
+            } catch (error) {
+                console.error("앱 초기화 오류:", error.message);
+                document.getElementById('connection-status').textContent = '연결 오류';
+                document.getElementById('connection-status').classList.add('bg-red-600/30', 'text-red-300');
+                
+                // 에러 모달 표시 (alert 대신)
+                const errorModal = document.createElement('div');
+                errorModal.innerHTML = `
+                    <div class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+                        <div class="bg-gray-800 rounded-xl p-6 max-w-sm w-full shadow-2xl border border-red-500">
+                            <h3 class="text-xl font-bold text-red-400 mb-3 flex items-center"><i data-lucide="alert-triangle" class="w-5 h-5 mr-2"></i> 설정 오류</h3>
+                            <p class="text-gray-200 text-sm mb-4">${error.message}</p>
+                            <p class="text-gray-400 text-xs">코드를 열어 'YOUR_SUPABASE_...' 부분을 프로젝트 정보로 변경해주세요.</p>
+                            <button onclick="this.closest('.fixed').remove()" class="mt-4 w-full py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded transition">닫기</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(errorModal);
+                window.lucide.createIcons(); // 아이콘 렌더링
+            }
+        }
+
+        // --- 데이터 로딩 및 렌더링 ---
+
+        async function fetchAndRenderAllData() {
+            if (!supabase) return;
+            await Promise.all([fetchTrades(), fetchPrices()]);
+            renderTradeHistory();
+            renderDashboard();
+            renderHoldingsSummary();
+        }
+
+        async function fetchTrades() {
+            const { data, error } = await supabase
+                .from('trades')
+                .select('*')
+                .eq('user_id', currentUserId)
+                .order('date', { ascending: false })
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error("Supabase Trade Fetch Error:", error);
+                tradesData = [];
+            } else {
+                tradesData = data.map(t => ({
+                    ...t,
+                    quantity: Number(t.quantity),
+                    price: Number(t.price),
+                    total: Number(t.total),
+                }));
+            }
+        }
+
+        async function fetchPrices() {
+            const { data, error } = await supabase
+                .from('prices')
+                .select('ticker, price')
+                .eq('user_id', currentUserId);
+
+            if (error) {
+                console.error("Supabase Price Fetch Error:", error);
+                pricesData = {};
+            } else {
+                pricesData = {};
+                data.forEach(p => {
+                    pricesData[p.ticker] = Number(p.price);
+                });
+            }
+        }
+
+        function setupRealtimeListeners() {
+            if (!supabase) return;
+
+            // Trades Listener
+            supabase.channel('trades_changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'trades', filter: `user_id=eq.${currentUserId}` }, async (payload) => {
+                    console.log('Trade Realtime change:', payload);
+                    await fetchTrades();
+                    renderTradeHistory();
+                    renderDashboard();
+                    renderHoldingsSummary();
+                })
+                .subscribe();
+
+            // Prices Listener
+            supabase.channel('prices_changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'prices', filter: `user_id=eq.${currentUserId}` }, async (payload) => {
+                    console.log('Price Realtime change:', payload);
+                    await fetchPrices();
+                    renderDashboard();
+                    renderHoldingsSummary();
+                })
+                .subscribe();
+        }
+
+        // --- 분석 및 계산 로직 ---
+        function analyzeTrades() {
+            let totalRealizedPnL = 0;
+            let winCount = 0;
+            let sellCount = 0;
+            const portfolio = {};
+
+            // Sort by created_at which should reflect insertion order for calculation
+            const chronTrades = [...tradesData].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
+            chronTrades.forEach(trade => {
+                if (!portfolio[trade.ticker]) {
+                    portfolio[trade.ticker] = { 
+                        ticker: trade.ticker, 
+                        quantity: 0, 
+                        avgPrice: 0,
+                        currentPrice: pricesData[trade.ticker] || 0
+                    };
+                }
+
+                const item = portfolio[trade.ticker];
+
+                if (trade.type === 'BUY') {
+                    const currentTotalVal = item.quantity * item.avgPrice;
+                    const newTotalVal = currentTotalVal + (trade.quantity * trade.price);
+                    item.quantity += trade.quantity;
+                    item.avgPrice = item.quantity > 0 ? newTotalVal / item.quantity : 0;
+                } else {
+                    const profit = (trade.price - item.avgPrice) * trade.quantity;
+                    totalRealizedPnL += profit;
+                    item.quantity -= trade.quantity;
+                    sellCount++;
+                    if (profit > 0) winCount++;
+                }
+            });
+
+            const holdingList = Object.values(portfolio).filter(p => p.quantity > 0);
+            
+            let totalInvested = 0;
+            let totalEvaluation = 0;
+            let totalUnrealizedPnL = 0;
+
+            holdingList.forEach(item => {
+                const invested = item.quantity * item.avgPrice;
+                // If no current price, assume evaluation = invested to prevent infinite loss/gain calculation
+                const currentVal = item.currentPrice > 0 ? item.quantity * item.currentPrice : invested; 
+                
+                totalInvested += invested;
+                totalEvaluation += currentVal;
+                
+                if (item.currentPrice > 0) {
+                    totalUnrealizedPnL += (currentVal - invested);
+                }
+            });
+
+            const winRate = sellCount > 0 ? (winCount / sellCount) * 100 : 0;
+            const totalAccountPnL = totalRealizedPnL + totalUnrealizedPnL;
+
+            return {
+                totalRealizedPnL,
+                totalUnrealizedPnL,
+                totalAccountPnL,
+                winRate,
+                holdingList,
+                totalInvested,
+                totalEvaluation,
+                tradeCount: tradesData.length
+            };
+        }
+
+        // --- UI 헬퍼 함수 ---
+
+        function formatCurrency(val) {
+            return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW', maximumFractionDigits: 0 }).format(val);
+        }
+
+        function formatNumber(val, decimals = 0) {
+            return new Intl.NumberFormat('ko-KR', { maximumFractionDigits: decimals }).format(val);
+        }
+
+        function getPnLColor(val) {
+            if (val > 0) return 'text-red-400';
+            if (val < 0) return 'text-blue-400';
+            return 'text-gray-400';
+        }
+
+        function openStockSite(ticker) {
+            const isKoreanStock = /^\d{6}$/.test(ticker);
+            let url = '';
+            if (isKoreanStock) {
+                url = `https://finance.naver.com/item/main.nhn?code=${ticker}`;
+            } else {
+                url = `https://finance.yahoo.com/quote/${ticker}`;
+            }
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+
+        // --- 렌더링 함수 ---
+
+        function renderDashboard() {
+            const analysis = analyzeTrades();
+            const cardsContainer = document.getElementById('dashboard-cards');
+            cardsContainer.innerHTML = ''; // 기존 내용 지우기
+
+            const totalAccountPnLColor = getPnLColor(analysis.totalAccountPnL);
+            const totalRealizedPnLColor = getPnLColor(analysis.totalRealizedPnL);
+            const totalUnrealizedPnLColor = getPnLColor(analysis.totalUnrealizedPnL);
+
+            cardsContainer.innerHTML = `
+                <!-- Total Account PnL -->
+                <div class="col-span-2 bg-gray-800 p-4 rounded-xl border border-gray-700 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10">
+                        <i data-lucide="wallet" class="w-24 h-24 text-white"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-400 font-medium">전체 손익 합계 (실현+평가)</span>
+                        </div>
+                        <div class="text-3xl font-bold ${totalAccountPnLColor}">
+                            ${formatCurrency(analysis.totalAccountPnL)}
+                        </div>
+                        <div class="mt-2 text-xs text-gray-500">
+                            확정수익과 보유주식 평가금의 총합입니다.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Realized PnL -->
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs text-gray-400">실현 손익 (확정)</span>
+                        <i data-lucide="dollar-sign" class="w-4 h-4 ${totalRealizedPnLColor}"></i>
+                    </div>
+                    <div class="text-lg font-bold ${totalRealizedPnLColor}">
+                        ${formatCurrency(analysis.totalRealizedPnL)}
+                    </div>
+                </div>
+
+                <!-- Unrealized PnL -->
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs text-gray-400">평가 손익 (보유)</span>
+                        <i data-lucide="refresh-cw" class="w-4 h-4 ${totalUnrealizedPnLColor}"></i>
+                    </div>
+                    <div class="text-lg font-bold ${totalUnrealizedPnLColor}">
+                        ${analysis.totalUnrealizedPnL > 0 ? '+' : ''}${formatNumber(analysis.totalUnrealizedPnL, 0)}
+                    </div>
+                </div>
+
+                <!-- Invested Amount -->
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs text-gray-400">총 매수금</span>
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-purple-400"></i>
+                    </div>
+                    <div class="text-lg font-bold text-white truncate">
+                        ${formatNumber(Math.round(analysis.totalInvested / 10000))}만
+                    </div>
+                </div>
+
+                <!-- Total Evaluation -->
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs text-gray-400">총 평가금</span>
+                        <i data-lucide="trending-up" class="w-4 h-4 text-green-400"></i>
+                    </div>
+                    <div class="text-lg font-bold text-white truncate">
+                        ${formatNumber(Math.round(analysis.totalEvaluation / 10000))}만
+                    </div>
+                </div>
+            `;
+            window.lucide.createIcons();
+        }
+
+        function renderTradeHistory() {
+            const historyList = document.getElementById('trade-history-list');
+            document.getElementById('trade-count').textContent = tradesData.length;
+            historyList.innerHTML = '';
+
+            if (tradesData.length === 0) {
+                historyList.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-gray-500 space-y-2 p-8">
+                        <div class="bg-gray-700/50 p-4 rounded-full">
+                            <i data-lucide="activity" class="w-8 h-8 text-gray-600"></i>
+                        </div>
+                        <p>아직 기록된 거래가 없습니다.</p>
+                        <p class="text-xs">왼쪽 폼을 이용해 첫 거래를 입력해보세요.</p>
+                    </div>
+                `;
+                window.lucide.createIcons();
+                return;
+            }
+
+            // Desktop Table Header
+            historyList.innerHTML += `
+                <div class="hidden md:grid grid-cols-6 text-xs text-gray-400 bg-gray-900 px-4 py-3 border-b border-gray-700 font-medium">
+                    <div>날짜</div>
+                    <div>종목</div>
+                    <div class="text-center">유형</div>
+                    <div class="text-right">가격(단가)</div>
+                    <div class="text-right">수량</div>
+                    <div class="text-right">총액/관리</div>
+                </div>
+            `;
+
+            tradesData.forEach(trade => {
+                const isBuy = trade.type === 'BUY';
+                const typeClass = isBuy ? 'bg-red-500/10 text-red-400' : 'bg-blue-500/10 text-blue-400';
+                const icon = isBuy ? 'arrow-up-right' : 'arrow-down-right';
+
+                const tradeElement = document.createElement('div');
+                tradeElement.className = `group border-b border-gray-700/50 transition-colors ${editingTradeId === trade.id ? 'bg-yellow-500/10' : 'hover:bg-gray-750'}`;
+                tradeElement.dataset.tradeId = trade.id;
+                
+                tradeElement.innerHTML = `
+                    <!-- Desktop View -->
+                    <div class="hidden md:grid grid-cols-6 px-4 py-3 items-center text-sm">
+                        <div class="text-gray-300">${trade.date}</div>
+                        <div class="font-bold text-white">${trade.ticker}</div>
+                        <div class="text-center">
+                            <span class="px-2 py-1 rounded text-xs font-bold ${typeClass}">
+                                ${isBuy ? '매수' : '매도'}
+                            </span>
+                        </div>
+                        <div class="text-right text-gray-300">${formatNumber(trade.price, 2)}</div>
+                        <div class="text-right text-gray-300">${formatNumber(trade.quantity, 0)}</div>
+                        <div class="flex items-center justify-end space-x-3">
+                            <span class="text-gray-200 font-medium">${formatNumber(trade.total, 0)}</span>
+                            <button data-action="edit" data-id="${trade.id}" class="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-yellow-400 transition-opacity" title="수정">
+                                <i data-lucide="pencil" class="w-4 h-4"></i>
+                            </button>
+                            <button data-action="delete" data-id="${trade.id}" class="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 transition-opacity" title="삭제">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Mobile View -->
+                    <div class="md:hidden px-4 py-3 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2 rounded-lg ${typeClass.replace('text-', 'border ').replace('/10', '/30')}">
+                                <i data-lucide="${icon}" class="w-5 h-5 ${isBuy ? 'text-red-400' : 'text-blue-400'}"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-bold text-white">${trade.ticker}</span>
+                                    <span class="text-xs text-gray-500">${trade.date}</span>
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    ${formatNumber(trade.price, 2)}원 × ${formatNumber(trade.quantity, 0)}주
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right flex flex-col items-end">
+                            <div class="font-medium text-gray-200">${formatNumber(trade.total, 0)}원</div>
+                            <div class="flex space-x-3 mt-2">
+                                <button data-action="edit" data-id="${trade.id}" class="text-xs text-gray-500 hover:text-yellow-400 underline">수정</button>
+                                <button data-action="delete" data-id="${trade.id}" class="text-xs text-gray-500 hover:text-red-400 underline">삭제</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                historyList.appendChild(tradeElement);
+            });
+            window.lucide.createIcons();
+        }
+
+        function renderHoldingsSummary() {
+            const analysis = analyzeTrades();
+            const summaryContainer = document.querySelector('#holdings-summary > div:last-child');
+            summaryContainer.innerHTML = '';
+
+            if (analysis.holdingList.length === 0) {
+                summaryContainer.innerHTML = '<div class="p-4 text-center text-gray-500 text-sm">보유 중인 종목이 없습니다.</div>';
+                return;
+            }
+
+            let tableHTML = `
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-gray-400 bg-gray-900 sticky top-0 z-10">
+                        <tr>
+                            <th class="px-3 py-2">종목/수량</th>
+                            <th class="px-3 py-2 text-right">평단가/현재가</th>
+                            <th class="px-3 py-2 text-right">평가손익</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            analysis.holdingList.forEach(item => {
+                const valuation = item.currentPrice * item.quantity;
+                const invested = item.avgPrice * item.quantity;
+                const pnl = item.currentPrice > 0 ? valuation - invested : 0;
+                const pnlPercent = item.currentPrice > 0 && item.avgPrice > 0 ? ((item.currentPrice - item.avgPrice) / item.avgPrice) * 100 : 0;
+                const pnlColor = getPnLColor(pnl);
+
+                tableHTML += `
+                    <tr class="border-b border-gray-700/50 last:border-0">
+                        <td class="px-3 py-3 align-top">
+                            <div class="flex items-center space-x-2">
+                                <div class="font-bold text-white">${item.ticker}</div>
+                                <button onclick="openStockSite('${item.ticker}')" class="text-gray-500 hover:text-blue-400 transition-colors" title="시세 확인하기 (네이버/야후)">
+                                    <i data-lucide="external-link" class="w-3 h-3"></i>
+                                </button>
+                            </div>
+                            <div class="text-xs text-gray-400 mt-1">${formatNumber(item.quantity, 0)}주</div>
+                        </td>
+                        <td class="px-3 py-3 text-right align-top">
+                            <div class="text-gray-300 text-xs">평: ${formatNumber(item.avgPrice, 2)}</div>
+                            <div class="mt-1">
+                                <input type="number" step="any" placeholder="현재가" value="${item.currentPrice || ''}"
+                                    onchange="handleUpdateCurrentPrice('${item.ticker}', this.value)"
+                                    class="w-20 bg-gray-900 border border-gray-600 rounded px-1 py-0.5 text-right text-white text-xs focus:border-blue-500 focus:outline-none"
+                                />
+                            </div>
+                        </td>
+                        <td class="px-3 py-3 text-right align-top">
+                            ${item.currentPrice > 0 ? `
+                                <div class="font-bold ${pnlColor}">
+                                    ${pnl > 0 ? '+' : ''}${formatNumber(pnl, 0)}
+                                </div>
+                                <div class="text-xs mt-1 ${pnlColor}">
+                                    ${pnlPercent > 0 ? '+' : ''}${pnlPercent.toFixed(1)}%
+                                </div>
+                            ` : `<span class="text-xs text-gray-500">-</span>`}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</tbody></table>`;
+            summaryContainer.innerHTML = tableHTML;
+            window.lucide.createIcons();
+        }
+
+        // --- Supabase 액션 함수 ---
+
+        async function handleSubmitTrade(e) {
+            e.preventDefault();
+            
+            const tickerInput = document.getElementById('trade-ticker');
+            const dateInput = document.getElementById('trade-date');
+            const priceInput = document.getElementById('trade-price');
+            const quantityInput = document.getElementById('trade-quantity');
+            const tradeType = document.querySelector('#trade-form button.font-bold[data-type]').dataset.type;
+
+            const ticker = tickerInput.value.toUpperCase().trim();
+            const date = dateInput.value;
+            const priceNum = Number(priceInput.value);
+            const qtyNum = Number(quantityInput.value);
+            const total = priceNum * qtyNum;
+
+            if (!ticker || !date || isNaN(priceNum) || priceNum <= 0 || isNaN(qtyNum) || qtyNum <= 0) {
+                console.error("입력값이 올바르지 않습니다.");
+                return;
+            }
+
+            try {
+                if (editingTradeId) {
+                    // UPDATE (수정)
+                    const { error } = await supabase
+                        .from('trades')
+                        .update({
+                            date,
+                            ticker,
+                            type: tradeType,
+                            quantity: qtyNum,
+                            price: priceNum,
+                            total,
+                        })
+                        .eq('id', editingTradeId)
+                        .eq('user_id', currentUserId);
+
+                    if (error) throw error;
+                    resetForm();
+                } else {
+                    // INSERT (추가)
+                    const { error } = await supabase
+                        .from('trades')
+                        .insert({
+                            user_id: currentUserId,
+                            date,
+                            ticker,
+                            type: tradeType,
+                            quantity: qtyNum,
+                            price: priceNum,
+                            total,
+                        });
+
+                    if (error) throw error;
+                    // 입력 필드 초기화
+                    tickerInput.value = '';
+                    priceInput.value = '';
+                    quantityInput.value = '';
+                }
+                
+            } catch (error) {
+                console.error("거래 기록 저장/수정 오류:", error);
+                // 에러 모달 표시 필요
+            }
+        }
+
+        async function handleUpdateCurrentPrice(ticker, newPrice) {
+            if (!supabase) return;
+            const priceNum = Number(newPrice);
+            if (isNaN(priceNum) || priceNum <= 0) return;
+
+            try {
+                const { error } = await supabase
+                    .from('prices')
+                    .upsert({
+                        ticker,
+                        user_id: currentUserId,
+                        price: priceNum,
+                    }, { onConflict: 'ticker, user_id' }); 
+
+                if (error) throw error;
+            } catch (error) {
+                console.error("현재가 업데이트 오류:", error);
+            }
+        }
+
+        async function handleDeleteTrade(id) {
+            if (!supabase) return;
+
+            // 사용자에게 확인 메시지 표시 (custom modal 필요)
+            const confirmed = window.confirm('정말로 이 거래 기록을 삭제하시겠습니까?');
+            if (!confirmed) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('trades')
+                    .delete()
+                    .eq('id', id)
+                    .eq('user_id', currentUserId);
+
+                if (error) throw error;
+                if (editingTradeId === id) resetForm();
+            } catch (error) {
+                console.error("거래 기록 삭제 오류:", error);
+            }
+        }
+
+        function setFormForEdit(id) {
+            const trade = tradesData.find(t => t.id === id);
+            if (!trade) return;
+
+            editingTradeId = id;
+            document.getElementById('form-title').innerHTML = '<i data-lucide="pencil" class="w-4 h-4 mr-2"></i> 기록 수정 중';
+            document.getElementById('form-title').closest('.bg-gray-800').classList.add('border-yellow-500');
+            document.getElementById('submit-button').textContent = '수정 완료';
+            document.getElementById('submit-button').classList.remove('bg-red-600', 'bg-blue-600');
+            document.getElementById('submit-button').classList.add('bg-yellow-600', 'hover:bg-yellow-700');
+            document.getElementById('cancel-edit-button').classList.remove('hidden');
+
+            document.getElementById('trade-date').value = trade.date;
+            document.getElementById('trade-ticker').value = trade.ticker;
+            document.getElementById('trade-price').value = trade.price;
+            document.getElementById('trade-quantity').value = trade.quantity;
+            
+            setTradeType(trade.type);
+            renderTradeHistory(); // highlight the editing row
+        }
+
+        function resetForm() {
+            editingTradeId = null;
+            document.getElementById('form-title').innerHTML = '<i data-lucide="plus-circle" class="w-4 h-4 mr-2 text-blue-400"></i> 새 기록 추가';
+            document.getElementById('form-title').closest('.bg-gray-800').classList.remove('border-yellow-500');
+            document.getElementById('submit-button').textContent = '매수 기록하기';
+            document.getElementById('submit-button').classList.remove('bg-yellow-600', 'hover:bg-yellow-700', 'bg-blue-600', 'hover:bg-blue-700');
+            document.getElementById('submit-button').classList.add('bg-red-600', 'hover:bg-red-700');
+            document.getElementById('cancel-edit-button').classList.add('hidden');
+            
+            document.getElementById('trade-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('trade-ticker').value = '';
+            document.getElementById('trade-price').value = '';
+            document.getElementById('trade-quantity').value = '';
+            
+            setTradeType('BUY');
+            renderTradeHistory(); // remove highlight
+        }
+
+        function setTradeType(type) {
+            const buyBtn = document.getElementById('type-buy');
+            const sellBtn = document.getElementById('type-sell');
+            const submitBtn = document.getElementById('submit-button');
+
+            buyBtn.className = 'flex-1 text-sm py-1 rounded';
+            sellBtn.className = 'flex-1 text-sm py-1 rounded';
+            submitBtn.classList.remove('bg-red-600', 'hover:bg-red-700', 'bg-blue-600', 'hover:bg-blue-700', 'bg-yellow-600', 'hover:bg-yellow-700');
+
+            if (type === 'BUY') {
+                buyBtn.classList.add('bg-red-500/20', 'text-red-400', 'font-bold');
+                sellBtn.classList.add('text-gray-400');
+                if (!editingTradeId) submitBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+            } else {
+                sellBtn.classList.add('bg-blue-500/20', 'text-blue-400', 'font-bold');
+                buyBtn.classList.add('text-gray-400');
+                if (!editingTradeId) submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            }
+            if (editingTradeId) submitBtn.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
+            submitBtn.classList.add('text-white');
+        }
+
+        // --- 이벤트 리스너 설정 ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 초기 날짜 설정
+            document.getElementById('trade-date').value = new Date().toISOString().split('T')[0];
+
+            // 매수/매도 버튼 이벤트
+            document.getElementById('type-buy').addEventListener('click', () => setTradeType('BUY'));
+            document.getElementById('type-sell').addEventListener('click', () => setTradeType('SELL'));
+
+            // 폼 제출 이벤트
+            document.getElementById('trade-form').addEventListener('submit', handleSubmitTrade);
+            
+            // 수정 취소 버튼 이벤트
+            document.getElementById('cancel-edit-button').addEventListener('click', resetForm);
+
+            // 매매 기록 목록의 이벤트 위임 (수정/삭제)
+            document.getElementById('trade-history-list').addEventListener('click', (e) => {
+                const target = e.target.closest('button');
+                if (!target) return;
+                
+                const action = target.dataset.action;
+                const id = target.dataset.id;
+                
+                if (action === 'edit') setFormForEdit(id);
+                if (action === 'delete') handleDeleteTrade(id);
+            });
+
+            initializeApp();
+        });
+    </script>
+</body>
+</html>

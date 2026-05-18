@@ -2,7 +2,7 @@ name: update-short-data
 
 on:
   schedule:
-    - cron: '0 9 * * 1-5'
+    - cron: '0 10 * * 1-5'
 
   workflow_dispatch:
 
@@ -14,23 +14,23 @@ jobs:
 
     steps:
 
-      - name: checkout
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: python
-        uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: install
+      - name: Install Packages
         run: |
           pip install -r requirements.txt
 
-      - name: run collector
+      - name: Run Collector
         run: |
           python collector/fetch_data.py
 
-      - name: commit
+      - name: Commit CSV
         run: |
           git config user.name github-actions
           git config user.email actions@github.com

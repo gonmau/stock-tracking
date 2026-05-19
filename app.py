@@ -83,10 +83,12 @@ def get_realtime_price():
         url = "https://m.stock.naver.com/api/stock/263750/basic"
         r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
         data = r.json()
-        return int(data["closePrice"].replace(",", ""))
+        current = int(data["closePrice"].replace(",", ""))
+        prev    = int(data["compareToPreviousClosePrice"].replace(",", ""))
+        change  = float(data["fluctuationsRatio"])
+        return {"current": current, "prev": prev, "chg": change}
     except:
-        pass
-    return None
+        return None
 
 def build_df(meta: dict) -> pd.DataFrame:
     df = pd.DataFrame(meta["records"])
@@ -276,9 +278,8 @@ def main():
     r  = analyze(df)
     realtime = get_realtime_price()
     if realtime:
-        prev_close = int(df.iloc[-2]["close"])  # JSON의 마지막 종가 = 전일 종가
-        r["close"] = realtime
-        r["price_chg"] = (realtime - prev_close) / prev_close * 100
+        r["close"]      = realtime["current"]
+        r["price_chg"]  = realtime["chg"]
 
     st.caption(f"마지막 업데이트: {meta.get('updated_at', '-')}  |  현재가: 실시간  |  공매도 데이터: 최신 기준 T+2 지연 (약 3~4영업일 전)")
 

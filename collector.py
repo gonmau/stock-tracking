@@ -36,17 +36,36 @@ def fetch():
         columns={"종가": "close", "거래량": "volume"}
     )
 
-    # 공매도 컬럼 정규화
+    # 실제 컬럼명 디버그 출력
+    print(f"  공매도 컬럼 목록: {list(short_df.columns)}")
+
+    # 공매도 컬럼 자동 감지
     rename_map = {}
     for col in short_df.columns:
-        col_s = col.strip()
-        if "공매도" in col_s and "금액" not in col_s and "비중" not in col_s:
+        col_s = str(col).strip()
+        if any(k in col_s for k in ["공매도량","공매도 수량","공매도수량","공매도"]) \
+                and "금액" not in col_s and "비중" not in col_s and "short_vol" not in rename_map.values():
             rename_map[col] = "short_vol"
-        elif "잔고" in col_s and "금액" not in col_s and "비중" not in col_s:
+        elif any(k in col_s for k in ["잔고수량","잔고 수량","보유잔고","잔고"]) \
+                and "금액" not in col_s and "비중" not in col_s and "balance" not in rename_map.values():
             rename_map[col] = "balance"
-        elif "비중" in col_s:
+        elif "비중" in col_s and "ratio_pct" not in rename_map.values():
             rename_map[col] = "ratio_pct"
+
+    print(f"  컬럼 매핑: {rename_map}")
+
+    # 매핑 실패 시 위치 기반 폴백 (0번째=공매도량, 3번째=잔고)
     short_df = short_df.rename(columns=rename_map)
+    numeric_cols = short_df.select_dtypes(include="number").columns.tolist()
+    if "short_vol" not in short_df.columns and len(numeric_cols) >= 1:
+        short_df = short_df.rename(columns={numeric_cols[0]: "short_vol"})
+        print(f"  폴백: {numeric_cols[0]} → short_vol")
+    if "balance" not in short_df.columns and len(numeric_cols) >= 4:
+        short_df = short_df.rename(columns={numeric_cols[3]: "balance"})
+        print(f"  폴백: {numeric_cols[3]} → balance")
+    elif "balance" not in short_df.columns and len(numeric_cols) >= 2:
+        short_df = short_df.rename(columns={numeric_cols[-1]: "balance"})
+        print(f"  폴백: {numeric_cols[-1]} → balance")
 
     df = price_df.join(
         short_df[[c for c in ["short_vol","balance","ratio_pct"] if c in short_df.columns]],

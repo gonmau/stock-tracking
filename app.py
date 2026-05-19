@@ -200,7 +200,7 @@ def make_chart(df: pd.DataFrame, days: int) -> go.Figure:
     bar_colors = [
         "#ff4444" if v >= T["daily_attack"] else
         "#ffd93d" if v >= T["daily_watch"] else
-        "#4ecdc488"
+        "rgba(78,205,196,0.5)"
         for v in d["short_vol"]
     ]
     fig.add_trace(go.Bar(
@@ -211,7 +211,7 @@ def make_chart(df: pd.DataFrame, days: int) -> go.Figure:
     # 거래량
     fig.add_trace(go.Bar(
         x=d.index, y=d["volume"] / 1000,
-        name="거래량", marker_color="#44444488", marker_line_width=0,
+        name="거래량", marker_color="rgba(68,68,68,0.5)", marker_line_width=0,
     ), row=3, col=1)
 
     fig.update_layout(

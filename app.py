@@ -232,7 +232,7 @@ def make_chart(df: pd.DataFrame, days: int) -> go.Figure:
         plot_bgcolor="#0e1117",
         height=620,
         showlegend=True,
-        legend=dict(orientation="h", y=1.02, x=0, font=dict(size=11)),
+        legend=dict(orientation="h", y=1.02, x=0, font=dict(size=11, color="#cccccc")),
         margin=dict(l=10, r=60, t=40, b=10),
     )
     fig.update_yaxes(title_text="주가(원)", tickformat=",",   row=1, col=1, secondary_y=False)

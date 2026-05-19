@@ -278,7 +278,7 @@ def main():
     if realtime:
         r["close"] = realtime
 
-    st.caption(f"마지막 업데이트: {meta.get('updated_at', '-')}")
+    st.caption(f"마지막 업데이트: {meta.get('updated_at', '-')}  |  현재가: 실시간  |  공매도 데이터: 최신 기준 T+2 지연 (약 3~4영업일 전)")
 
     col1, col2, col3, col4, col5 = st.columns(5)
 

@@ -76,7 +76,18 @@ def load_data(owner: str, repo: str):
         return r.json()
     except Exception as e:
         return {"error": str(e)}
-
+@st.cache_data(ttl=60)  # 1분 캐시
+def get_realtime_price():
+    try:
+        url = "https://finance.naver.com/item/main.naver?code=263750"
+        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
+        import re
+        match = re.search(r'"sv":"(\d+)"', r.text)
+        if match:
+            return int(match.group(1))
+    except:
+        pass
+    return None
 
 def build_df(meta: dict) -> pd.DataFrame:
     df = pd.DataFrame(meta["records"])
@@ -264,6 +275,9 @@ def main():
 
     df = build_df(meta)
     r  = analyze(df)
+    realtime = get_realtime_price()
+    if realtime:
+        r["close"] = realtime
 
     st.caption(f"마지막 업데이트: {meta.get('updated_at', '-')}")
 

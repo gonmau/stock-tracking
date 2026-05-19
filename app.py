@@ -76,15 +76,14 @@ def load_data(owner: str, repo: str):
         return r.json()
     except Exception as e:
         return {"error": str(e)}
-@st.cache_data(ttl=60)  # 1분 캐시
+
+@st.cache_data(ttl=60)
 def get_realtime_price():
     try:
-        url = "https://finance.naver.com/item/main.naver?code=263750"
+        url = "https://m.stock.naver.com/api/stock/263750/basic"
         r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
-        import re
-        match = re.search(r'"sv":"(\d+)"', r.text)
-        if match:
-            return int(match.group(1))
+        data = r.json()
+        return int(data["closePrice"].replace(",", ""))
     except:
         pass
     return None

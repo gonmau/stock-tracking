@@ -1,0 +1,6 @@
+pykrx
+pandas
+streamlit
+plotly
+requests
+openpyxl

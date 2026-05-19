@@ -276,7 +276,7 @@ def main():
     r  = analyze(df)
     realtime = get_realtime_price()
     if realtime:
-        prev_close = int(df.iloc[-1]["close"])  # JSON의 마지막 종가 = 전일 종가
+        prev_close = int(df.iloc[-2]["close"])  # JSON의 마지막 종가 = 전일 종가
         r["close"] = realtime
         r["price_chg"] = (realtime - prev_close) / prev_close * 100
 

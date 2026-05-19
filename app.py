@@ -234,7 +234,6 @@ def make_chart(df: pd.DataFrame, days: int) -> go.Figure:
         showlegend=True,
         legend=dict(orientation="h", y=1.02, x=0, font=dict(size=11, color="#cccccc")),
         margin=dict(l=10, r=60, t=40, b=10),
-        config={"toImageButtonOptions": {"width": 1600, "height": 900, "scale": 2}}
     )
     fig.update_yaxes(title_text="주가(원)", tickformat=",",   row=1, col=1, secondary_y=False)
     fig.update_yaxes(title_text="잔고(만주)", ticksuffix="만", showgrid=False, row=1, col=1, secondary_y=True)

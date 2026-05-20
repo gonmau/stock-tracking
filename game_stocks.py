@@ -7,9 +7,6 @@ import time
 # pykrx
 from pykrx import stock as krx
 
-# yfinance (넥슨 도쿄 상장)
-import yfinance as yf
-
 # plotly
 import plotly.graph_objects as go
 import plotly.express as px
@@ -20,30 +17,25 @@ from plotly.subplots import make_subplots
 # ───────────────────────────────────────────
 GAME_STOCKS = {
     # 대형주
-    "259960": {"name": "크래프톤",    "market": "KOSPI", "yf": "259960.KS"},
-    "263750": {"name": "펄어비스",    "market": "KOSPI", "yf": "263750.KS"},
-    "036570": {"name": "엔씨소프트",  "market": "KOSPI", "yf": "036570.KS"},
-    "251270": {"name": "넷마블",      "market": "KOSPI", "yf": "251270.KS"},
-    "462870": {"name": "시프트업",    "market": "KOSPI", "yf": "462870.KS"},
+    "259960": {"name": "크래프톤",            "market": "KOSPI"},
+    "263750": {"name": "펄어비스",            "market": "KOSPI"},
+    "036570": {"name": "엔씨소프트",          "market": "KOSPI"},
+    "251270": {"name": "넷마블",              "market": "KOSPI"},
+    "462870": {"name": "시프트업",            "market": "KOSPI"},
     # 중형주
-    "293490": {"name": "카카오게임즈","market": "KOSDAQ","yf": "293490.KQ"},
-    "095660": {"name": "네오위즈",    "market": "KOSDAQ","yf": "095660.KQ"},
-    "225570": {"name": "넥슨게임즈",  "market": "KOSDAQ","yf": "225570.KQ"},
-    "078340": {"name": "컴투스",      "market": "KOSDAQ","yf": "078340.KQ"},
-    "078630": {"name": "게임빌(컴투스홀딩스)", "market": "KOSDAQ","yf": "078630.KQ"},
+    "293490": {"name": "카카오게임즈",        "market": "KOSDAQ"},
+    "095660": {"name": "네오위즈",            "market": "KOSDAQ"},
+    "225570": {"name": "넥슨게임즈",          "market": "KOSDAQ"},
+    "078340": {"name": "컴투스",              "market": "KOSDAQ"},
+    "078630": {"name": "게임빌(컴투스홀딩스)","market": "KOSDAQ"},
     # 소형주
-    "069080": {"name": "웹젠",        "market": "KOSDAQ","yf": "069080.KQ"},
-    "194480": {"name": "데브시스터즈","market": "KOSDAQ","yf": "194480.KQ"},
-    "112040": {"name": "위메이드",    "market": "KOSDAQ","yf": "112040.KQ"},
-    "067000": {"name": "조이시티",    "market": "KOSDAQ","yf": "067000.KQ"},
-    "123420": {"name": "선데이토즈",  "market": "KOSDAQ","yf": "123420.KQ"},
-    "201060": {"name": "미투온",      "market": "KOSDAQ","yf": "201060.KQ"},
-    # 해외 상장
-    "3659.T": {"name": "넥슨(도쿄)",  "market": "TSE",   "yf": "3659.T"},
+    "069080": {"name": "웹젠",               "market": "KOSDAQ"},
+    "194480": {"name": "데브시스터즈",        "market": "KOSDAQ"},
+    "112040": {"name": "위메이드",            "market": "KOSDAQ"},
+    "067000": {"name": "조이시티",            "market": "KOSDAQ"},
+    "123420": {"name": "선데이토즈",          "market": "KOSDAQ"},
+    "201060": {"name": "미투온",              "market": "KOSDAQ"},
 }
-
-# KRX 티커 (TSE 제외)
-KRX_TICKERS = {k: v for k, v in GAME_STOCKS.items() if v["market"] != "TSE"}
 
 # ───────────────────────────────────────────
 # 페이지 설정
@@ -119,21 +111,6 @@ def load_price_data(ticker: str, days: int = 90) -> pd.DataFrame:
     except Exception:
         return pd.DataFrame()
 
-@st.cache_data(ttl=1800, show_spinner=False)
-def load_price_yf(ticker_yf: str, days: int = 90) -> pd.DataFrame:
-    """yfinance 주가 (도쿄 상장 넥슨 등)"""
-    try:
-        end = datetime.today()
-        start = end - timedelta(days=days)
-        df = yf.download(ticker_yf, start=start, end=end, progress=False)
-        if df.empty:
-            return pd.DataFrame()
-        df = df[["Open","High","Low","Close","Volume"]].copy()
-        df.columns = ["open","high","low","close","volume"]
-        df["change_pct"] = df["close"].pct_change() * 100
-        return df
-    except Exception:
-        return pd.DataFrame()
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def load_fundamental(ticker: str) -> dict:
@@ -206,11 +183,7 @@ def load_investor_trading(ticker: str, days: int = 30) -> pd.DataFrame:
 def build_summary_table() -> pd.DataFrame:
     rows = []
     for ticker, meta in GAME_STOCKS.items():
-        is_tse = meta["market"] == "TSE"
-        if is_tse:
-            price_df = load_price_yf(meta["yf"], days=5)
-        else:
-            price_df = load_price_data(ticker, days=5)
+        price_df = load_price_data(ticker, days=5)
 
         if price_df.empty:
             continue
@@ -229,22 +202,20 @@ def build_summary_table() -> pd.DataFrame:
         short_ratio = None
         foreign_ratio = None
 
-        if not is_tse:
-            sv = load_shorting_volume(ticker, days=5)
-            if not sv.empty:
-                last_sv = sv.iloc[-1]
-                cols = sv.columns.tolist()
-                # 공매도비중 컬럼 찾기
-                ratio_col = next((c for c in cols if "비중" in c or "ratio" in c.lower()), None)
-                if ratio_col:
-                    short_ratio = float(last_sv[ratio_col])
+        sv = load_shorting_volume(ticker, days=5)
+        if not sv.empty:
+            last_sv = sv.iloc[-1]
+            cols = sv.columns.tolist()
+            ratio_col = next((c for c in cols if "비중" in c or "ratio" in c.lower()), None)
+            if ratio_col:
+                short_ratio = float(last_sv[ratio_col])
 
-            fr = load_foreign_ratio(ticker, days=5)
-            if not fr.empty:
-                cols = fr.columns.tolist()
-                ratio_col = next((c for c in cols if "보유율" in c or "비율" in c or "ratio" in c.lower()), None)
-                if ratio_col:
-                    foreign_ratio = float(fr.iloc[-1][ratio_col])
+        fr = load_foreign_ratio(ticker, days=5)
+        if not fr.empty:
+            cols = fr.columns.tolist()
+            ratio_col = next((c for c in cols if "보유율" in c or "비율" in c or "ratio" in c.lower()), None)
+            if ratio_col:
+                foreign_ratio = float(fr.iloc[-1][ratio_col])
 
         rows.append({
             "티커": ticker,
@@ -399,10 +370,7 @@ with tab_chart:
         meta = GAME_STOCKS[chart_ticker]
 
         with st.spinner(f"{meta['name']} 데이터 로딩..."):
-            if meta["market"] == "TSE":
-                price_df = load_price_yf(meta["yf"], days=selected_period)
-            else:
-                price_df = load_price_data(chart_ticker, days=selected_period)
+            price_df = load_price_data(chart_ticker, days=selected_period)
 
         if price_df.empty:
             st.warning("가격 데이터를 불러올 수 없습니다.")
@@ -455,17 +423,16 @@ with tab_chart:
                 marker_color=vol_colors, name="거래량", showlegend=False,
             ), row=2, col=1)
 
-            # 공매도비중 (KRX만)
-            if meta["market"] != "TSE":
-                sv = load_shorting_volume(chart_ticker, days=selected_period)
-                if not sv.empty:
-                    cols = sv.columns.tolist()
-                    ratio_col = next((c for c in cols if "비중" in c), None)
-                    if ratio_col:
-                        fig.add_trace(go.Bar(
-                            x=sv.index, y=sv[ratio_col],
-                            marker_color="#f0883e", name="공매도비중", showlegend=False,
-                        ), row=3, col=1)
+            # 공매도비중
+            sv = load_shorting_volume(chart_ticker, days=selected_period)
+            if not sv.empty:
+                cols = sv.columns.tolist()
+                ratio_col = next((c for c in cols if "비중" in c), None)
+                if ratio_col:
+                    fig.add_trace(go.Bar(
+                        x=sv.index, y=sv[ratio_col],
+                        marker_color="#f0883e", name="공매도비중", showlegend=False,
+                    ), row=3, col=1)
 
             fig.update_layout(
                 paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
@@ -485,10 +452,7 @@ with tab_chart:
             fig_rel = go.Figure()
             for t in selected_tickers[:8]:  # 최대 8개
                 m = GAME_STOCKS[t]
-                if m["market"] == "TSE":
-                    df_t = load_price_yf(m["yf"], days=selected_period)
-                else:
-                    df_t = load_price_data(t, days=selected_period)
+                df_t = load_price_data(t, days=selected_period)
                 if df_t.empty or len(df_t) < 2:
                     continue
                 base = df_t["close"].iloc[0]
@@ -516,7 +480,7 @@ with tab_short:
 
     short_ticker = st.selectbox(
         "공매도 조회 종목",
-        options=[t for t in selected_tickers if GAME_STOCKS[t]["market"] != "TSE"],
+        options=selected_tickers,
         format_func=lambda x: f"{GAME_STOCKS[x]['name']} ({x})",
         key="short_sel"
     )
@@ -595,7 +559,7 @@ with tab_short:
         # 전종목 공매도비중 비교
         st.markdown('<div class="section-header">전 종목 공매도비중 비교 (최근)</div>', unsafe_allow_html=True)
         short_rows = []
-        krx_selected = [t for t in selected_tickers if GAME_STOCKS[t]["market"] != "TSE"]
+        krx_selected = selected_tickers
         for t in krx_selected:
             sv = load_shorting_volume(t, days=5)
             sb = load_shorting_balance(t, days=5)
@@ -647,7 +611,7 @@ with tab_foreign:
 
     foreign_ticker = st.selectbox(
         "외국인 조회 종목",
-        options=[t for t in selected_tickers if GAME_STOCKS[t]["market"] != "TSE"],
+        options=selected_tickers,
         format_func=lambda x: f"{GAME_STOCKS[x]['name']} ({x})",
         key="foreign_sel"
     )
@@ -701,7 +665,7 @@ with tab_foreign:
     # 전종목 외인비율 히트맵
     st.markdown('<div class="section-header">전 종목 외인 보유율 히트맵</div>', unsafe_allow_html=True)
     heatmap_data = {}
-    krx_sel = [t for t in selected_tickers if GAME_STOCKS[t]["market"] != "TSE"]
+    krx_sel = selected_tickers
     for t in krx_sel:
         fr2 = load_foreign_ratio(t, days=30)
         if fr2.empty:
@@ -737,7 +701,7 @@ with tab_investor:
 
     inv_ticker = st.selectbox(
         "투자자 동향 종목",
-        options=[t for t in selected_tickers if GAME_STOCKS[t]["market"] != "TSE"],
+        options=selected_tickers,
         format_func=lambda x: f"{GAME_STOCKS[x]['name']} ({x})",
         key="inv_sel"
     )

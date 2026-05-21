@@ -1,20 +1,23 @@
+"""
+game_stocks.py
+한국 게임주 트래커 대시보드
+app.py와 동일한 방식 — GitHub Raw에서 {ticker}_game.json 읽기
+pykrx 직접 호출 없음
+"""
+
+import requests
 import streamlit as st
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
-import time
-
-# pykrx
-from pykrx import stock as krx
-
-# plotly
 import plotly.graph_objects as go
-import plotly.express as px
 from plotly.subplots import make_subplots
+from datetime import datetime
 
 # ───────────────────────────────────────────
-# 종목 정의
+# 설정
 # ───────────────────────────────────────────
+GITHUB_RAW = "https://raw.githubusercontent.com/{owner}/{repo}/main/data/{ticker}_game.json"
+
 GAME_STOCKS = {
     # 대형주
     "259960": {"name": "크래프톤",            "market": "KOSPI"},
@@ -54,189 +57,71 @@ st.markdown("""
 html, body, [class*="css"] { font-family: 'Noto Sans KR', sans-serif; }
 .stApp { background: #0d1117; color: #e6edf3; }
 
-/* 메트릭 카드 */
 .metric-card {
     background: #161b22;
     border: 1px solid #30363d;
     border-radius: 8px;
     padding: 14px 16px;
     margin-bottom: 8px;
-    transition: border-color .2s;
 }
 .metric-card:hover { border-color: #58a6ff; }
 .metric-label { font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
 .metric-value { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 600; }
-.metric-sub { font-size: 12px; margin-top: 3px; }
-.up   { color: #3fb950; }
-.down { color: #f85149; }
-.flat { color: #8b949e; }
 
-/* 섹션 헤더 */
 .section-header {
     font-size: 13px; font-weight: 700; color: #8b949e;
     text-transform: uppercase; letter-spacing: .1em;
     border-bottom: 1px solid #21262d; padding-bottom: 6px; margin: 20px 0 12px;
 }
-
-/* 사이드바 */
 [data-testid="stSidebar"] { background: #0d1117; border-right: 1px solid #21262d; }
-
-/* 탭 */
 .stTabs [data-baseweb="tab"] { color: #8b949e; }
 .stTabs [aria-selected="true"] { color: #58a6ff !important; border-bottom-color: #58a6ff !important; }
-
-/* 데이터프레임 */
-.dataframe { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 </style>
 """, unsafe_allow_html=True)
 
 # ───────────────────────────────────────────
-# 데이터 로드 함수
+# 데이터 로드 (app.py 동일 패턴)
 # ───────────────────────────────────────────
 
-def today_str():
-    return datetime.today().strftime("%Y%m%d")
-
-def n_days_ago_str(n=90):
-    return (datetime.today() - timedelta(days=n)).strftime("%Y%m%d")
-
-@st.cache_data(ttl=1800, show_spinner=False)
-def load_price_data(ticker: str, days: int = 90) -> pd.DataFrame:
-    """KRX 주가 데이터 (일봉)"""
+@st.cache_data(ttl=3600)
+def load_ticker(owner: str, repo: str, ticker: str) -> dict:
+    url = GITHUB_RAW.format(owner=owner, repo=repo, ticker=ticker)
     try:
-        df = krx.get_market_ohlcv_by_date(n_days_ago_str(days), today_str(), ticker)
-        df.index = pd.to_datetime(df.index)
-        df.columns = ["open","high","low","close","volume","value","change_pct"]
-        return df
-    except Exception:
+        r = requests.get(url, timeout=10)
+        r.raise_for_status()
+        return r.json()
+    except Exception as e:
+        return {"error": str(e)}
+
+def build_df(meta: dict) -> pd.DataFrame:
+    """JSON records → DataFrame. app.py의 build_df와 동일"""
+    df = pd.DataFrame(meta["records"])
+    df["date"] = pd.to_datetime(df["date"])
+    df = df.set_index("date").sort_index()
+    return df
+
+def get_df(owner: str, repo: str, ticker: str) -> pd.DataFrame:
+    meta = load_ticker(owner, repo, ticker)
+    if "error" in meta or not meta.get("records"):
         return pd.DataFrame()
+    return build_df(meta)
 
-
-@st.cache_data(ttl=3600, show_spinner=False)
-def load_fundamental(ticker: str) -> dict:
-    """시총, 외인비율 등 기본 정보"""
-    try:
-        df = krx.get_market_cap_by_date(n_days_ago_str(5), today_str(), ticker)
-        if df.empty:
-            return {}
-        latest = df.iloc[-1]
-        return {
-            "market_cap": int(latest.get("시가총액", 0)),
-            "shares": int(latest.get("상장주식수", 0)),
-        }
-    except Exception:
-        return {}
-
-@st.cache_data(ttl=3600, show_spinner=False)
-def load_foreign_ratio(ticker: str, days: int = 60) -> pd.DataFrame:
-    """외국인 보유 비율"""
-    try:
-        df = krx.get_exhaustion_rates_of_foreign_investment_by_date(
-            n_days_ago_str(days), today_str(), ticker
-        )
-        df.index = pd.to_datetime(df.index)
+def slice_days(df: pd.DataFrame, days: int) -> pd.DataFrame:
+    if df.empty:
         return df
-    except Exception:
-        return pd.DataFrame()
-
-@st.cache_data(ttl=3600, show_spinner=False)
-def load_shorting_volume(ticker: str, days: int = 60) -> pd.DataFrame:
-    """공매도 거래량 및 비중"""
-    try:
-        df = krx.get_shorting_volume_by_date(
-            n_days_ago_str(days), today_str(), ticker
-        )
-        df.index = pd.to_datetime(df.index)
-        return df
-    except Exception:
-        return pd.DataFrame()
-
-@st.cache_data(ttl=3600, show_spinner=False)
-def load_shorting_balance(ticker: str, days: int = 60) -> pd.DataFrame:
-    """공매도 잔고"""
-    try:
-        df = krx.get_shorting_balance_by_date(
-            n_days_ago_str(days), today_str(), ticker
-        )
-        df.index = pd.to_datetime(df.index)
-        return df
-    except Exception:
-        return pd.DataFrame()
-
-@st.cache_data(ttl=1800, show_spinner=False)
-def load_investor_trading(ticker: str, days: int = 30) -> pd.DataFrame:
-    """투자자별 순매수 (외국인/기관/개인)"""
-    try:
-        df = krx.get_market_trading_value_by_date(
-            n_days_ago_str(days), today_str(), ticker
-        )
-        df.index = pd.to_datetime(df.index)
-        return df
-    except Exception:
-        return pd.DataFrame()
-
-# ───────────────────────────────────────────
-# 요약 행 계산
-# ───────────────────────────────────────────
-
-@st.cache_data(ttl=1800, show_spinner=False)
-def build_summary_table() -> pd.DataFrame:
-    rows = []
-    for ticker, meta in GAME_STOCKS.items():
-        price_df = load_price_data(ticker, days=5)
-
-        if price_df.empty:
-            continue
-
-        latest = price_df.iloc[-1]
-        prev   = price_df.iloc[-2] if len(price_df) > 1 else latest
-
-        close      = float(latest["close"])
-        prev_close = float(prev["close"])
-        chg_pct    = (close - prev_close) / prev_close * 100 if prev_close else 0
-        vol        = int(latest["volume"])
-
-        hi52 = float(price_df["high"].max()) if len(price_df) >= 2 else close
-        lo52 = float(price_df["low"].min())  if len(price_df) >= 2 else close
-
-        short_ratio = None
-        foreign_ratio = None
-
-        sv = load_shorting_volume(ticker, days=5)
-        if not sv.empty:
-            last_sv = sv.iloc[-1]
-            cols = sv.columns.tolist()
-            ratio_col = next((c for c in cols if "비중" in c or "ratio" in c.lower()), None)
-            if ratio_col:
-                short_ratio = float(last_sv[ratio_col])
-
-        fr = load_foreign_ratio(ticker, days=5)
-        if not fr.empty:
-            cols = fr.columns.tolist()
-            ratio_col = next((c for c in cols if "보유율" in c or "비율" in c or "ratio" in c.lower()), None)
-            if ratio_col:
-                foreign_ratio = float(fr.iloc[-1][ratio_col])
-
-        rows.append({
-            "티커": ticker,
-            "종목명": meta["name"],
-            "시장": meta["market"],
-            "현재가": close,
-            "등락률(%)": round(chg_pct, 2),
-            "거래량": vol,
-            "52주고": hi52,
-            "52주저": lo52,
-            "공매도비중(%)": short_ratio,
-            "외인보유율(%)": foreign_ratio,
-        })
-
-    return pd.DataFrame(rows)
+    cutoff = df.index.max() - pd.Timedelta(days=days)
+    return df[df.index >= cutoff]
 
 # ───────────────────────────────────────────
 # 사이드바
 # ───────────────────────────────────────────
 with st.sidebar:
     st.markdown("### 🎮 게임주 트래커")
+    st.markdown("---")
+
+    owner = st.text_input("GitHub 사용자명", value="gonmau")
+    repo  = st.text_input("레포지터리명",    value="stock-tracking")
+
     st.markdown("---")
 
     selected_tickers = st.multiselect(
@@ -250,10 +135,10 @@ with st.sidebar:
     selected_period_label = st.selectbox("기간", list(period_map.keys()), index=1)
     selected_period = period_map[selected_period_label]
 
-    chart_type = st.radio("차트 유형", ["캔들", "라인"], horizontal=True)
+    chart_type = st.radio("차트 유형", ["캔들스틱", "라인"], horizontal=True)
 
     st.markdown("---")
-    if st.button("🔄 데이터 새로고침"):
+    if st.button("🔄 새로고침"):
         st.cache_data.clear()
         st.rerun()
 
@@ -263,505 +148,444 @@ with st.sidebar:
 # 메인 헤더
 # ───────────────────────────────────────────
 st.markdown("## 🎮 한국 게임주 트래커")
-st.markdown(f"<span style='color:#8b949e;font-size:13px'>{datetime.today().strftime('%Y년 %m월 %d일')} 기준 · KRX 데이터</span>", unsafe_allow_html=True)
+st.markdown(
+    f"<span style='color:#8b949e;font-size:13px'>"
+    f"{datetime.today().strftime('%Y년 %m월 %d일')} 기준 · KRX 데이터 (T+2 지연)</span>",
+    unsafe_allow_html=True
+)
 st.markdown("---")
+
+if not selected_tickers:
+    st.info("사이드바에서 종목을 선택해주세요.")
+    st.stop()
+
+# ───────────────────────────────────────────
+# 전종목 데이터 로드 (캐시)
+# ───────────────────────────────────────────
+@st.cache_data(ttl=3600, show_spinner=False)
+def load_all(owner: str, repo: str, tickers: tuple) -> dict:
+    return {t: get_df(owner, repo, t) for t in tickers}
+
+with st.spinner("데이터 로딩 중..."):
+    all_data = load_all(owner, repo, tuple(selected_tickers))
+
+# 데이터 전혀 없으면 중단
+loaded = [t for t, df in all_data.items() if not df.empty]
+if not loaded:
+    st.error(
+        "데이터를 불러올 수 없습니다.\n\n"
+        "1. GitHub 사용자명 / 레포명을 사이드바에서 확인하세요.\n"
+        "2. `data/{ticker}_game.json` 파일이 레포에 있는지 확인하세요.\n"
+        "3. `game_collector.py`를 먼저 실행해 데이터를 생성하세요.\n"
+        "4. 레포가 Public인지 확인하세요."
+    )
+    st.stop()
 
 # ───────────────────────────────────────────
 # 탭 구성
 # ───────────────────────────────────────────
-tab_overview, tab_chart, tab_short, tab_foreign, tab_investor = st.tabs([
-    "📊 종목 요약", "📈 주가 차트", "🔻 공매도", "🌍 외국인", "💰 투자자 동향"
+tab_overview, tab_chart, tab_short, tab_compare = st.tabs([
+    "📊 종목 요약", "📈 주가 & 공매도", "🔻 공매도 비교", "📐 상대 수익률"
 ])
 
 # ══════════════════════════════════════════
 # TAB 1 — 종목 요약
 # ══════════════════════════════════════════
 with tab_overview:
-    with st.spinner("요약 데이터 로딩 중..."):
-        summary = build_summary_table()
+    rows = []
+    for ticker in selected_tickers:
+        df = all_data[ticker]
+        if df.empty:
+            continue
+        latest = df.iloc[-1]
+        prev   = df.iloc[-2] if len(df) > 1 else latest
 
-    if summary.empty:
-        st.warning("데이터를 불러올 수 없습니다.")
+        close      = float(latest["close"])
+        prev_close = float(prev["close"])
+        chg_pct    = (close - prev_close) / prev_close * 100 if prev_close else 0
+
+        df_full = all_data[ticker]
+        hi52 = float(df_full["close"].tail(252).max())
+        lo52 = float(df_full["close"].tail(252).min())
+        pos52 = (close - lo52) / (hi52 - lo52) * 100 if hi52 != lo52 else 50
+
+        rows.append({
+            "티커":        ticker,
+            "종목명":      GAME_STOCKS[ticker]["name"],
+            "시장":        GAME_STOCKS[ticker]["market"],
+            "현재가":      close,
+            "등락률(%)":   round(chg_pct, 2),
+            "거래량":      int(latest["volume"]),
+            "공매도잔고(만주)": float(latest.get("balance", 0)),
+            "잔고변화(만주)":   float(latest.get("balance_chg", 0)),
+            "잔고비율(%)":     float(latest.get("ratio", 0)),
+            "52주위치(%)":     round(pos52, 1),
+        })
+
+    if not rows:
+        st.warning("표시할 데이터가 없습니다.")
     else:
-        # 필터
-        display = summary[summary["티커"].isin(selected_tickers)] if selected_tickers else summary
+        summary = pd.DataFrame(rows)
 
-        # 상단 KPI
+        # KPI
         col1, col2, col3, col4 = st.columns(4)
-        ups   = (display["등락률(%)"] > 0).sum()
-        downs = (display["등락률(%)"] < 0).sum()
-        avg_chg = display["등락률(%)"].mean()
+        ups   = (summary["등락률(%)"] > 0).sum()
+        downs = (summary["등락률(%)"] < 0).sum()
+        avg_chg = summary["등락률(%)"].mean()
+        avg_bal = summary["잔고비율(%)"].mean()
 
-        with col1:
-            st.metric("추적 종목 수", f"{len(display)}개")
-        with col2:
-            st.metric("상승 종목", f"{ups}개", delta=f"하락 {downs}개")
-        with col3:
-            color = "normal" if avg_chg >= 0 else "inverse"
-            st.metric("평균 등락률", f"{avg_chg:+.2f}%")
-        with col4:
-            avg_short = display["공매도비중(%)"].dropna().mean()
-            st.metric("평균 공매도비중", f"{avg_short:.2f}%" if not np.isnan(avg_short) else "N/A")
+        col1.metric("추적 종목", f"{len(summary)}개")
+        col2.metric("상승 / 하락", f"{ups} / {downs}")
+        col3.metric("평균 등락률", f"{avg_chg:+.2f}%")
+        col4.metric("평균 잔고비율", f"{avg_bal:.3f}%")
 
         st.markdown('<div class="section-header">종목별 현황</div>', unsafe_allow_html=True)
 
-        # 등락률 컬러 포맷
-        def color_change(val):
+        def color_chg(val):
             if pd.isna(val): return ""
             c = "#3fb950" if val > 0 else "#f85149" if val < 0 else "#8b949e"
-            return f"color: {c}; font-weight: 600"
+            return f"color:{c};font-weight:600"
 
-        def color_short(val):
+        def color_bal_chg(val):
             if pd.isna(val): return ""
-            c = "#f85149" if val > 5 else "#e3b341" if val > 2 else "#3fb950"
-            return f"color: {c}"
+            c = "#f85149" if val > 0 else "#3fb950" if val < 0 else "#8b949e"
+            return f"color:{c}"
 
-        styled = display.style \
-            .applymap(color_change, subset=["등락률(%)"]) \
-            .applymap(color_short, subset=["공매도비중(%)"]) \
+        def color_ratio(val):
+            if pd.isna(val): return ""
+            c = "#f85149" if val > 1.0 else "#e3b341" if val > 0.5 else "#3fb950"
+            return f"color:{c}"
+
+        styled = (
+            summary.style
+            .applymap(color_chg,     subset=["등락률(%)"])
+            .applymap(color_bal_chg, subset=["잔고변화(만주)"])
+            .applymap(color_ratio,   subset=["잔고비율(%)"])
             .format({
-                "현재가": "{:,.0f}",
-                "등락률(%)": "{:+.2f}%",
-                "거래량": "{:,.0f}",
-                "52주고": "{:,.0f}",
-                "52주저": "{:,.0f}",
-                "공매도비중(%)": lambda x: f"{x:.2f}%" if pd.notna(x) else "-",
-                "외인보유율(%)": lambda x: f"{x:.2f}%" if pd.notna(x) else "-",
-            }) \
+                "현재가":          "{:,.0f}",
+                "등락률(%)":       "{:+.2f}%",
+                "거래량":          "{:,.0f}",
+                "공매도잔고(만주)": "{:.1f}",
+                "잔고변화(만주)":   "{:+.2f}",
+                "잔고비율(%)":     "{:.3f}%",
+                "52주위치(%)":     "{:.1f}%",
+            })
             .hide(axis="index")
+        )
+        st.dataframe(styled, use_container_width=True, height=520)
 
-        st.dataframe(styled, use_container_width=True, height=500)
-
-        # 등락률 바 차트
+        # 등락률 바차트
         st.markdown('<div class="section-header">등락률 비교</div>', unsafe_allow_html=True)
         fig_bar = go.Figure(go.Bar(
-            x=display["종목명"],
-            y=display["등락률(%)"],
-            marker_color=[
-                "#3fb950" if v > 0 else "#f85149" if v < 0 else "#8b949e"
-                for v in display["등락률(%)"]
-            ],
-            text=[f"{v:+.2f}%" for v in display["등락률(%)"]],
+            x=summary["종목명"],
+            y=summary["등락률(%)"],
+            marker_color=["#3fb950" if v > 0 else "#f85149" if v < 0 else "#8b949e"
+                          for v in summary["등락률(%)"]],
+            text=[f"{v:+.2f}%" for v in summary["등락률(%)"]],
             textposition="outside",
         ))
         fig_bar.update_layout(
             paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
             font_color="#e6edf3", height=300,
-            xaxis=dict(tickfont=dict(size=11)),
             yaxis=dict(zeroline=True, zerolinecolor="#30363d", gridcolor="#21262d"),
-            margin=dict(t=20, b=40),
+            margin=dict(t=20, b=10),
             showlegend=False,
         )
         st.plotly_chart(fig_bar, use_container_width=True)
 
+        # 공매도 잔고 바차트
+        st.markdown('<div class="section-header">공매도 잔고 비율 비교</div>', unsafe_allow_html=True)
+        fig_bal = go.Figure(go.Bar(
+            x=summary["종목명"],
+            y=summary["잔고비율(%)"],
+            marker_color=["#f85149" if v > 1.0 else "#e3b341" if v > 0.5 else "#3fb950"
+                          for v in summary["잔고비율(%)"]],
+            text=[f"{v:.3f}%" for v in summary["잔고비율(%)"]],
+            textposition="outside",
+        ))
+        fig_bal.update_layout(
+            paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
+            font_color="#e6edf3", height=300,
+            yaxis=dict(gridcolor="#21262d", ticksuffix="%"),
+            margin=dict(t=20, b=10),
+            showlegend=False,
+        )
+        st.plotly_chart(fig_bal, use_container_width=True)
+
 # ══════════════════════════════════════════
-# TAB 2 — 주가 차트
+# TAB 2 — 주가 & 공매도 (app.py 스타일)
 # ══════════════════════════════════════════
 with tab_chart:
-    if not selected_tickers:
-        st.info("사이드바에서 종목을 선택해주세요.")
+    chart_ticker = st.selectbox(
+        "종목 선택",
+        options=selected_tickers,
+        format_func=lambda x: f"{GAME_STOCKS[x]['name']} ({x})",
+        key="chart_sel"
+    )
+
+    df = all_data[chart_ticker]
+    if df.empty:
+        st.warning("데이터 없음 — Actions가 아직 실행되지 않았을 수 있습니다.")
     else:
-        chart_ticker = st.selectbox(
-            "차트 종목",
-            options=selected_tickers,
-            format_func=lambda x: f"{GAME_STOCKS[x]['name']} ({x})",
-            key="chart_sel"
+        meta = load_ticker(owner, repo, chart_ticker)
+        updated_at = meta.get("updated_at", "-")
+        st.caption(f"마지막 수집: {updated_at}  |  공매도 데이터: T+2 지연")
+
+        d = slice_days(df, selected_period)
+
+        # 상단 KPI (app.py 스타일)
+        latest = d.iloc[-1]
+        prev   = d.iloc[-2] if len(d) > 1 else latest
+        close     = int(latest["close"])
+        chg_pct   = (latest["close"] - prev["close"]) / prev["close"] * 100
+        bal       = float(latest.get("balance", 0))
+        bal_chg   = float(latest.get("balance_chg", 0))
+        short_vol = float(latest.get("short_vol", 0))
+        ratio     = float(latest.get("ratio", 0))
+
+        c1, c2, c3, c4 = st.columns(4)
+        chg_color = "#3fb950" if chg_pct >= 0 else "#f85149"
+        bal_color = "#f85149" if bal_chg > 0 else "#3fb950"
+        sv_color  = "#f85149" if short_vol >= 200 else "#e3b341" if short_vol >= 100 else "#3fb950"
+
+        c1.markdown(f"""<div class="metric-card">
+            <div class="metric-label">현재가</div>
+            <div class="metric-value" style="color:#58a6ff">{close:,}원</div>
+            <div style="font-size:12px;color:{chg_color}">{chg_pct:+.2f}%</div>
+        </div>""", unsafe_allow_html=True)
+        c2.markdown(f"""<div class="metric-card">
+            <div class="metric-label">공매도 잔고</div>
+            <div class="metric-value" style="color:#f85149">{bal:.1f}만주</div>
+            <div style="font-size:12px;color:{bal_color}">전일比 {bal_chg:+.2f}만주</div>
+        </div>""", unsafe_allow_html=True)
+        c3.markdown(f"""<div class="metric-card">
+            <div class="metric-label">당일 공매도</div>
+            <div class="metric-value" style="color:{sv_color}">{short_vol:.0f}천주</div>
+        </div>""", unsafe_allow_html=True)
+        c4.markdown(f"""<div class="metric-card">
+            <div class="metric-label">잔고 비율</div>
+            <div class="metric-value">{ratio:.3f}%</div>
+            <div style="font-size:11px;color:#8b949e">발행주식 대비</div>
+        </div>""", unsafe_allow_html=True)
+
+        # 차트 (app.py의 make_chart 구조 동일)
+        fig = make_subplots(
+            rows=3, cols=1,
+            shared_xaxes=True,
+            row_heights=[0.5, 0.25, 0.25],
+            vertical_spacing=0.03,
+            subplot_titles=("주가 & 공매도 잔고", "당일 공매도 (천주)", "거래량 (천주)"),
+            specs=[[{"secondary_y": True}], [{"secondary_y": False}], [{"secondary_y": False}]],
         )
-        meta = GAME_STOCKS[chart_ticker]
 
-        with st.spinner(f"{meta['name']} 데이터 로딩..."):
-            price_df = load_price_data(chart_ticker, days=selected_period)
-
-        if price_df.empty:
-            st.warning("가격 데이터를 불러올 수 없습니다.")
+        # 주가
+        if chart_type == "캔들스틱" and "open" in d.columns:
+            fig.add_trace(go.Candlestick(
+                x=d.index,
+                open=d["open"], high=d["high"], low=d["low"], close=d["close"],
+                increasing_line_color="#3fb950", decreasing_line_color="#f85149",
+                name="주가",
+            ), row=1, col=1, secondary_y=False)
         else:
-            # 이동평균
-            price_df["ma5"]  = price_df["close"].rolling(5).mean()
-            price_df["ma20"] = price_df["close"].rolling(20).mean()
-            price_df["ma60"] = price_df["close"].rolling(60).mean()
+            fig.add_trace(go.Scatter(
+                x=d.index, y=d["close"],
+                line=dict(color="#58a6ff", width=2), name="주가"
+            ), row=1, col=1, secondary_y=False)
 
-            fig = make_subplots(
-                rows=3, cols=1,
-                row_heights=[0.6, 0.2, 0.2],
-                shared_xaxes=True,
-                vertical_spacing=0.03,
-                subplot_titles=["", "거래량", "공매도비중(%)"],
-            )
-
-            if chart_type == "캔들":
-                fig.add_trace(go.Candlestick(
-                    x=price_df.index,
-                    open=price_df["open"], high=price_df["high"],
-                    low=price_df["low"],   close=price_df["close"],
-                    increasing_line_color="#3fb950",
-                    decreasing_line_color="#f85149",
-                    name="OHLC",
-                ), row=1, col=1)
-            else:
+        # 이평선
+        for ma_col, color, label in [("price_5ma","#ffd93d","5MA"),("price_20ma","#ff9f43","20MA")]:
+            if ma_col in d.columns:
                 fig.add_trace(go.Scatter(
-                    x=price_df.index, y=price_df["close"],
-                    line=dict(color="#58a6ff", width=2), name="종가"
-                ), row=1, col=1)
+                    x=d.index, y=d[ma_col],
+                    line=dict(color=color, width=1, dash="dot"), name=label
+                ), row=1, col=1, secondary_y=False)
 
-            for ma, color, name in [
-                ("ma5","#f0e68c","MA5"),("ma20","#ff8c00","MA20"),("ma60","#da70d6","MA60")
-            ]:
+        # 공매도 잔고 (우축)
+        if "balance" in d.columns:
+            fig.add_trace(go.Scatter(
+                x=d.index, y=d["balance"],
+                line=dict(color="#ff6b6b", width=2, dash="dash"), name="잔고(만주)"
+            ), row=1, col=1, secondary_y=True)
+            # 5MA 잔고
+            if "bal_5ma" in d.columns:
                 fig.add_trace(go.Scatter(
-                    x=price_df.index, y=price_df[ma],
-                    line=dict(color=color, width=1, dash="dot"),
-                    name=name, opacity=0.8
-                ), row=1, col=1)
+                    x=d.index, y=d["bal_5ma"],
+                    line=dict(color="#ff6b6b", width=1, dash="dot"), name="잔고5MA", opacity=0.6
+                ), row=1, col=1, secondary_y=True)
 
-            # 거래량
-            vol_colors = [
-                "#3fb950" if price_df["close"].iloc[i] >= price_df["close"].iloc[i-1]
-                else "#f85149"
-                for i in range(len(price_df))
+        # 당일 공매도 바
+        if "short_vol" in d.columns:
+            bar_colors = [
+                "#ff4444" if v >= 200 else "#ffd93d" if v >= 100 else "rgba(78,205,196,0.5)"
+                for v in d["short_vol"]
             ]
             fig.add_trace(go.Bar(
-                x=price_df.index, y=price_df["volume"],
-                marker_color=vol_colors, name="거래량", showlegend=False,
+                x=d.index, y=d["short_vol"],
+                marker_color=bar_colors, name="당일공매도", showlegend=False,
             ), row=2, col=1)
 
-            # 공매도비중
-            sv = load_shorting_volume(chart_ticker, days=selected_period)
-            if not sv.empty:
-                cols = sv.columns.tolist()
-                ratio_col = next((c for c in cols if "비중" in c), None)
-                if ratio_col:
-                    fig.add_trace(go.Bar(
-                        x=sv.index, y=sv[ratio_col],
-                        marker_color="#f0883e", name="공매도비중", showlegend=False,
-                    ), row=3, col=1)
+        # 거래량
+        fig.add_trace(go.Bar(
+            x=d.index, y=d["volume"] / 1000,
+            marker_color="rgba(68,68,68,0.5)", name="거래량", showlegend=False,
+        ), row=3, col=1)
 
-            fig.update_layout(
-                paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
-                font_color="#e6edf3", height=600,
-                xaxis_rangeslider_visible=False,
-                legend=dict(orientation="h", y=1.02, x=0),
-                margin=dict(t=30, b=20),
-            )
-            for i in range(1, 4):
-                fig.update_xaxes(gridcolor="#21262d", showgrid=True, row=i, col=1)
-                fig.update_yaxes(gridcolor="#21262d", showgrid=True, row=i, col=1)
+        fig.update_layout(
+            template="plotly_dark",
+            paper_bgcolor="#0e1117", plot_bgcolor="#0e1117",
+            font_color="#e6edf3", height=620,
+            xaxis_rangeslider_visible=False,
+            legend=dict(orientation="h", y=1.02, x=0, font=dict(size=11)),
+            margin=dict(l=10, r=60, t=40, b=10),
+        )
+        fig.update_yaxes(title_text="주가(원)",   tickformat=",",       row=1, col=1, secondary_y=False)
+        fig.update_yaxes(title_text="잔고(만주)", ticksuffix="만", showgrid=False, row=1, col=1, secondary_y=True)
+        fig.update_yaxes(ticksuffix="천", row=2, col=1)
+        fig.update_xaxes(tickformat="%m/%d", row=3, col=1)
+        for i in range(1, 4):
+            fig.update_xaxes(gridcolor="#21262d", row=i, col=1)
+            fig.update_yaxes(gridcolor="#21262d", row=i, col=1)
 
-            st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True)
 
-            # 상대 수익률 비교
-            st.markdown('<div class="section-header">선택 종목 상대 수익률 비교</div>', unsafe_allow_html=True)
-            fig_rel = go.Figure()
-            for t in selected_tickers[:8]:  # 최대 8개
-                m = GAME_STOCKS[t]
-                df_t = load_price_data(t, days=selected_period)
-                if df_t.empty or len(df_t) < 2:
-                    continue
-                base = df_t["close"].iloc[0]
-                rel  = (df_t["close"] / base - 1) * 100
-                fig_rel.add_trace(go.Scatter(
-                    x=df_t.index, y=rel,
-                    name=m["name"], mode="lines", line=dict(width=1.5)
-                ))
-            fig_rel.add_hline(y=0, line_dash="dot", line_color="#30363d")
-            fig_rel.update_layout(
-                paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
-                font_color="#e6edf3", height=320,
-                xaxis=dict(gridcolor="#21262d"),
-                yaxis=dict(gridcolor="#21262d", ticksuffix="%"),
-                margin=dict(t=10, b=20),
-                legend=dict(orientation="h"),
-            )
-            st.plotly_chart(fig_rel, use_container_width=True)
+        # 원시 데이터
+        with st.expander("📋 원시 데이터 (최근 30일)"):
+            show_cols = [c for c in ["close","volume","short_vol","balance","balance_chg","ratio"] if c in d.columns]
+            show = d[show_cols].tail(30).copy()
+            show.columns = [{"close":"종가","volume":"거래량","short_vol":"당일공매도(천주)",
+                             "balance":"잔고(만주)","balance_chg":"잔고변화(만주)","ratio":"잔고비율(%)"}.get(c,c)
+                            for c in show_cols]
+            show.index = show.index.strftime("%Y-%m-%d")
+            st.dataframe(show.sort_index(ascending=False), use_container_width=True)
 
 # ══════════════════════════════════════════
-# TAB 3 — 공매도
+# TAB 3 — 공매도 비교
 # ══════════════════════════════════════════
 with tab_short:
-    st.markdown('<div class="section-header">공매도 거래량 · 잔고 현황</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">공매도 잔고 추이 비교</div>', unsafe_allow_html=True)
 
-    short_ticker = st.selectbox(
-        "공매도 조회 종목",
-        options=selected_tickers,
-        format_func=lambda x: f"{GAME_STOCKS[x]['name']} ({x})",
-        key="short_sel"
-    )
-
-    if short_ticker:
-        col_sv, col_sb = st.columns(2)
-
-        with col_sv:
-            st.markdown("**공매도 거래량 & 비중**")
-            with st.spinner("로딩..."):
-                sv = load_shorting_volume(short_ticker, days=selected_period)
-
-            if not sv.empty:
-                cols = sv.columns.tolist()
-                vol_col   = next((c for c in cols if "거래량" in c and "공매도" in c), cols[0] if cols else None)
-                ratio_col = next((c for c in cols if "비중" in c), None)
-
-                fig_sv = make_subplots(specs=[[{"secondary_y": True}]])
-                if vol_col:
-                    fig_sv.add_trace(go.Bar(
-                        x=sv.index, y=sv[vol_col],
-                        name="공매도거래량", marker_color="rgba(248,81,73,0.6)"
-                    ), secondary_y=False)
-                if ratio_col:
-                    fig_sv.add_trace(go.Scatter(
-                        x=sv.index, y=sv[ratio_col],
-                        name="공매도비중(%)", line=dict(color="#f0883e", width=2)
-                    ), secondary_y=True)
-
-                fig_sv.update_layout(
-                    paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
-                    font_color="#e6edf3", height=300,
-                    xaxis=dict(gridcolor="#21262d"),
-                    yaxis=dict(gridcolor="#21262d"),
-                    margin=dict(t=10, b=20),
-                    legend=dict(orientation="h", y=1.05),
-                )
-                st.plotly_chart(fig_sv, use_container_width=True)
-            else:
-                st.info("공매도 거래량 데이터 없음")
-
-        with col_sb:
-            st.markdown("**공매도 잔고 & 잔고비율**")
-            with st.spinner("로딩..."):
-                sb = load_shorting_balance(short_ticker, days=selected_period)
-
-            if not sb.empty:
-                cols = sb.columns.tolist()
-                bal_col   = next((c for c in cols if "잔고" in c and "비율" not in c), cols[0] if cols else None)
-                ratio_col = next((c for c in cols if "비율" in c or "비중" in c), None)
-
-                fig_sb = make_subplots(specs=[[{"secondary_y": True}]])
-                if bal_col:
-                    fig_sb.add_trace(go.Bar(
-                        x=sb.index, y=sb[bal_col],
-                        name="공매도잔고", marker_color="rgba(240,136,62,0.5)"
-                    ), secondary_y=False)
-                if ratio_col:
-                    fig_sb.add_trace(go.Scatter(
-                        x=sb.index, y=sb[ratio_col],
-                        name="잔고비율(%)", line=dict(color="#ffa657", width=2)
-                    ), secondary_y=True)
-
-                fig_sb.update_layout(
-                    paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
-                    font_color="#e6edf3", height=300,
-                    xaxis=dict(gridcolor="#21262d"),
-                    yaxis=dict(gridcolor="#21262d"),
-                    margin=dict(t=10, b=20),
-                    legend=dict(orientation="h", y=1.05),
-                )
-                st.plotly_chart(fig_sb, use_container_width=True)
-            else:
-                st.info("공매도 잔고 데이터 없음")
-
-        # 전종목 공매도비중 비교
-        st.markdown('<div class="section-header">전 종목 공매도비중 비교 (최근)</div>', unsafe_allow_html=True)
-        short_rows = []
-        krx_selected = selected_tickers
-        for t in krx_selected:
-            sv = load_shorting_volume(t, days=5)
-            sb = load_shorting_balance(t, days=5)
-            ratio = None
-            bal_ratio = None
-            if not sv.empty:
-                cols = sv.columns.tolist()
-                rc = next((c for c in cols if "비중" in c), None)
-                if rc:
-                    ratio = float(sv.iloc[-1][rc])
-            if not sb.empty:
-                cols = sb.columns.tolist()
-                rc = next((c for c in cols if "비율" in c or "비중" in c), None)
-                if rc:
-                    bal_ratio = float(sb.iloc[-1][rc])
-            short_rows.append({
-                "종목명": GAME_STOCKS[t]["name"],
-                "공매도거래비중(%)": ratio,
-                "공매도잔고비율(%)": bal_ratio,
-            })
-
-        df_short = pd.DataFrame(short_rows).dropna(how="all", subset=["공매도거래비중(%)","공매도잔고비율(%)"])
-        if not df_short.empty:
-            fig_cmp = go.Figure()
-            fig_cmp.add_trace(go.Bar(
-                name="거래비중(%)", x=df_short["종목명"], y=df_short["공매도거래비중(%)"],
-                marker_color="#f85149"
-            ))
-            fig_cmp.add_trace(go.Bar(
-                name="잔고비율(%)", x=df_short["종목명"], y=df_short["공매도잔고비율(%)"],
-                marker_color="#f0883e"
-            ))
-            fig_cmp.update_layout(
-                barmode="group",
-                paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
-                font_color="#e6edf3", height=320,
-                xaxis=dict(gridcolor="#21262d"),
-                yaxis=dict(gridcolor="#21262d", ticksuffix="%"),
-                margin=dict(t=10, b=20),
-                legend=dict(orientation="h"),
-            )
-            st.plotly_chart(fig_cmp, use_container_width=True)
-
-# ══════════════════════════════════════════
-# TAB 4 — 외국인
-# ══════════════════════════════════════════
-with tab_foreign:
-    st.markdown('<div class="section-header">외국인 보유율 추이</div>', unsafe_allow_html=True)
-
-    foreign_ticker = st.selectbox(
-        "외국인 조회 종목",
-        options=selected_tickers,
-        format_func=lambda x: f"{GAME_STOCKS[x]['name']} ({x})",
-        key="foreign_sel"
-    )
-
-    if foreign_ticker:
-        with st.spinner("외국인 데이터 로딩..."):
-            fr = load_foreign_ratio(foreign_ticker, days=selected_period)
-
-        if not fr.empty:
-            cols = fr.columns.tolist()
-            ratio_col = next((c for c in cols if "보유율" in c or "비율" in c), cols[0] if cols else None)
-
-            price_df2 = load_price_data(foreign_ticker, days=selected_period)
-
-            fig_fr = make_subplots(specs=[[{"secondary_y": True}]])
-            if not price_df2.empty:
-                fig_fr.add_trace(go.Scatter(
-                    x=price_df2.index, y=price_df2["close"],
-                    name="주가", line=dict(color="#58a6ff", width=1.5)
-                ), secondary_y=False)
-            if ratio_col:
-                fig_fr.add_trace(go.Scatter(
-                    x=fr.index, y=fr[ratio_col],
-                    name="외인보유율(%)", line=dict(color="#3fb950", width=2)
-                ), secondary_y=True)
-
-            fig_fr.update_layout(
-                paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
-                font_color="#e6edf3", height=380,
-                xaxis=dict(gridcolor="#21262d"),
-                yaxis=dict(gridcolor="#21262d", title="주가(원)"),
-                yaxis2=dict(gridcolor="#21262d", title="외인보유율(%)", ticksuffix="%"),
-                margin=dict(t=10, b=20),
-                legend=dict(orientation="h"),
-            )
-            st.plotly_chart(fig_fr, use_container_width=True)
-
-            if ratio_col:
-                latest_fr  = float(fr.iloc[-1][ratio_col])
-                max_fr     = float(fr[ratio_col].max())
-                min_fr     = float(fr[ratio_col].min())
-                avg_fr     = float(fr[ratio_col].mean())
-                c1, c2, c3, c4 = st.columns(4)
-                c1.metric("현재 외인보유율",   f"{latest_fr:.2f}%")
-                c2.metric("기간 최고",         f"{max_fr:.2f}%")
-                c3.metric("기간 최저",         f"{min_fr:.2f}%")
-                c4.metric("기간 평균",         f"{avg_fr:.2f}%")
-        else:
-            st.info("외국인 보유율 데이터를 불러올 수 없습니다.")
-
-    # 전종목 외인비율 히트맵
-    st.markdown('<div class="section-header">전 종목 외인 보유율 히트맵</div>', unsafe_allow_html=True)
-    heatmap_data = {}
-    krx_sel = selected_tickers
-    for t in krx_sel:
-        fr2 = load_foreign_ratio(t, days=30)
-        if fr2.empty:
+    # 전종목 잔고 추이 (라인)
+    fig_sl = go.Figure()
+    for ticker in selected_tickers:
+        df = all_data[ticker]
+        if df.empty or "balance" not in df.columns:
             continue
-        cols = fr2.columns.tolist()
-        rc = next((c for c in cols if "보유율" in c or "비율" in c), None)
-        if rc:
-            heatmap_data[GAME_STOCKS[t]["name"]] = fr2[rc]
-
-    if heatmap_data:
-        hm_df = pd.DataFrame(heatmap_data).tail(20)
-        fig_hm = go.Figure(go.Heatmap(
-            z=hm_df.T.values,
-            x=[d.strftime("%m/%d") for d in hm_df.index],
-            y=hm_df.columns.tolist(),
-            colorscale="RdYlGn",
-            text=np.round(hm_df.T.values, 1),
-            texttemplate="%{text}",
-            colorbar=dict(title="%"),
+        d = slice_days(df, selected_period)
+        fig_sl.add_trace(go.Scatter(
+            x=d.index, y=d["balance"],
+            name=GAME_STOCKS[ticker]["name"], mode="lines", line=dict(width=1.5)
         ))
-        fig_hm.update_layout(
-            paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
-            font_color="#e6edf3", height=max(300, len(heatmap_data) * 35 + 80),
-            margin=dict(t=10, b=20),
-        )
-        st.plotly_chart(fig_hm, use_container_width=True)
-
-# ══════════════════════════════════════════
-# TAB 5 — 투자자 동향
-# ══════════════════════════════════════════
-with tab_investor:
-    st.markdown('<div class="section-header">투자자별 순매수 동향</div>', unsafe_allow_html=True)
-
-    inv_ticker = st.selectbox(
-        "투자자 동향 종목",
-        options=selected_tickers,
-        format_func=lambda x: f"{GAME_STOCKS[x]['name']} ({x})",
-        key="inv_sel"
+    fig_sl.update_layout(
+        paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
+        font_color="#e6edf3", height=350,
+        xaxis=dict(gridcolor="#21262d"),
+        yaxis=dict(gridcolor="#21262d", ticksuffix="만"),
+        margin=dict(t=10, b=10),
+        legend=dict(orientation="h"),
     )
+    st.plotly_chart(fig_sl, use_container_width=True)
 
-    if inv_ticker:
-        with st.spinner("투자자 데이터 로딩..."):
-            inv_df = load_investor_trading(inv_ticker, days=selected_period)
+    # 최근 잔고비율 & 잔고변화 비교 바
+    st.markdown('<div class="section-header">최근 잔고비율 & 전일 변화</div>', unsafe_allow_html=True)
+    cmp_rows = []
+    for ticker in selected_tickers:
+        df = all_data[ticker]
+        if df.empty:
+            continue
+        latest = df.iloc[-1]
+        cmp_rows.append({
+            "종목명":      GAME_STOCKS[ticker]["name"],
+            "잔고비율(%)": float(latest.get("ratio", 0)),
+            "잔고변화":    float(latest.get("balance_chg", 0)),
+        })
 
-        if not inv_df.empty:
-            cols = inv_df.columns.tolist()
-            # 외국인/기관/개인 컬럼 찾기
-            foreign_col  = next((c for c in cols if "외국인" in c), None)
-            inst_col     = next((c for c in cols if "기관" in c), None)
-            retail_col   = next((c for c in cols if "개인" in c), None)
+    if cmp_rows:
+        cmp_df = pd.DataFrame(cmp_rows)
+        fig_cmp = make_subplots(rows=1, cols=2, subplot_titles=("잔고비율(%)", "전일 잔고변화(만주)"))
+        fig_cmp.add_trace(go.Bar(
+            x=cmp_df["종목명"], y=cmp_df["잔고비율(%)"],
+            marker_color=["#f85149" if v > 1.0 else "#e3b341" if v > 0.5 else "#3fb950"
+                          for v in cmp_df["잔고비율(%)"]],
+            showlegend=False,
+        ), row=1, col=1)
+        fig_cmp.add_trace(go.Bar(
+            x=cmp_df["종목명"], y=cmp_df["잔고변화"],
+            marker_color=["#f85149" if v > 0 else "#3fb950" for v in cmp_df["잔고변화"]],
+            showlegend=False,
+        ), row=1, col=2)
+        fig_cmp.update_layout(
+            paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
+            font_color="#e6edf3", height=320,
+            margin=dict(t=30, b=10),
+        )
+        fig_cmp.update_xaxes(gridcolor="#21262d")
+        fig_cmp.update_yaxes(gridcolor="#21262d")
+        st.plotly_chart(fig_cmp, use_container_width=True)
 
-            fig_inv = go.Figure()
-            for col, color, name in [
-                (foreign_col, "#3fb950", "외국인"),
-                (inst_col,    "#58a6ff", "기관"),
-                (retail_col,  "#f0883e", "개인"),
-            ]:
-                if col and col in inv_df.columns:
-                    fig_inv.add_trace(go.Bar(
-                        x=inv_df.index, y=inv_df[col],
-                        name=name, marker_color=color
-                    ))
+# ══════════════════════════════════════════
+# TAB 4 — 상대 수익률
+# ══════════════════════════════════════════
+with tab_compare:
+    st.markdown('<div class="section-header">선택 종목 상대 수익률 비교</div>', unsafe_allow_html=True)
 
-            fig_inv.add_hline(y=0, line_color="#30363d", line_dash="dot")
-            fig_inv.update_layout(
-                barmode="group",
-                paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
-                font_color="#e6edf3", height=380,
-                xaxis=dict(gridcolor="#21262d"),
-                yaxis=dict(gridcolor="#21262d", tickformat=",.0f"),
-                margin=dict(t=10, b=20),
-                legend=dict(orientation="h"),
-            )
-            st.plotly_chart(fig_inv, use_container_width=True)
+    fig_rel = go.Figure()
+    for ticker in selected_tickers:
+        df = all_data[ticker]
+        if df.empty or len(df) < 2:
+            continue
+        d = slice_days(df, selected_period)
+        if len(d) < 2:
+            continue
+        base = float(d["close"].iloc[0])
+        rel  = (d["close"] / base - 1) * 100
+        fig_rel.add_trace(go.Scatter(
+            x=d.index, y=rel,
+            name=GAME_STOCKS[ticker]["name"], mode="lines", line=dict(width=1.5)
+        ))
 
-            # 누적 순매수
-            st.markdown("**누적 순매수 (기간 합계)**")
-            cumsum_data = {}
-            for col, name in [(foreign_col,"외국인"),(inst_col,"기관"),(retail_col,"개인")]:
-                if col and col in inv_df.columns:
-                    cumsum_data[name] = inv_df[col].sum()
-            if cumsum_data:
-                fig_cum = go.Figure(go.Bar(
-                    x=list(cumsum_data.keys()),
-                    y=list(cumsum_data.values()),
-                    marker_color=["#3fb950","#58a6ff","#f0883e"],
-                    text=[f"{v/1e8:+.1f}억" for v in cumsum_data.values()],
-                    textposition="outside",
-                ))
-                fig_cum.add_hline(y=0, line_color="#30363d", line_dash="dot")
-                fig_cum.update_layout(
-                    paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
-                    font_color="#e6edf3", height=280,
-                    yaxis=dict(gridcolor="#21262d"),
-                    margin=dict(t=20, b=20),
-                )
-                st.plotly_chart(fig_cum, use_container_width=True)
-        else:
-            st.info("투자자 데이터를 불러올 수 없습니다.")
+    fig_rel.add_hline(y=0, line_dash="dot", line_color="#30363d")
+    fig_rel.update_layout(
+        paper_bgcolor="#0d1117", plot_bgcolor="#0d1117",
+        font_color="#e6edf3", height=420,
+        xaxis=dict(gridcolor="#21262d"),
+        yaxis=dict(gridcolor="#21262d", ticksuffix="%"),
+        margin=dict(t=10, b=10),
+        legend=dict(orientation="h"),
+    )
+    st.plotly_chart(fig_rel, use_container_width=True)
+
+    # 기간 수익률 테이블
+    st.markdown('<div class="section-header">기간 수익률 요약</div>', unsafe_allow_html=True)
+    perf_rows = []
+    for ticker in selected_tickers:
+        df = all_data[ticker]
+        if df.empty:
+            continue
+        def period_ret(days):
+            d = slice_days(df, days)
+            if len(d) < 2: return None
+            return (float(d["close"].iloc[-1]) / float(d["close"].iloc[0]) - 1) * 100
+
+        perf_rows.append({
+            "종목명": GAME_STOCKS[ticker]["name"],
+            "1개월(%)": period_ret(30),
+            "3개월(%)": period_ret(90),
+            "6개월(%)": period_ret(180),
+            "1년(%)":   period_ret(365),
+        })
+
+    if perf_rows:
+        perf_df = pd.DataFrame(perf_rows)
+
+        def color_ret(val):
+            if pd.isna(val): return ""
+            return f"color:#3fb950;font-weight:600" if val > 0 else f"color:#f85149;font-weight:600"
+
+        styled_perf = (
+            perf_df.style
+            .applymap(color_ret, subset=["1개월(%)","3개월(%)","6개월(%)","1년(%)"])
+            .format({c: lambda x: f"{x:+.1f}%" if pd.notna(x) else "-"
+                     for c in ["1개월(%)","3개월(%)","6개월(%)","1년(%)"]})
+            .hide(axis="index")
+        )
+        st.dataframe(styled_perf, use_container_width=True)

@@ -18,7 +18,7 @@ from pykrx import stock
 # ───────────────────────────────────────────
 GAME_STOCKS = {
     "259960": {"name": "크래프톤",            "shares": 44_039_000},
-    "263750": {"name": "펄어비스",            "shares": 64_250_000},
+    "263750": {"name": "펄어비스",            "shares": 64_250_000},  # KOSDAQ
     "036570": {"name": "엔씨소프트",          "shares": 21_954_022},
     "251270": {"name": "넷마블",              "shares": 84_739_137},
     "462870": {"name": "시프트업",            "shares": 50_000_000},
@@ -128,6 +128,27 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str):
     df["price_5ma"]   = df["close"].rolling(5).mean()
     df["price_20ma"]  = df["close"].rolling(20).mean()
 
+    # 외국인 보유비율
+    try:
+        fr_df = stock.get_exhaustion_rates_of_foreign_investment_by_date(start, end, ticker)
+        time.sleep(1)
+        if not fr_df.empty:
+            # 보유율 컬럼 자동 감지
+            fr_cols = fr_df.columns.tolist()
+            rate_col = next((c for c in fr_cols if "보유율" in str(c) or "비율" in str(c)), None)
+            if rate_col is None and len(fr_cols) >= 1:
+                rate_col = fr_cols[-1]
+            if rate_col:
+                fr_df = fr_df[[rate_col]].rename(columns={rate_col: "foreign_rate"})
+                df = df.join(fr_df["foreign_rate"], how="left")
+                df["foreign_rate"] = df["foreign_rate"].fillna(method="ffill").round(2)
+    except Exception as e:
+        print(f"  ⚠ 외국인보유율 수집 실패: {e}")
+        df["foreign_rate"] = 0.0
+
+    if "foreign_rate" not in df.columns:
+        df["foreign_rate"] = 0.0
+
     return df
 
 
@@ -145,6 +166,7 @@ def to_records(df: pd.DataFrame) -> list:
             "bal_5ma":     round(float(row["bal_5ma"])    if pd.notna(row["bal_5ma"])    else 0, 2),
             "price_5ma":   round(float(row["price_5ma"])  if pd.notna(row["price_5ma"])  else 0, 0),
             "price_20ma":  round(float(row["price_20ma"]) if pd.notna(row["price_20ma"]) else 0, 0),
+            "foreign_rate": round(float(row["foreign_rate"]) if pd.notna(row.get("foreign_rate", 0)) else 0, 2),
         })
     return records
 

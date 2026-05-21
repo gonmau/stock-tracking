@@ -18,7 +18,7 @@ GITHUB_RAW = "https://raw.githubusercontent.com/{owner}/{repo}/main/data/{ticker
 
 GAME_STOCKS = {
     "259960": {"name": "크래프톤",            "market": "KOSPI",  "mcap_tier": "대형"},
-    "263750": {"name": "펄어비스",            "market": "KOSPI",  "mcap_tier": "대형"},
+    "263750": {"name": "펄어비스",            "market": "KOSDAQ", "mcap_tier": "대형"},
     "036570": {"name": "엔씨소프트",          "market": "KOSPI",  "mcap_tier": "대형"},
     "251270": {"name": "넷마블",              "market": "KOSPI",  "mcap_tier": "대형"},
     "462870": {"name": "시프트업",            "market": "KOSPI",  "mcap_tier": "대형"},
@@ -271,6 +271,7 @@ def build_summary():
             "현재가":   close,
             "등락(%)":  round(chg, 2),
             "거래량":   int(latest["volume"]),
+            "외인보유율(%)": float(latest.get("foreign_rate", 0)),
             "공매도잔고(만)": float(latest.get("balance", 0)),
             "잔고변화":      float(latest.get("balance_chg", 0)),
             "잔고비율(%)":   float(latest.get("ratio", 0)),
@@ -342,7 +343,7 @@ with tab_ov:
 
     # 컬러 포맷된 데이터프레임
     disp = summary[["종목명","시장","현재가","등락(%)","거래량",
-                     "공매도잔고(만)","잔고변화","잔고비율(%)",
+                     "외인보유율(%)","공매도잔고(만)","잔고변화","잔고비율(%)",
                      "1M(%)","3M(%)","1Y(%)","52주위치"]].copy()
 
     def color_v(val):
@@ -358,6 +359,7 @@ with tab_ov:
             "현재가":         "{:,.0f}",
             "등락(%)":        "{:+.2f}%",
             "거래량":         "{:,.0f}",
+            "외인보유율(%)":  "{:.2f}%",
             "공매도잔고(만)":  "{:.1f}",
             "잔고변화":       "{:+.2f}",
             "잔고비율(%)":    "{:.3f}%",
@@ -452,14 +454,17 @@ with tab_chart:
         sv      = float(lat.get("short_vol",0))
         ratio   = float(lat.get("ratio",0))
 
+        foreign_rate = float(lat.get("foreign_rate", 0))
+
         # KPI 행
-        k1,k2,k3,k4 = st.columns(4)
+        k1,k2,k3,k4,k5 = st.columns(5)
         for col, lbl, val, sub, acc in [
-            (k1, "현재가",     f"{close:,}원",    f"{chg_pct:+.2f}%", "#4f7df3"),
-            (k2, "공매도 잔고", f"{bal:.1f}만주",  f"전일比 {bal_chg:+.2f}만",
+            (k1, "현재가",      f"{close:,}원",         f"{chg_pct:+.2f}%",        "#4f7df3"),
+            (k2, "외인보유율",  f"{foreign_rate:.2f}%", "외국인 보유 비율",           "#7c3aed"),
+            (k3, "공매도 잔고", f"{bal:.1f}만주",        f"전일比 {bal_chg:+.2f}만",
              "#dc2626" if bal_chg>0 else "#16a34a"),
-            (k3, "당일 공매도", f"{sv:.0f}천주",   "기준: 200천주=위험", "#f59e0b"),
-            (k4, "잔고 비율",  f"{ratio:.3f}%",   "발행주식 대비",       "#6b7280"),
+            (k4, "당일 공매도", f"{sv:.0f}천주",         "기준: 200천주=위험",        "#f59e0b"),
+            (k5, "잔고 비율",  f"{ratio:.3f}%",          "발행주식 대비",             "#6b7280"),
         ]:
             col.markdown(f"""<div class="kpi-card" style="border-left-color:{acc}">
                 <div class="kpi-label">{lbl}</div>
@@ -565,6 +570,29 @@ with tab_chart:
                         config={"toImageButtonOptions":{"width":1600,"height":900,"scale":2}})
 
         st.caption("🔴 거래량 빨간 막대 = 20일 평균 2배 이상 이상거래량 / 📌 보라 점선 = 게임 이벤트")
+
+        # 외인보유율 추이
+        if "foreign_rate" in d.columns and d["foreign_rate"].sum() > 0:
+            st.markdown('<div class="section-hdr">외국인 보유율 추이</div>', unsafe_allow_html=True)
+            fig_fr = make_subplots(specs=[[{"secondary_y": True}]])
+            fig_fr.add_trace(go.Scatter(
+                x=d.index, y=d["close"],
+                name="주가", line=dict(color="#4f7df3", width=1.5),
+            ), secondary_y=False)
+            fig_fr.add_trace(go.Scatter(
+                x=d.index, y=d["foreign_rate"],
+                name="외인보유율(%)", line=dict(color="#7c3aed", width=2),
+                fill="tozeroy", fillcolor="rgba(124,58,237,0.06)",
+            ), secondary_y=True)
+            fig_fr.update_layout(**PLOT_LAYOUT, height=300,
+                                  margin=dict(t=20,b=10,l=10,r=60),
+                                  legend=dict(orientation="h"))
+            fig_fr.update_yaxes(title_text="주가(원)", tickformat=",",
+                                 gridcolor="#e2e6ed", secondary_y=False)
+            fig_fr.update_yaxes(title_text="외인보유율(%)", ticksuffix="%",
+                                 showgrid=False, secondary_y=True)
+            fig_fr.update_xaxes(gridcolor="#e2e6ed")
+            st.plotly_chart(fig_fr, use_container_width=True)
 
         with st.expander("📋 원시 데이터 (최근 30일)"):
             cols_show = [c for c in ["close","volume","short_vol","balance","balance_chg","ratio"] if c in d.columns]

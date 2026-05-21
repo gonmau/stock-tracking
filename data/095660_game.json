@@ -2,7 +2,7 @@
   "ticker": "095660",
   "name": "네오위즈",
   "total_shares": 18652100,
-  "updated_at": "2026-05-21 23:37",
+  "updated_at": "2026-05-21 23:47",
   "records": [
     {
       "date": "2025-05-19",
@@ -2907,7 +2907,16 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0
+      "foreign_rate": 0.0,
+      "market_cap_b": 4511,
+      "per": 8.27,
+      "pbr": 0.78,
+      "div_yield": 1.45,
+      "trading_value_b": 0.0,
+      "turnover": 0.386,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     },
     {
       "date": "2026-05-15",
@@ -2920,7 +2929,16 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0
+      "foreign_rate": 0.0,
+      "market_cap_b": 4479,
+      "per": 8.21,
+      "pbr": 0.77,
+      "div_yield": 1.46,
+      "trading_value_b": 0.0,
+      "turnover": 0.413,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     },
     {
       "date": "2026-05-18",
@@ -2933,7 +2951,16 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0
+      "foreign_rate": 0.0,
+      "market_cap_b": 4403,
+      "per": 8.07,
+      "pbr": 0.76,
+      "div_yield": 1.49,
+      "trading_value_b": 0.0,
+      "turnover": 0.274,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     },
     {
       "date": "2026-05-19",
@@ -2946,7 +2973,16 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0
+      "foreign_rate": 0.0,
+      "market_cap_b": 4500,
+      "per": 8.25,
+      "pbr": 0.77,
+      "div_yield": 1.46,
+      "trading_value_b": 0.0,
+      "turnover": 0.5,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     }
   ]
 }

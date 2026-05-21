@@ -2,7 +2,7 @@
   "ticker": "263750",
   "name": "펄어비스",
   "total_shares": 64250000,
-  "updated_at": "2026-05-21 23:36",
+  "updated_at": "2026-05-21 23:46",
   "records": [
     {
       "date": "2025-05-19",
@@ -2907,7 +2907,16 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0
+      "foreign_rate": 0.0,
+      "market_cap_b": 32509,
+      "per": 0.0,
+      "pbr": 3.89,
+      "div_yield": 0.0,
+      "trading_value_b": 0.0,
+      "turnover": 2.622,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     },
     {
       "date": "2026-05-15",
@@ -2920,7 +2929,16 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0
+      "foreign_rate": 0.0,
+      "market_cap_b": 30325,
+      "per": 0.0,
+      "pbr": 3.63,
+      "div_yield": 0.0,
+      "trading_value_b": 0.0,
+      "turnover": 2.089,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     },
     {
       "date": "2026-05-18",
@@ -2933,7 +2951,16 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0
+      "foreign_rate": 0.0,
+      "market_cap_b": 29426,
+      "per": 0.0,
+      "pbr": 3.52,
+      "div_yield": 0.0,
+      "trading_value_b": 0.0,
+      "turnover": 1.155,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     },
     {
       "date": "2026-05-19",
@@ -2946,7 +2973,16 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0
+      "foreign_rate": 0.0,
+      "market_cap_b": 30196,
+      "per": 0.0,
+      "pbr": 3.61,
+      "div_yield": 0.0,
+      "trading_value_b": 0.0,
+      "turnover": 0.982,
+      "vol_ratio": 0,
+      "short_cover_signal": 1,
+      "short_attack_signal": 0
     }
   ]
 }

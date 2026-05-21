@@ -2,7 +2,7 @@
   "ticker": "069080",
   "name": "웹젠",
   "total_shares": 30098760,
-  "updated_at": "2026-05-21 23:37",
+  "updated_at": "2026-05-21 23:47",
   "records": [
     {
       "date": "2025-05-19",
@@ -2907,7 +2907,16 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0
+      "foreign_rate": 0.0,
+      "market_cap_b": 3896,
+      "per": 13.67,
+      "pbr": 0.48,
+      "div_yield": 6.22,
+      "trading_value_b": 0.0,
+      "turnover": 0.381,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     },
     {
       "date": "2026-05-15",
@@ -2920,7 +2929,16 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0
+      "foreign_rate": 0.0,
+      "market_cap_b": 3447,
+      "per": 13.51,
+      "pbr": 0.47,
+      "div_yield": 6.29,
+      "trading_value_b": 0.0,
+      "turnover": 0.384,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     },
     {
       "date": "2026-05-18",
@@ -2933,7 +2951,16 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0
+      "foreign_rate": 0.0,
+      "market_cap_b": 3363,
+      "per": 13.18,
+      "pbr": 0.46,
+      "div_yield": 6.45,
+      "trading_value_b": 0.0,
+      "turnover": 0.347,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     },
     {
       "date": "2026-05-19",
@@ -2946,7 +2973,16 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0
+      "foreign_rate": 0.0,
+      "market_cap_b": 3382,
+      "per": 13.25,
+      "pbr": 0.46,
+      "div_yield": 6.41,
+      "trading_value_b": 0.0,
+      "turnover": 0.434,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     }
   ]
 }

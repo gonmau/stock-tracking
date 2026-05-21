@@ -74,9 +74,13 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str):
         print(f"  ✗ 주가 수집 실패: {e}")
         return None
 
-    price_df = price_df[["종가", "거래량"]].rename(
-        columns={"종가": "close", "거래량": "volume"}
+    # 거래대금 컬럼 있으면 같이 가져옴
+    avail_cols = [c for c in ["종가","거래량","거래대금"] if c in price_df.columns]
+    price_df = price_df[avail_cols].rename(
+        columns={"종가": "close", "거래량": "volume", "거래대금": "trading_value"}
     )
+    if "trading_value" not in price_df.columns:
+        price_df["trading_value"] = 0
 
     # 공매도
     try:
@@ -127,6 +131,20 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str):
     df["bal_5ma"]     = df["balance_m"].rolling(5).mean()
     df["price_5ma"]   = df["close"].rolling(5).mean()
     df["price_20ma"]  = df["close"].rolling(20).mean()
+    # 거래대금 억원 / 회전율
+    df["trading_value_b"] = (df["trading_value"] / 1e8).round(1) if "trading_value" in df.columns else 0
+    df["turnover"] = (df["volume"] / total_shares * 100).round(3) if total_shares else 0
+    df["vol_20ma"] = df["volume"].rolling(20).mean()
+    df["vol_ratio"] = (df["volume"] / df["vol_20ma"]).round(2)   # 거래량 20일 대비 배율
+    # 숏커버링 신호: 잔고 감소 + 주가 상승
+    price_chg = df["close"].pct_change() * 100
+    df["short_cover_signal"] = (
+        (df["balance_chg"] < -1) & (price_chg > 0)
+    ).astype(int)
+    # 공매도 공세 신호: 잔고 증가 + 주가 하락
+    df["short_attack_signal"] = (
+        (df["balance_chg"] > 1) & (price_chg < 0)
+    ).astype(int)
 
     # 외국인 보유비율
     try:
@@ -149,6 +167,52 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str):
     if "foreign_rate" not in df.columns:
         df["foreign_rate"] = 0.0
 
+    # 시가총액
+    try:
+        mc_df = stock.get_market_cap_by_date(start, end, ticker)
+        time.sleep(1)
+        if not mc_df.empty:
+            mc_cols = mc_df.columns.tolist()
+            cap_col = next((c for c in mc_cols if "시가총액" in str(c)), None)
+            if cap_col:
+                mc_df = mc_df[[cap_col]].rename(columns={cap_col: "market_cap"})
+                df = df.join(mc_df["market_cap"], how="left")
+                df["market_cap"] = df["market_cap"].fillna(method="ffill").fillna(0)
+                # 억원 단위로 변환
+                df["market_cap_b"] = (df["market_cap"] / 1e8).round(0)
+    except Exception as e:
+        print(f"  ⚠ 시가총액 수집 실패: {e}")
+        df["market_cap_b"] = 0.0
+
+    if "market_cap_b" not in df.columns:
+        df["market_cap_b"] = 0.0
+
+    # PER / PBR / EPS / BPS
+    try:
+        fn_df = stock.get_market_fundamental_by_date(start, end, ticker)
+        time.sleep(1)
+        if not fn_df.empty:
+            fn_cols = fn_df.columns.tolist()
+            per_col = next((c for c in fn_cols if "PER" in str(c).upper()), None)
+            pbr_col = next((c for c in fn_cols if "PBR" in str(c).upper()), None)
+            div_col = next((c for c in fn_cols if "DIV" in str(c).upper() or "배당" in str(c)), None)
+            rename = {}
+            if per_col: rename[per_col] = "per"
+            if pbr_col: rename[pbr_col] = "pbr"
+            if div_col: rename[div_col] = "div_yield"
+            if rename:
+                fn_df = fn_df[list(rename.keys())].rename(columns=rename)
+                df = df.join(fn_df, how="left")
+                for col in ["per","pbr","div_yield"]:
+                    if col in df.columns:
+                        df[col] = df[col].fillna(method="ffill").fillna(0).round(2)
+    except Exception as e:
+        print(f"  ⚠ 펀더멘털 수집 실패: {e}")
+
+    for col in ["per","pbr","div_yield"]:
+        if col not in df.columns:
+            df[col] = 0.0
+
     return df
 
 
@@ -167,6 +231,15 @@ def to_records(df: pd.DataFrame) -> list:
             "price_5ma":   round(float(row["price_5ma"])  if pd.notna(row["price_5ma"])  else 0, 0),
             "price_20ma":  round(float(row["price_20ma"]) if pd.notna(row["price_20ma"]) else 0, 0),
             "foreign_rate": round(float(row["foreign_rate"]) if pd.notna(row.get("foreign_rate", 0)) else 0, 2),
+            "market_cap_b": int(row["market_cap_b"]) if pd.notna(row.get("market_cap_b", 0)) else 0,
+            "per":       round(float(row["per"])       if pd.notna(row.get("per", 0))       else 0, 2),
+            "pbr":       round(float(row["pbr"])       if pd.notna(row.get("pbr", 0))       else 0, 2),
+            "div_yield": round(float(row["div_yield"]) if pd.notna(row.get("div_yield", 0)) else 0, 2),
+            "trading_value_b":     round(float(row.get("trading_value_b", 0)), 1),
+            "turnover":            round(float(row.get("turnover", 0)), 3),
+            "vol_ratio":           round(float(row.get("vol_ratio", 0))  if pd.notna(row.get("vol_ratio", 0))  else 0, 2),
+            "short_cover_signal":  int(row.get("short_cover_signal", 0)),
+            "short_attack_signal": int(row.get("short_attack_signal", 0)),
         })
     return records
 

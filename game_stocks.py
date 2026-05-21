@@ -272,6 +272,7 @@ def build_summary():
             "등락(%)":  round(chg, 2),
             "거래량":   int(latest["volume"]),
             "외인보유율(%)": float(latest.get("foreign_rate", 0)),
+            "시가총액(억)":  int(latest.get("market_cap_b", 0)),
             "공매도잔고(만)": float(latest.get("balance", 0)),
             "잔고변화":      float(latest.get("balance_chg", 0)),
             "잔고비율(%)":   float(latest.get("ratio", 0)),
@@ -297,14 +298,17 @@ avg_bal  = summary["잔고비율(%)"].mean()
 top_gainer = summary.loc[summary["등락(%)"].idxmax(), "종목명"] if not summary.empty else "-"
 top_loser  = summary.loc[summary["등락(%)"].idxmin(), "종목명"] if not summary.empty else "-"
 top_short  = summary.loc[summary["잔고비율(%)"].idxmax(), "종목명"] if not summary.empty else "-"
+top_cap    = summary.loc[summary["시가총액(억)"].idxmax(),  "종목명"] if not summary.empty else "-"
+top_cap_v  = summary["시가총액(억)"].max()
 
-k1, k2, k3, k4, k5 = st.columns(5)
+k1, k2, k3, k4, k5, k6 = st.columns(6)
 kpis = [
     (k1, "상승 / 보합 / 하락", f"{ups} · {flat} · {downs}", None),
     (k2, "평균 등락률", f"{avg_chg:+.2f}%", pcolor(avg_chg)),
     (k3, "최고 상승", top_gainer, "#16a34a"),
     (k4, "최고 하락", top_loser,  "#dc2626"),
-    (k5, "공매도 1위", top_short, "#f59e0b"),
+    (k5, "시총 1위",  f"{top_cap} ({top_cap_v:,.0f}억)", "#4f7df3"),
+    (k6, "공매도 1위", top_short, "#f59e0b"),
 ]
 for col, label, val, color in kpis:
     c = color or "#1a1d23"
@@ -318,8 +322,8 @@ st.divider()
 # ───────────────────────────────────────────
 # 탭
 # ───────────────────────────────────────────
-tab_ov, tab_chart, tab_short, tab_compare, tab_event = st.tabs([
-    "📊 종목 요약", "📈 주가 & 공매도", "🔻 공매도 분석", "📐 수익률 비교", "🎮 이벤트"
+tab_ov, tab_chart, tab_short, tab_compare, tab_val, tab_event = st.tabs([
+    "📊 종목 요약", "📈 주가 & 공매도", "🔻 공매도 분석", "📐 수익률 비교", "💰 밸류에이션", "🎮 이벤트"
 ])
 
 # ══════════════════════════════════════════
@@ -343,7 +347,7 @@ with tab_ov:
 
     # 컬러 포맷된 데이터프레임
     disp = summary[["종목명","시장","현재가","등락(%)","거래량",
-                     "외인보유율(%)","공매도잔고(만)","잔고변화","잔고비율(%)",
+                     "시가총액(억)","외인보유율(%)","공매도잔고(만)","잔고변화","잔고비율(%)",
                      "1M(%)","3M(%)","1Y(%)","52주위치"]].copy()
 
     def color_v(val):
@@ -359,6 +363,7 @@ with tab_ov:
             "현재가":         "{:,.0f}",
             "등락(%)":        "{:+.2f}%",
             "거래량":         "{:,.0f}",
+            "시가총액(억)":  "{:,.0f}",
             "외인보유율(%)":  "{:.2f}%",
             "공매도잔고(만)":  "{:.1f}",
             "잔고변화":       "{:+.2f}",
@@ -404,6 +409,23 @@ with tab_ov:
     fig_dual.update_xaxes(**GRID)
     fig_dual.update_yaxes(**GRID)
     st.plotly_chart(fig_dual, use_container_width=True)
+
+    # 시가총액 순위 바차트
+    if summary["시가총액(억)"].sum() > 0:
+        st.markdown('<div class="section-hdr">시가총액 순위 (억원)</div>', unsafe_allow_html=True)
+        cap_sorted = summary[summary["시가총액(억)"] > 0].sort_values("시가총액(억)", ascending=True)
+        fig_cap = go.Figure(go.Bar(
+            x=cap_sorted["시가총액(억)"], y=cap_sorted["종목명"],
+            orientation="h",
+            marker_color="#4f7df3",
+            text=[f"{v:,.0f}억" for v in cap_sorted["시가총액(억)"]],
+            textposition="outside",
+        ))
+        fig_cap.update_layout(**PLOT_LAYOUT, height=max(280, len(cap_sorted)*32+60),
+                               margin=dict(t=20,b=10,l=10,r=80),
+                               xaxis=dict(gridcolor="#e2e6ed", showgrid=True),
+                               yaxis=dict(gridcolor="#e2e6ed"))
+        st.plotly_chart(fig_cap, use_container_width=True)
 
     # 52주 위치 게이지 바
     st.markdown('<div class="section-hdr">52주 가격 위치</div>', unsafe_allow_html=True)
@@ -571,6 +593,36 @@ with tab_chart:
 
         st.caption("🔴 거래량 빨간 막대 = 20일 평균 2배 이상 이상거래량 / 📌 보라 점선 = 게임 이벤트")
 
+        # 거래대금 & 회전율
+        if "trading_value_b" in d.columns and d["trading_value_b"].sum() > 0:
+            st.markdown('<div class="section-hdr">거래대금 & 회전율</div>', unsafe_allow_html=True)
+            fig_tv = make_subplots(specs=[[{"secondary_y": True}]])
+            fig_tv.add_trace(go.Bar(
+                x=d.index, y=d["trading_value_b"],
+                name="거래대금(억)", marker_color="rgba(79,125,243,0.5)",
+            ), secondary_y=False)
+            if "turnover" in d.columns:
+                fig_tv.add_trace(go.Scatter(
+                    x=d.index, y=d["turnover"],
+                    name="회전율(%)", line=dict(color="#f59e0b", width=2),
+                ), secondary_y=True)
+            # 거래량 이상 배율 표시
+            if "vol_ratio" in d.columns:
+                high_vol = d[d["vol_ratio"] >= 2]
+                if not high_vol.empty:
+                    fig_tv.add_trace(go.Scatter(
+                        x=high_vol.index, y=high_vol["trading_value_b"],
+                        mode="markers", name="이상거래량",
+                        marker=dict(color="#dc2626", size=8, symbol="star"),
+                    ), secondary_y=False)
+            fig_tv.update_layout(**PLOT_LAYOUT, height=280,
+                                  margin=dict(t=20,b=10,l=10,r=60),
+                                  legend=dict(orientation="h"))
+            fig_tv.update_yaxes(title_text="거래대금(억)", gridcolor="#e2e6ed", secondary_y=False)
+            fig_tv.update_yaxes(title_text="회전율(%)", ticksuffix="%", showgrid=False, secondary_y=True)
+            fig_tv.update_xaxes(gridcolor="#e2e6ed")
+            st.plotly_chart(fig_tv, use_container_width=True)
+
         # 외인보유율 추이
         if "foreign_rate" in d.columns and d["foreign_rate"].sum() > 0:
             st.markdown('<div class="section-hdr">외국인 보유율 추이</div>', unsafe_allow_html=True)
@@ -672,6 +724,83 @@ with tab_short:
             .reset_index(drop=True),
             use_container_width=True,
         )
+
+    # 숏커버링 / 공매도 공세 신호
+    st.markdown('<div class="section-hdr">숏커버링 & 공매도 공세 신호</div>', unsafe_allow_html=True)
+    st.caption("숏커버링: 잔고 1만주↓ + 주가 상승 / 공매도 공세: 잔고 1만주↑ + 주가 하락")
+
+    sig_ticker = st.selectbox(
+        "종목 선택",
+        options=selected_tickers,
+        format_func=lambda x: f"{GAME_STOCKS[x]['name']} ({x})",
+        key="sig_sel"
+    )
+    if sig_ticker:
+        df_sig = slice_days(all_data[sig_ticker], selected_period)
+        if not df_sig.empty and "short_cover_signal" in df_sig.columns:
+            covers  = df_sig[df_sig["short_cover_signal"]  == 1]
+            attacks = df_sig[df_sig["short_attack_signal"] == 1]
+
+            fig_sig = make_subplots(rows=2, cols=1, shared_xaxes=True,
+                                     row_heights=[0.6, 0.4], vertical_spacing=0.04,
+                                     subplot_titles=("주가 & 신호", "공매도 잔고(만주)"))
+            # 주가
+            fig_sig.add_trace(go.Scatter(
+                x=df_sig.index, y=df_sig["close"],
+                line=dict(color="#4f7df3", width=2), name="주가",
+            ), row=1, col=1)
+            # 숏커버링 마커 (초록 삼각형 위)
+            if not covers.empty:
+                fig_sig.add_trace(go.Scatter(
+                    x=covers.index, y=covers["close"],
+                    mode="markers", name="숏커버링",
+                    marker=dict(color="#16a34a", size=10, symbol="triangle-up"),
+                ), row=1, col=1)
+            # 공매도 공세 마커 (빨간 삼각형 아래)
+            if not attacks.empty:
+                fig_sig.add_trace(go.Scatter(
+                    x=attacks.index, y=attacks["close"],
+                    mode="markers", name="공매도공세",
+                    marker=dict(color="#dc2626", size=10, symbol="triangle-down"),
+                ), row=1, col=1)
+            # 잔고 라인
+            if "balance" in df_sig.columns:
+                fig_sig.add_trace(go.Scatter(
+                    x=df_sig.index, y=df_sig["balance"],
+                    line=dict(color="#dc2626", width=1.5, dash="dash"), name="잔고(만주)",
+                ), row=2, col=1)
+
+            fig_sig.update_layout(**PLOT_LAYOUT, height=450,
+                                   margin=dict(t=30,b=10,l=10,r=10),
+                                   legend=dict(orientation="h"))
+            fig_sig.update_xaxes(gridcolor="#e2e6ed")
+            fig_sig.update_yaxes(gridcolor="#e2e6ed")
+            st.plotly_chart(fig_sig, use_container_width=True)
+
+            # 신호 발생 이력 테이블
+            sig_history = []
+            for dt, row in df_sig.iterrows():
+                if row.get("short_cover_signal", 0) == 1:
+                    sig_history.append({
+                        "날짜": dt.strftime("%Y-%m-%d"),
+                        "신호": "🟢 숏커버링",
+                        "주가": f"{int(row['close']):,}원",
+                        "잔고변화(만)": f"{row.get('balance_chg',0):+.2f}",
+                    })
+                elif row.get("short_attack_signal", 0) == 1:
+                    sig_history.append({
+                        "날짜": dt.strftime("%Y-%m-%d"),
+                        "신호": "🔴 공매도공세",
+                        "주가": f"{int(row['close']):,}원",
+                        "잔고변화(만)": f"{row.get('balance_chg',0):+.2f}",
+                    })
+            if sig_history:
+                st.dataframe(
+                    pd.DataFrame(sig_history).sort_values("날짜", ascending=False).reset_index(drop=True),
+                    use_container_width=True, height=300,
+                )
+            else:
+                st.info("선택 기간 내 신호 없음")
 
 # ══════════════════════════════════════════
 # TAB 4 — 수익률 비교
@@ -822,7 +951,147 @@ with tab_compare:
         st.dataframe(styled_p, use_container_width=True)
 
 # ══════════════════════════════════════════
-# TAB 5 — 게임 이벤트
+# TAB 5 — 밸류에이션
+# ══════════════════════════════════════════
+with tab_val:
+    st.markdown('<div class="section-hdr">PER / PBR / 배당수익률 비교</div>', unsafe_allow_html=True)
+
+    val_rows = []
+    for t in selected_tickers:
+        df = all_data[t]
+        if df.empty: continue
+        latest = df.iloc[-1]
+        per = float(latest.get("per", 0))
+        pbr = float(latest.get("pbr", 0))
+        div = float(latest.get("div_yield", 0))
+        val_rows.append({
+            "종목명":      GAME_STOCKS[t]["name"],
+            "시장":        GAME_STOCKS[t]["market"],
+            "현재가":      int(latest.get("close", 0)),
+            "PER":         per  if per  > 0 else None,
+            "PBR":         pbr  if pbr  > 0 else None,
+            "배당수익률(%)": div if div  > 0 else None,
+            "시가총액(억)": int(latest.get("market_cap_b", 0)),
+        })
+
+    if not val_rows:
+        st.info("Actions 실행 후 데이터가 수집되면 표시됩니다.")
+    else:
+        val_df = pd.DataFrame(val_rows)
+
+        # 밸류에이션 요약 테이블
+        def color_per(v):
+            if pd.isna(v) or v == 0: return "color:#9ca3af"
+            return "color:#dc2626;font-weight:600" if v > 30 else                    "color:#f59e0b;font-weight:600" if v > 15 else                    "color:#16a34a;font-weight:600"
+        def color_pbr(v):
+            if pd.isna(v) or v == 0: return "color:#9ca3af"
+            return "color:#dc2626;font-weight:600" if v > 3 else                    "color:#f59e0b;font-weight:600" if v > 1 else                    "color:#16a34a;font-weight:600"
+
+        styled_val = (
+            val_df.style
+            .applymap(color_per, subset=["PER"])
+            .applymap(color_pbr, subset=["PBR"])
+            .format({
+                "현재가":        "{:,.0f}",
+                "PER":           lambda x: f"{x:.1f}x" if pd.notna(x) else "-",
+                "PBR":           lambda x: f"{x:.2f}x" if pd.notna(x) else "-",
+                "배당수익률(%)": lambda x: f"{x:.2f}%" if pd.notna(x) else "-",
+                "시가총액(억)":  "{:,.0f}",
+            })
+            .hide(axis="index")
+            .set_properties(**{"background-color":"#ffffff","font-size":"13px"})
+            .set_table_styles([
+                {"selector":"th","props":[("background","#f3f4f6"),("font-weight","700"),("padding","8px 12px")]},
+                {"selector":"td","props":[("padding","8px 12px"),("border-bottom","1px solid #f3f4f6")]},
+            ])
+        )
+        st.dataframe(styled_val, use_container_width=True)
+
+        # PER 비교 바차트
+        st.markdown('<div class="section-hdr">PER 비교</div>', unsafe_allow_html=True)
+        per_valid = val_df[val_df["PER"].notna() & (val_df["PER"] > 0)].sort_values("PER", ascending=True)
+        if not per_valid.empty:
+            fig_per = go.Figure(go.Bar(
+                x=per_valid["PER"], y=per_valid["종목명"],
+                orientation="h",
+                marker_color=["#dc2626" if v>30 else "#f59e0b" if v>15 else "#16a34a"
+                              for v in per_valid["PER"]],
+                text=[f"{v:.1f}x" for v in per_valid["PER"]],
+                textposition="outside",
+            ))
+            fig_per.add_vline(x=15, line_dash="dot", line_color="#f59e0b",
+                              annotation_text="15x", annotation_position="top")
+            fig_per.add_vline(x=30, line_dash="dot", line_color="#dc2626",
+                              annotation_text="30x", annotation_position="top")
+            fig_per.update_layout(**PLOT_LAYOUT, height=max(280, len(per_valid)*32+80),
+                                   margin=dict(t=40,b=10,l=10,r=60),
+                                   xaxis=dict(gridcolor="#e2e6ed", showgrid=True, ticksuffix="x"),
+                                   yaxis=dict(gridcolor="#e2e6ed"))
+            st.plotly_chart(fig_per, use_container_width=True)
+            st.caption("🟢 15x 이하 저평가 · 🟡 15~30x 적정 · 🔴 30x 이상 고평가")
+
+        # PBR 비교 바차트
+        st.markdown('<div class="section-hdr">PBR 비교</div>', unsafe_allow_html=True)
+        pbr_valid = val_df[val_df["PBR"].notna() & (val_df["PBR"] > 0)].sort_values("PBR", ascending=True)
+        if not pbr_valid.empty:
+            fig_pbr = go.Figure(go.Bar(
+                x=pbr_valid["PBR"], y=pbr_valid["종목명"],
+                orientation="h",
+                marker_color=["#dc2626" if v>3 else "#f59e0b" if v>1 else "#16a34a"
+                              for v in pbr_valid["PBR"]],
+                text=[f"{v:.2f}x" for v in pbr_valid["PBR"]],
+                textposition="outside",
+            ))
+            fig_pbr.add_vline(x=1, line_dash="dot", line_color="#16a34a",
+                              annotation_text="1x", annotation_position="top")
+            fig_pbr.add_vline(x=3, line_dash="dot", line_color="#dc2626",
+                              annotation_text="3x", annotation_position="top")
+            fig_pbr.update_layout(**PLOT_LAYOUT, height=max(280, len(pbr_valid)*32+80),
+                                   margin=dict(t=40,b=10,l=10,r=60),
+                                   xaxis=dict(gridcolor="#e2e6ed", showgrid=True, ticksuffix="x"),
+                                   yaxis=dict(gridcolor="#e2e6ed"))
+            st.plotly_chart(fig_pbr, use_container_width=True)
+            st.caption("🟢 1x 이하 자산가치 이하 · 🔴 3x 이상 고평가")
+
+        # PER 추이 (종목별)
+        st.markdown('<div class="section-hdr">PER 추이</div>', unsafe_allow_html=True)
+        per_ticker = st.selectbox(
+            "종목 선택",
+            options=[t for t in selected_tickers if not all_data[t].empty
+                     and all_data[t]["per"].sum() > 0] if selected_tickers else [],
+            format_func=lambda x: f"{GAME_STOCKS[x]['name']} ({x})",
+            key="per_sel"
+        )
+        if per_ticker:
+            df_per = slice_days(all_data[per_ticker], selected_period)
+            if "per" in df_per.columns and df_per["per"].sum() > 0:
+                fig_per_trend = make_subplots(specs=[[{"secondary_y": True}]])
+                fig_per_trend.add_trace(go.Scatter(
+                    x=df_per.index, y=df_per["close"],
+                    name="주가", line=dict(color="#4f7df3", width=1.5),
+                ), secondary_y=False)
+                fig_per_trend.add_trace(go.Scatter(
+                    x=df_per.index, y=df_per["per"].replace(0, None),
+                    name="PER", line=dict(color="#f59e0b", width=2),
+                ), secondary_y=True)
+                if "pbr" in df_per.columns:
+                    fig_per_trend.add_trace(go.Scatter(
+                        x=df_per.index, y=df_per["pbr"].replace(0, None),
+                        name="PBR", line=dict(color="#7c3aed", width=1.5, dash="dot"),
+                    ), secondary_y=True)
+                fig_per_trend.update_layout(**PLOT_LAYOUT, height=320,
+                                             margin=dict(t=20,b=10,l=10,r=60),
+                                             legend=dict(orientation="h"))
+                fig_per_trend.update_yaxes(title_text="주가(원)", tickformat=",",
+                                            gridcolor="#e2e6ed", secondary_y=False)
+                fig_per_trend.update_yaxes(title_text="PER/PBR", showgrid=False,
+                                            secondary_y=True)
+                fig_per_trend.update_xaxes(gridcolor="#e2e6ed")
+                st.plotly_chart(fig_per_trend, use_container_width=True)
+
+
+# ══════════════════════════════════════════
+# TAB 6 — 게임 이벤트
 # ══════════════════════════════════════════
 with tab_event:
     st.markdown('<div class="section-hdr">주요 게임 이벤트 & 주가 반응</div>', unsafe_allow_html=True)

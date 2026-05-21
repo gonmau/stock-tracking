@@ -655,11 +655,6 @@ with tab_compare:
     idx_kospi  = load_index(owner, repo, "KOSPI")
     idx_kosdaq = load_index(owner, repo, "KOSDAQ")
 
-    # 디버그 (확인 후 제거)
-    kospi_url = f"https://raw.githubusercontent.com/{owner}/{repo}/main/data/index_kospi.json"
-    st.caption(f"🔍 URL: `{kospi_url}`")
-    st.caption(f"KOSPI: {'✅ ' + str(len(idx_kospi)) + '행' if not idx_kospi.empty else '❌ 빈 DataFrame'} / KOSDAQ: {'✅ ' + str(len(idx_kosdaq)) + '행' if not idx_kosdaq.empty else '❌ 빈 DataFrame'}")
-
     fig_rel = go.Figure()
 
     # KOSPI / KOSDAQ 기준선 (굵은 점선)
@@ -698,13 +693,16 @@ with tab_compare:
                            legend=dict(orientation="h"))
     st.plotly_chart(fig_rel, use_container_width=True)
 
-    # 지수 대비 초과수익률 테이블
-    if not idx_kospi.empty:
-        st.markdown('<div class="section-hdr">지수 대비 초과수익률 (KOSPI 기준)</div>', unsafe_allow_html=True)
-        def excess_ret(df, days):
+    # 지수 대비 초과수익률 테이블 — KOSPI 종목은 KOSPI, KOSDAQ 종목은 KOSDAQ 기준
+    if not idx_kospi.empty or not idx_kosdaq.empty:
+        st.markdown('<div class="section-hdr">지수 대비 초과수익률 (KOSPI 종목→KOSPI, KOSDAQ 종목→KOSDAQ)</div>', unsafe_allow_html=True)
+
+        def excess_ret_by_market(df, days, market):
             ret = period_ret(df, days)
-            idx_d = slice_days(idx_kospi, days)
-            if ret is None or len(idx_d) < 2: return None
+            idx_df = idx_kospi if market == "KOSPI" else idx_kosdaq
+            if ret is None or idx_df.empty: return None
+            idx_d = slice_days(idx_df, days)
+            if len(idx_d) < 2: return None
             idx_ret = (float(idx_d["close"].iloc[-1]) / float(idx_d["close"].iloc[0]) - 1) * 100
             return ret - idx_ret
 
@@ -712,12 +710,15 @@ with tab_compare:
         for t in selected_tickers:
             df = all_data[t]
             if df.empty: continue
+            market = GAME_STOCKS[t]["market"]
             exc_rows.append({
-                "종목명":    GAME_STOCKS[t]["name"],
-                "1M 초과(%)":  excess_ret(df, 30),
-                "3M 초과(%)":  excess_ret(df, 90),
-                "6M 초과(%)":  excess_ret(df, 180),
-                "1Y 초과(%)":  excess_ret(df, 365),
+                "종목명":      GAME_STOCKS[t]["name"],
+                "시장":        market,
+                "기준지수":    market,
+                "1M 초과(%)":  excess_ret_by_market(df, 30,  market),
+                "3M 초과(%)":  excess_ret_by_market(df, 90,  market),
+                "6M 초과(%)":  excess_ret_by_market(df, 180, market),
+                "1Y 초과(%)":  excess_ret_by_market(df, 365, market),
             })
         if exc_rows:
             exc_df = pd.DataFrame(exc_rows)

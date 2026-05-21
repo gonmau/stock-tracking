@@ -130,7 +130,6 @@ html, body, [class*="css"] {
 PLOT_LAYOUT = dict(
     paper_bgcolor="#ffffff", plot_bgcolor="#f8f9fc",
     font=dict(color="#1a1d23", family="Noto Sans KR"),
-    margin=dict(t=30, b=10, l=10, r=10),
 )
 GRID = dict(gridcolor="#e2e6ed", showgrid=True)
 
@@ -385,7 +384,7 @@ with tab_ov:
         textposition="outside", showlegend=False,
     ), row=1, col=2)
 
-    fig_dual.update_layout(**PLOT_LAYOUT, height=320)
+    fig_dual.update_layout(**PLOT_LAYOUT, height=320, margin=dict(t=30,b=10,l=10,r=10))
     fig_dual.update_xaxes(**GRID)
     fig_dual.update_yaxes(**GRID)
     st.plotly_chart(fig_dual, use_container_width=True)
@@ -403,10 +402,9 @@ with tab_ov:
             textfont=dict(color="#ffffff" if pos > 20 else "#1a1d23", size=11),
         ))
     fig_52.update_layout(
-        paper_bgcolor="#ffffff", plot_bgcolor="#f8f9fc",
-        font=dict(color="#1a1d23", family="Noto Sans KR"),
-        margin=dict(t=30, b=10, l=10, r=10),
+        **PLOT_LAYOUT,
         height=max(280, len(summary)*32+60),
+        margin=dict(t=30, b=10, l=10, r=10),
         xaxis=dict(range=[0,100], ticksuffix="%", gridcolor="#e2e6ed", showgrid=True),
         yaxis=dict(gridcolor="#e2e6ed", showgrid=True),
     )
@@ -538,7 +536,6 @@ with tab_chart:
 
         fig.update_layout(
             **PLOT_LAYOUT, height=650,
-            paper_bgcolor="#ffffff", plot_bgcolor="#f8f9fc",
             xaxis_rangeslider_visible=False,
             legend=dict(orientation="h", y=1.03, x=0, font=dict(size=11)),
             margin=dict(l=10, r=60, t=45, b=10),
@@ -578,7 +575,7 @@ with tab_short:
             x=d.index, y=d["balance"],
             name=GAME_STOCKS[t]["name"], mode="lines", line=dict(width=1.8),
         ))
-    fig_sl.update_layout(**PLOT_LAYOUT, height=350,
+    fig_sl.update_layout(**PLOT_LAYOUT, height=350, margin=dict(t=30,b=10,l=10,r=10),
                           xaxis=dict(gridcolor="#e2e6ed"),
                           yaxis=dict(gridcolor="#e2e6ed", ticksuffix="만"),
                           legend=dict(orientation="h"))
@@ -615,7 +612,7 @@ with tab_short:
             text=[f"{v:+.2f}" for v in cmp_df["잔고변화(만)"]],
             textposition="outside", showlegend=False,
         ), row=1, col=2)
-        fig_cmp.update_layout(**PLOT_LAYOUT, height=340)
+        fig_cmp.update_layout(**PLOT_LAYOUT, height=340, margin=dict(t=30,b=10,l=10,r=10))
         fig_cmp.update_xaxes(gridcolor="#e2e6ed")
         fig_cmp.update_yaxes(gridcolor="#e2e6ed")
         st.plotly_chart(fig_cmp, use_container_width=True)
@@ -653,7 +650,7 @@ with tab_compare:
             name=GAME_STOCKS[t]["name"], mode="lines", line=dict(width=1.8),
         ))
     fig_rel.add_hline(y=0, line_dash="dot", line_color="#9ca3af", line_width=1)
-    fig_rel.update_layout(**PLOT_LAYOUT, height=420,
+    fig_rel.update_layout(**PLOT_LAYOUT, height=420, margin=dict(t=30,b=10,l=10,r=10),
                            xaxis=dict(gridcolor="#e2e6ed"),
                            yaxis=dict(gridcolor="#e2e6ed", ticksuffix="%"),
                            legend=dict(orientation="h"))
@@ -682,7 +679,7 @@ with tab_compare:
             text=text, texttemplate="%{text}",
             zmid=0, colorbar=dict(title="%"),
         ))
-        fig_hm.update_layout(**PLOT_LAYOUT, height=max(280, len(heat_names)*36+80))
+        fig_hm.update_layout(**PLOT_LAYOUT, height=max(280, len(heat_names)*36+80), margin=dict(t=30,b=10,l=10,r=10))
         st.plotly_chart(fig_hm, use_container_width=True)
 
     # 기간 수익률 테이블
@@ -757,7 +754,7 @@ with tab_event:
                         bordercolor="#7c3aed", borderwidth=1,
                         ay=-40,
                     )
-            fig_ev.update_layout(**PLOT_LAYOUT, height=400,
+            fig_ev.update_layout(**PLOT_LAYOUT, height=400, margin=dict(t=30,b=10,l=10,r=10),
                                   xaxis=dict(gridcolor="#e2e6ed"),
                                   yaxis=dict(gridcolor="#e2e6ed", tickformat=",", title="주가(원)"))
             st.plotly_chart(fig_ev, use_container_width=True)

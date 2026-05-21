@@ -2,7 +2,7 @@
   "ticker": "293490",
   "name": "카카오게임즈",
   "total_shares": 134986390,
-  "updated_at": "2026-05-20 11:01",
+  "updated_at": "2026-05-21 03:28",
   "records": [
     {
       "date": "2025-05-19",
@@ -2891,10 +2891,10 @@
       "short_vol": 68.6,
       "balance": 273.54,
       "ratio": 2.026,
-      "balance_chg": -9.52,
-      "bal_5ma": 283.32,
-      "price_5ma": 11174.0,
-      "price_20ma": 11998.0
+      "balance_chg": 0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-14",
@@ -2904,9 +2904,9 @@
       "balance": 260.78,
       "ratio": 1.932,
       "balance_chg": -12.76,
-      "bal_5ma": 277.68,
-      "price_5ma": 11164.0,
-      "price_20ma": 11965.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-15",
@@ -2916,9 +2916,9 @@
       "balance": 253.07,
       "ratio": 1.875,
       "balance_chg": -7.71,
-      "bal_5ma": 272.18,
-      "price_5ma": 11054.0,
-      "price_20ma": 11904.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-18",
@@ -2928,9 +2928,21 @@
       "balance": 256.9,
       "ratio": 1.903,
       "balance_chg": 3.83,
-      "bal_5ma": 265.47,
-      "price_5ma": 10954.0,
-      "price_20ma": 11812.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
+    },
+    {
+      "date": "2026-05-19",
+      "close": 10310,
+      "volume": 235810,
+      "short_vol": 0.0,
+      "balance": 0.0,
+      "ratio": 0.0,
+      "balance_chg": -256.9,
+      "bal_5ma": 208.86,
+      "price_5ma": 10848.0,
+      "price_20ma": 0
     }
   ]
 }

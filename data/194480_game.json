@@ -2,7 +2,7 @@
   "ticker": "194480",
   "name": "데브시스터즈",
   "total_shares": 12988480,
-  "updated_at": "2026-05-20 11:02",
+  "updated_at": "2026-05-21 03:28",
   "records": [
     {
       "date": "2025-05-19",
@@ -2891,10 +2891,10 @@
       "short_vol": 7.2,
       "balance": 26.65,
       "ratio": 2.052,
-      "balance_chg": -1.78,
-      "bal_5ma": 30.69,
-      "price_5ma": 19726.0,
-      "price_20ma": 22424.0
+      "balance_chg": 0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-14",
@@ -2904,9 +2904,9 @@
       "balance": 26.29,
       "ratio": 2.024,
       "balance_chg": -0.37,
-      "bal_5ma": 29.4,
-      "price_5ma": 19370.0,
-      "price_20ma": 22232.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-15",
@@ -2916,9 +2916,9 @@
       "balance": 26.74,
       "ratio": 2.059,
       "balance_chg": 0.45,
-      "bal_5ma": 28.14,
-      "price_5ma": 18890.0,
-      "price_20ma": 22008.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-18",
@@ -2928,9 +2928,21 @@
       "balance": 26.5,
       "ratio": 2.041,
       "balance_chg": -0.23,
-      "bal_5ma": 26.92,
-      "price_5ma": 18454.0,
-      "price_20ma": 21720.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
+    },
+    {
+      "date": "2026-05-19",
+      "close": 17440,
+      "volume": 72364,
+      "short_vol": 0.0,
+      "balance": 0.0,
+      "ratio": 0.0,
+      "balance_chg": -26.5,
+      "bal_5ma": 21.24,
+      "price_5ma": 18222.0,
+      "price_20ma": 0
     }
   ]
 }

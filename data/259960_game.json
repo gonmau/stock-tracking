@@ -2,7 +2,7 @@
   "ticker": "259960",
   "name": "크래프톤",
   "total_shares": 44039000,
-  "updated_at": "2026-05-20 11:00",
+  "updated_at": "2026-05-21 03:27",
   "records": [
     {
       "date": "2025-05-19",
@@ -2891,10 +2891,10 @@
       "short_vol": 52.5,
       "balance": 11.01,
       "ratio": 0.25,
-      "balance_chg": 2.94,
-      "bal_5ma": 8.72,
-      "price_5ma": 277200.0,
-      "price_20ma": 269325.0
+      "balance_chg": 0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-14",
@@ -2904,9 +2904,9 @@
       "balance": 14.76,
       "ratio": 0.335,
       "balance_chg": 3.75,
-      "bal_5ma": 9.68,
-      "price_5ma": 281900.0,
-      "price_20ma": 272050.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-15",
@@ -2916,9 +2916,9 @@
       "balance": 14.19,
       "ratio": 0.322,
       "balance_chg": -0.57,
-      "bal_5ma": 10.84,
-      "price_5ma": 283100.0,
-      "price_20ma": 273800.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-18",
@@ -2928,9 +2928,21 @@
       "balance": 15.26,
       "ratio": 0.347,
       "balance_chg": 1.07,
-      "bal_5ma": 12.66,
-      "price_5ma": 282600.0,
-      "price_20ma": 275075.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
+    },
+    {
+      "date": "2026-05-19",
+      "close": 276000,
+      "volume": 129293,
+      "short_vol": 0.0,
+      "balance": 0.0,
+      "ratio": 0.0,
+      "balance_chg": -15.26,
+      "bal_5ma": 11.04,
+      "price_5ma": 282300.0,
+      "price_20ma": 0
     }
   ]
 }

@@ -2,7 +2,7 @@
   "ticker": "251270",
   "name": "넷마블",
   "total_shares": 84739137,
-  "updated_at": "2026-05-20 11:01",
+  "updated_at": "2026-05-21 03:28",
   "records": [
     {
       "date": "2025-05-19",
@@ -2891,10 +2891,10 @@
       "short_vol": 53.6,
       "balance": 26.4,
       "ratio": 0.312,
-      "balance_chg": 0.35,
-      "bal_5ma": 24.23,
-      "price_5ma": 43360.0,
-      "price_20ma": 48728.0
+      "balance_chg": 0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-14",
@@ -2904,9 +2904,9 @@
       "balance": 25.57,
       "ratio": 0.302,
       "balance_chg": -0.82,
-      "bal_5ma": 25.23,
-      "price_5ma": 42750.0,
-      "price_20ma": 48395.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-15",
@@ -2916,9 +2916,9 @@
       "balance": 24.83,
       "ratio": 0.293,
       "balance_chg": -0.74,
-      "bal_5ma": 25.42,
-      "price_5ma": 42790.0,
-      "price_20ma": 48015.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-18",
@@ -2928,9 +2928,21 @@
       "balance": 26.72,
       "ratio": 0.315,
       "balance_chg": 1.89,
-      "bal_5ma": 25.91,
-      "price_5ma": 42710.0,
-      "price_20ma": 47538.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
+    },
+    {
+      "date": "2026-05-19",
+      "close": 43000,
+      "volume": 222423,
+      "short_vol": 0.0,
+      "balance": 0.0,
+      "ratio": 0.0,
+      "balance_chg": -26.72,
+      "bal_5ma": 20.71,
+      "price_5ma": 42920.0,
+      "price_20ma": 0
     }
   ]
 }

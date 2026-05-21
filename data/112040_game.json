@@ -2,7 +2,7 @@
   "ticker": "112040",
   "name": "위메이드",
   "total_shares": 37600000,
-  "updated_at": "2026-05-20 11:02",
+  "updated_at": "2026-05-21 03:29",
   "records": [
     {
       "date": "2025-05-19",
@@ -2891,10 +2891,10 @@
       "short_vol": 25.8,
       "balance": 116.99,
       "ratio": 3.111,
-      "balance_chg": -0.1,
-      "bal_5ma": 119.13,
-      "price_5ma": 22020.0,
-      "price_20ma": 23072.0
+      "balance_chg": 0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-14",
@@ -2904,9 +2904,9 @@
       "balance": 107.82,
       "ratio": 2.868,
       "balance_chg": -9.17,
-      "bal_5ma": 116.38,
-      "price_5ma": 21820.0,
-      "price_20ma": 23112.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-15",
@@ -2916,9 +2916,9 @@
       "balance": 115.68,
       "ratio": 3.077,
       "balance_chg": 7.86,
-      "bal_5ma": 115.41,
-      "price_5ma": 21390.0,
-      "price_20ma": 23082.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-18",
@@ -2928,9 +2928,21 @@
       "balance": 115.27,
       "ratio": 3.066,
       "balance_chg": -0.41,
-      "bal_5ma": 114.57,
-      "price_5ma": 21070.0,
-      "price_20ma": 22990.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
+    },
+    {
+      "date": "2026-05-19",
+      "close": 20250,
+      "volume": 159540,
+      "short_vol": 0.0,
+      "balance": 0.0,
+      "ratio": 0.0,
+      "balance_chg": -115.27,
+      "bal_5ma": 91.15,
+      "price_5ma": 20870.0,
+      "price_20ma": 0
     }
   ]
 }

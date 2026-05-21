@@ -2,7 +2,7 @@
   "ticker": "095660",
   "name": "네오위즈",
   "total_shares": 18652100,
-  "updated_at": "2026-05-20 11:01",
+  "updated_at": "2026-05-21 03:28",
   "records": [
     {
       "date": "2025-05-19",
@@ -2891,10 +2891,10 @@
       "short_vol": 20.0,
       "balance": 1.39,
       "ratio": 0.075,
-      "balance_chg": 0.15,
-      "bal_5ma": 1.08,
-      "price_5ma": 20530.0,
-      "price_20ma": 22520.0
+      "balance_chg": 0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-14",
@@ -2904,9 +2904,9 @@
       "balance": 1.2,
       "ratio": 0.064,
       "balance_chg": -0.19,
-      "bal_5ma": 1.22,
-      "price_5ma": 20500.0,
-      "price_20ma": 22382.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-15",
@@ -2916,9 +2916,9 @@
       "balance": 1.15,
       "ratio": 0.061,
       "balance_chg": -0.05,
-      "bal_5ma": 1.26,
-      "price_5ma": 20450.0,
-      "price_20ma": 22230.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-18",
@@ -2928,9 +2928,21 @@
       "balance": 1.43,
       "ratio": 0.077,
       "balance_chg": 0.28,
-      "bal_5ma": 1.28,
-      "price_5ma": 20480.0,
-      "price_20ma": 22040.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
+    },
+    {
+      "date": "2026-05-19",
+      "close": 20800,
+      "volume": 93187,
+      "short_vol": 0.0,
+      "balance": 0.0,
+      "ratio": 0.0,
+      "balance_chg": -1.43,
+      "bal_5ma": 1.03,
+      "price_5ma": 20590.0,
+      "price_20ma": 0
     }
   ]
 }

@@ -2,7 +2,7 @@
   "ticker": "036570",
   "name": "엔씨소프트",
   "total_shares": 21954022,
-  "updated_at": "2026-05-20 11:01",
+  "updated_at": "2026-05-21 03:27",
   "records": [
     {
       "date": "2025-05-19",
@@ -2891,10 +2891,10 @@
       "short_vol": 50.5,
       "balance": 2.02,
       "ratio": 0.092,
-      "balance_chg": 0.03,
-      "bal_5ma": 2.01,
-      "price_5ma": 254500.0,
-      "price_20ma": 262375.0
+      "balance_chg": 0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-14",
@@ -2904,9 +2904,9 @@
       "balance": 1.94,
       "ratio": 0.089,
       "balance_chg": -0.07,
-      "bal_5ma": 2.0,
-      "price_5ma": 259700.0,
-      "price_20ma": 263900.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-15",
@@ -2916,9 +2916,9 @@
       "balance": 1.95,
       "ratio": 0.089,
       "balance_chg": 0.01,
-      "bal_5ma": 1.99,
-      "price_5ma": 262900.0,
-      "price_20ma": 265100.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-18",
@@ -2928,9 +2928,21 @@
       "balance": 2.27,
       "ratio": 0.103,
       "balance_chg": 0.32,
-      "bal_5ma": 2.03,
-      "price_5ma": 264400.0,
-      "price_20ma": 264700.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
+    },
+    {
+      "date": "2026-05-19",
+      "close": 265000,
+      "volume": 149501,
+      "short_vol": 0.0,
+      "balance": 0.0,
+      "ratio": 0.0,
+      "balance_chg": -2.27,
+      "bal_5ma": 1.64,
+      "price_5ma": 267400.0,
+      "price_20ma": 0
     }
   ]
 }

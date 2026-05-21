@@ -2,7 +2,7 @@
   "ticker": "067000",
   "name": "조이시티",
   "total_shares": 27000000,
-  "updated_at": "2026-05-20 11:02",
+  "updated_at": "2026-05-21 03:29",
   "records": [
     {
       "date": "2025-05-19",
@@ -2891,10 +2891,10 @@
       "short_vol": 23.5,
       "balance": 27.28,
       "ratio": 1.01,
-      "balance_chg": 0.03,
-      "bal_5ma": 27.28,
-      "price_5ma": 1928.0,
-      "price_20ma": 2394.0
+      "balance_chg": 0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-14",
@@ -2904,9 +2904,9 @@
       "balance": 27.15,
       "ratio": 1.006,
       "balance_chg": -0.12,
-      "bal_5ma": 27.25,
-      "price_5ma": 1879.0,
-      "price_20ma": 2351.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-15",
@@ -2916,9 +2916,9 @@
       "balance": 26.79,
       "ratio": 0.992,
       "balance_chg": -0.36,
-      "bal_5ma": 27.15,
-      "price_5ma": 1815.0,
-      "price_20ma": 2302.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-18",
@@ -2928,9 +2928,21 @@
       "balance": 26.52,
       "ratio": 0.982,
       "balance_chg": -0.28,
-      "bal_5ma": 27.0,
-      "price_5ma": 1772.0,
-      "price_20ma": 2254.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
+    },
+    {
+      "date": "2026-05-19",
+      "close": 1666,
+      "volume": 364164,
+      "short_vol": 0.0,
+      "balance": 0.0,
+      "ratio": 0.0,
+      "balance_chg": -26.52,
+      "bal_5ma": 21.55,
+      "price_5ma": 1733.0,
+      "price_20ma": 0
     }
   ]
 }

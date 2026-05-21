@@ -2,7 +2,7 @@
   "ticker": "123420",
   "name": "선데이토즈",
   "total_shares": 14030000,
-  "updated_at": "2026-05-20 11:02",
+  "updated_at": "2026-05-21 03:29",
   "records": [
     {
       "date": "2025-05-19",
@@ -2891,10 +2891,10 @@
       "short_vol": 10.3,
       "balance": 8.23,
       "ratio": 0.587,
-      "balance_chg": 0.42,
-      "bal_5ma": 7.74,
-      "price_5ma": 7340.0,
-      "price_20ma": 7738.0
+      "balance_chg": 0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-14",
@@ -2904,9 +2904,9 @@
       "balance": 8.4,
       "ratio": 0.599,
       "balance_chg": 0.16,
-      "bal_5ma": 7.91,
-      "price_5ma": 7340.0,
-      "price_20ma": 7736.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-15",
@@ -2916,9 +2916,9 @@
       "balance": 8.61,
       "ratio": 0.614,
       "balance_chg": 0.21,
-      "bal_5ma": 8.12,
-      "price_5ma": 7320.0,
-      "price_20ma": 7726.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-18",
@@ -2928,9 +2928,21 @@
       "balance": 8.81,
       "ratio": 0.628,
       "balance_chg": 0.2,
-      "bal_5ma": 8.37,
-      "price_5ma": 7270.0,
-      "price_20ma": 7687.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
+    },
+    {
+      "date": "2026-05-19",
+      "close": 7030,
+      "volume": 23286,
+      "short_vol": 0.0,
+      "balance": 0.0,
+      "ratio": 0.0,
+      "balance_chg": -8.81,
+      "bal_5ma": 6.81,
+      "price_5ma": 7210.0,
+      "price_20ma": 0
     }
   ]
 }

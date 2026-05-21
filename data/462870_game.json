@@ -2,7 +2,7 @@
   "ticker": "462870",
   "name": "시프트업",
   "total_shares": 50000000,
-  "updated_at": "2026-05-20 11:01",
+  "updated_at": "2026-05-21 03:28",
   "records": [
     {
       "date": "2025-05-19",
@@ -2891,10 +2891,10 @@
       "short_vol": 9.6,
       "balance": 62.39,
       "ratio": 1.248,
-      "balance_chg": -0.78,
-      "bal_5ma": 61.83,
-      "price_5ma": 30880.0,
-      "price_20ma": 33152.0
+      "balance_chg": 0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-14",
@@ -2904,9 +2904,9 @@
       "balance": 59.8,
       "ratio": 1.196,
       "balance_chg": -2.59,
-      "bal_5ma": 61.45,
-      "price_5ma": 30700.0,
-      "price_20ma": 33015.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-15",
@@ -2916,9 +2916,9 @@
       "balance": 59.77,
       "ratio": 1.195,
       "balance_chg": -0.03,
-      "bal_5ma": 61.11,
-      "price_5ma": 30510.0,
-      "price_20ma": 32875.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
     },
     {
       "date": "2026-05-18",
@@ -2928,9 +2928,21 @@
       "balance": 60.05,
       "ratio": 1.201,
       "balance_chg": 0.28,
-      "bal_5ma": 61.04,
-      "price_5ma": 30110.0,
-      "price_20ma": 32660.0
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0
+    },
+    {
+      "date": "2026-05-19",
+      "close": 29550,
+      "volume": 60111,
+      "short_vol": 0.0,
+      "balance": 0.0,
+      "ratio": 0.0,
+      "balance_chg": -60.05,
+      "bal_5ma": 48.4,
+      "price_5ma": 29990.0,
+      "price_20ma": 0
     }
   ]
 }

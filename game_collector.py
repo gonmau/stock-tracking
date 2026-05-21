@@ -182,6 +182,91 @@ def upsert_json(data_path: str, new_records: list, ticker: str, name: str, total
     print(f"  ✓ 저장: {data_path} (전체 {len(final_records)}일치, 신규 {len(new_records)}건)")
 
 
+# ───────────────────────────────────────────
+# 지수 수집 (KOSPI / KOSDAQ)
+# ───────────────────────────────────────────
+INDICES = {
+    "1001": "KOSPI",
+    "2001": "KOSDAQ",
+}
+
+def get_incremental_dates_index(data_path):
+    if not os.path.exists(data_path):
+        end   = datetime.today() - timedelta(days=2)
+        start = end - timedelta(days=DAYS_BACK)
+        return start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
+    try:
+        with open(data_path, encoding="utf-8") as f:
+            meta = json.load(f)
+        records = meta.get("records", [])
+        if not records:
+            end   = datetime.today() - timedelta(days=2)
+            start = end - timedelta(days=DAYS_BACK)
+            return start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
+        last_date = datetime.strptime(records[-1]["date"], "%Y-%m-%d")
+        start = last_date - timedelta(days=5)
+        end   = datetime.today() - timedelta(days=2)
+        return start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
+    except Exception:
+        end   = datetime.today() - timedelta(days=2)
+        start = end - timedelta(days=DAYS_BACK)
+        return start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
+
+
+def fetch_index(index_code, name):
+    data_path = f"data/index_{name.lower()}.json"
+    start, end = get_incremental_dates_index(data_path)
+    print(f"\n[지수 {name} / {index_code}] 수집 기간: {start} ~ {end}")
+    try:
+        df = stock.get_index_ohlcv_by_date(start, end, index_code)
+        time.sleep(1)
+    except Exception as e:
+        print(f"  ✗ {name} 지수 수집 실패: {e}")
+        return
+    if df.empty:
+        print(f"  ✗ {name} 지수 데이터 없음")
+        return
+
+    close_col = next((c for c in df.columns if "종가" in str(c)), df.columns[0])
+    df = df[[close_col]].rename(columns={close_col: "close"})
+    df["ma5"]  = df["close"].rolling(5).mean()
+    df["ma20"] = df["close"].rolling(20).mean()
+
+    new_records = []
+    for dt, row in df.iterrows():
+        new_records.append({
+            "date":  dt.strftime("%Y-%m-%d") if hasattr(dt, "strftime") else str(dt),
+            "close": round(float(row["close"]), 2),
+            "ma5":   round(float(row["ma5"])  if pd.notna(row["ma5"])  else 0, 2),
+            "ma20":  round(float(row["ma20"]) if pd.notna(row["ma20"]) else 0, 2),
+        })
+
+    existing_records = []
+    if os.path.exists(data_path):
+        try:
+            with open(data_path, encoding="utf-8") as f:
+                old_meta = json.load(f)
+            existing_records = old_meta.get("records", [])
+        except Exception:
+            pass
+
+    merged = {r["date"]: r for r in existing_records}
+    for r in new_records:
+        merged[r["date"]] = r
+    final_records = sorted(merged.values(), key=lambda x: x["date"])
+
+    meta = {
+        "index_code": index_code,
+        "name":       name,
+        "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "records":    final_records,
+    }
+    os.makedirs("data", exist_ok=True)
+    with open(data_path, "w", encoding="utf-8") as f:
+        json.dump(meta, f, ensure_ascii=False, indent=2)
+    print(f"  ✓ 저장: {data_path} (전체 {len(final_records)}일치)")
+
+
 def main():
     print("=" * 55)
     print("게임주 전종목 수집 시작")
@@ -208,7 +293,18 @@ def main():
             print(f"  ✗ {name} ({ticker}) 예외: {e}")
             errors.append(ticker)
 
-        time.sleep(2)  # 종목 간 KRX 부하 방지
+        time.sleep(2)
+
+    # 지수 수집
+    print("\n" + "=" * 55)
+    print("지수 수집 (KOSPI / KOSDAQ)")
+    print("=" * 55)
+    for code, name in INDICES.items():
+        try:
+            fetch_index(code, name)
+        except Exception as e:
+            print(f"  ✗ {name} 지수 예외: {e}")
+        time.sleep(2)
 
     print("\n" + "=" * 55)
     print(f"수집 완료 | 성공: {len(GAME_STOCKS) - len(errors)}/{len(GAME_STOCKS)}")

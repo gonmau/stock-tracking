@@ -157,6 +157,20 @@ def get_df(owner, repo, ticker):
         return pd.DataFrame()
     return build_df(meta)
 
+@st.cache_data(ttl=3600)
+def load_index(owner, repo, name):
+    """KOSPI/KOSDAQ 지수 JSON 로드 — data/index_kospi.json 등"""
+    url = GITHUB_RAW.format(owner=owner, repo=repo, ticker=f"index_{name.lower()}")
+    try:
+        r = requests.get(url, timeout=10)
+        r.raise_for_status()
+        meta = r.json()
+        df = pd.DataFrame(meta["records"])
+        df["date"] = pd.to_datetime(df["date"])
+        return df.set_index("date").sort_index()
+    except Exception:
+        return pd.DataFrame()
+
 def slice_days(df, days):
     if df.empty: return df
     cutoff = df.index.max() - pd.Timedelta(days=days)
@@ -635,9 +649,31 @@ with tab_short:
 # TAB 4 — 수익률 비교
 # ══════════════════════════════════════════
 with tab_compare:
-    st.markdown('<div class="section-hdr">선택 기간 상대 수익률</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-hdr">선택 기간 상대 수익률 (vs KOSPI/KOSDAQ)</div>', unsafe_allow_html=True)
+
+    # 지수 로드
+    idx_kospi  = load_index(owner, repo, "KOSPI")
+    idx_kosdaq = load_index(owner, repo, "KOSDAQ")
 
     fig_rel = go.Figure()
+
+    # KOSPI / KOSDAQ 기준선 (굵은 점선)
+    for idx_df, idx_name, idx_color in [
+        (idx_kospi,  "KOSPI",  "#6b7280"),
+        (idx_kosdaq, "KOSDAQ", "#9ca3af"),
+    ]:
+        if idx_df.empty: continue
+        d_idx = slice_days(idx_df, selected_period)
+        if len(d_idx) < 2: continue
+        base_idx = float(d_idx["close"].iloc[0])
+        rel_idx  = (d_idx["close"] / base_idx - 1) * 100
+        fig_rel.add_trace(go.Scatter(
+            x=d_idx.index, y=rel_idx,
+            name=idx_name, mode="lines",
+            line=dict(color=idx_color, width=2, dash="dash"),
+        ))
+
+    # 종목별 수익률
     for t in selected_tickers:
         df = all_data[t]
         if df.empty or len(df)<2: continue
@@ -649,12 +685,50 @@ with tab_compare:
             x=d.index, y=rel,
             name=GAME_STOCKS[t]["name"], mode="lines", line=dict(width=1.8),
         ))
+
     fig_rel.add_hline(y=0, line_dash="dot", line_color="#9ca3af", line_width=1)
-    fig_rel.update_layout(**PLOT_LAYOUT, height=420, margin=dict(t=30,b=10,l=10,r=10),
+    fig_rel.update_layout(**PLOT_LAYOUT, height=460, margin=dict(t=30,b=10,l=10,r=10),
                            xaxis=dict(gridcolor="#e2e6ed"),
                            yaxis=dict(gridcolor="#e2e6ed", ticksuffix="%"),
                            legend=dict(orientation="h"))
     st.plotly_chart(fig_rel, use_container_width=True)
+
+    # 지수 대비 초과수익률 테이블
+    if not idx_kospi.empty:
+        st.markdown('<div class="section-hdr">지수 대비 초과수익률 (KOSPI 기준)</div>', unsafe_allow_html=True)
+        def excess_ret(df, days):
+            ret = period_ret(df, days)
+            idx_d = slice_days(idx_kospi, days)
+            if ret is None or len(idx_d) < 2: return None
+            idx_ret = (float(idx_d["close"].iloc[-1]) / float(idx_d["close"].iloc[0]) - 1) * 100
+            return ret - idx_ret
+
+        exc_rows = []
+        for t in selected_tickers:
+            df = all_data[t]
+            if df.empty: continue
+            exc_rows.append({
+                "종목명":    GAME_STOCKS[t]["name"],
+                "1M 초과(%)":  excess_ret(df, 30),
+                "3M 초과(%)":  excess_ret(df, 90),
+                "6M 초과(%)":  excess_ret(df, 180),
+                "1Y 초과(%)":  excess_ret(df, 365),
+            })
+        if exc_rows:
+            exc_df = pd.DataFrame(exc_rows)
+            exc_cols = ["1M 초과(%)","3M 초과(%)","6M 초과(%)","1Y 초과(%)"]
+            styled_exc = (
+                exc_df.style
+                .applymap(lambda v: color_v(v) if pd.notna(v) else "", subset=exc_cols)
+                .format({c: lambda x: f"{x:+.1f}%" if pd.notna(x) else "-" for c in exc_cols})
+                .hide(axis="index")
+                .set_properties(**{"background-color":"#ffffff","font-size":"13px"})
+                .set_table_styles([
+                    {"selector":"th","props":[("background","#f3f4f6"),("font-weight","700"),("padding","8px 12px")]},
+                    {"selector":"td","props":[("padding","8px 12px"),("border-bottom","1px solid #f3f4f6")]},
+                ])
+            )
+            st.dataframe(styled_exc, use_container_width=True)
 
     # 기간별 수익률 히트맵
     st.markdown('<div class="section-hdr">기간별 수익률 히트맵</div>', unsafe_allow_html=True)

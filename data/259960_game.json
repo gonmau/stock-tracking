@@ -2,7 +2,7 @@
   "ticker": "259960",
   "name": "크래프톤",
   "total_shares": 44039000,
-  "updated_at": "2026-05-21 23:24",
+  "updated_at": "2026-05-21 23:36",
   "records": [
     {
       "date": "2025-05-19",
@@ -2906,7 +2906,8 @@
       "balance_chg": 0,
       "bal_5ma": 0,
       "price_5ma": 0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 0.0
     },
     {
       "date": "2026-05-15",
@@ -2918,7 +2919,8 @@
       "balance_chg": -0.57,
       "bal_5ma": 0,
       "price_5ma": 0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 0.0
     },
     {
       "date": "2026-05-18",
@@ -2930,7 +2932,8 @@
       "balance_chg": 1.07,
       "bal_5ma": 0,
       "price_5ma": 0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 0.0
     },
     {
       "date": "2026-05-19",
@@ -2942,7 +2945,8 @@
       "balance_chg": 0.39,
       "bal_5ma": 0,
       "price_5ma": 0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 0.0
     }
   ]
 }

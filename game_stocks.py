@@ -160,7 +160,7 @@ def get_df(owner, repo, ticker):
 @st.cache_data(ttl=3600)
 def load_index(owner, repo, name):
     """KOSPI/KOSDAQ 지수 JSON 로드 — data/index_kospi.json 등"""
-    url = GITHUB_RAW.format(owner=owner, repo=repo, ticker=f"index_{name.lower()}")
+    url = f"https://raw.githubusercontent.com/{owner}/{repo}/main/data/index_{name.lower()}.json"
     try:
         r = requests.get(url, timeout=10)
         r.raise_for_status()
@@ -654,6 +654,11 @@ with tab_compare:
     # 지수 로드
     idx_kospi  = load_index(owner, repo, "KOSPI")
     idx_kosdaq = load_index(owner, repo, "KOSDAQ")
+
+    # 디버그 (확인 후 제거)
+    kospi_url = f"https://raw.githubusercontent.com/{owner}/{repo}/main/data/index_kospi.json"
+    st.caption(f"🔍 URL: `{kospi_url}`")
+    st.caption(f"KOSPI: {'✅ ' + str(len(idx_kospi)) + '행' if not idx_kospi.empty else '❌ 빈 DataFrame'} / KOSDAQ: {'✅ ' + str(len(idx_kosdaq)) + '행' if not idx_kosdaq.empty else '❌ 빈 DataFrame'}")
 
     fig_rel = go.Figure()
 

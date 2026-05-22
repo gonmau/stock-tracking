@@ -164,41 +164,26 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str, info
         (df["balance_chg"] > 1) & (price_chg < 0)
     ).astype(int)
 
-    # 외국인 보유비율 — get_exhaustion_rates_of_foreign_investment_by_date
-    # market 파라미터 포함/미포함 버전 모두 시도
-    market_str = info.get("market", "KOSPI") if info else "KOSPI"
-    fr_df = pd.DataFrame()
+    # 외국인 보유비율 — get_market_cap_by_date에서 외인 컬럼 추출
     try:
-        try:
-            fr_df = stock.get_exhaustion_rates_of_foreign_investment_by_date(
-                start, end, ticker, market_str
-            )
-        except TypeError:
-            try:
-                fr_df = stock.get_exhaustion_rates_of_foreign_investment_by_date(
-                    start, end, ticker
-                )
-            except Exception as e2:
-                print(f"  ⚠ 외국인보유율 수집 실패: {e2}")
+        cap_df = stock.get_market_cap_by_date(start, end, ticker)
         time.sleep(1)
-        if fr_df is not None and not fr_df.empty:
-            fr_cols = fr_df.columns.tolist()
-            print(f"  외인보유율 컬럼: {fr_cols}")
-            rate_col = next(
-                (c for c in fr_cols if any(k in str(c) for k in ["보유율","비율","비중"])),
+        if cap_df is not None and not cap_df.empty:
+            cap_cols = cap_df.columns.tolist()
+            # 외국인 관련 컬럼 찾기
+            fr_col = next(
+                (c for c in cap_cols if any(k in str(c) for k in ["외국인보유율","외국인비율","외국인비중"])),
                 None
             )
-            if rate_col is None:
-                num_cols = fr_df.select_dtypes(include="number").columns.tolist()
-                rate_col = num_cols[-1] if num_cols else None
-            if rate_col:
+            if fr_col:
                 df = df.join(
-                    fr_df[[rate_col]].rename(columns={rate_col: "foreign_rate"}),
+                    cap_df[[fr_col]].rename(columns={fr_col: "foreign_rate"}),
                     how="left"
                 )
                 df["foreign_rate"] = df["foreign_rate"].ffill().round(2)
-                print(f"  ✓ 외인보유율 최신: {df['foreign_rate'].iloc[-1]:.2f}%")
+                print(f"  ✓ 외인보유율 수집 완료: {df['foreign_rate'].iloc[-1]:.2f}%")
             else:
+                print(f"  ⚠ 외인보유율 컬럼 없음 (컬럼: {cap_cols})")
                 df["foreign_rate"] = 0.0
         else:
             df["foreign_rate"] = 0.0

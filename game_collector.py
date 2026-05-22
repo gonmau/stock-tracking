@@ -62,7 +62,7 @@ def get_incremental_dates(existing_path: str):
         return get_dates()
 
 
-def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str):
+def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str, info: dict = None):
     start, end = get_incremental_dates(data_path)
     print(f"\n[{name} / {ticker}] 수집 기간: {start} ~ {end}")
 
@@ -74,8 +74,15 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str):
         print(f"  ✗ 주가 수집 실패: {e}")
         return None
 
+    if price_df is None or price_df.empty:
+        print(f"  ✗ 주가 데이터 없음: {ticker}")
+        return None
+
     # 거래대금 컬럼 있으면 같이 가져옴
     avail_cols = [c for c in ["종가","거래량","거래대금"] if c in price_df.columns]
+    if "종가" not in price_df.columns:
+        print(f"  ✗ 종가 컬럼 없음: {list(price_df.columns)}")
+        return None
     price_df = price_df[avail_cols].rename(
         columns={"종가": "close", "거래량": "volume", "거래대금": "trading_value"}
     )
@@ -86,8 +93,10 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str):
     try:
         short_df = stock.get_shorting_status_by_date(start, end, ticker)
         time.sleep(1)
+        if short_df is None:
+            short_df = pd.DataFrame()
     except Exception as e:
-        print(f"  ✗ 공매도 수집 실패: {e}")
+        print(f"  ⚠ 공매도 수집 실패 (공매도 미대상 종목일 수 있음): {e}")
         short_df = pd.DataFrame()
 
     # 공매도 컬럼 자동 감지 (기존 collector.py 로직 동일)
@@ -96,11 +105,17 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str):
         rename_map = {}
         for col in short_df.columns:
             col_s = str(col).strip()
-            if any(k in col_s for k in ["공매도량", "공매도 수량", "공매도수량", "공매도"]) \
+            # 공매도 거래량 (pykrx가 반환하는 컬럼명 "거래량"이 곧 공매도량)
+            if col_s == "거래량" and "short_vol" not in rename_map.values():
+                rename_map[col] = "short_vol"
+            elif any(k in col_s for k in ["공매도량","공매도 수량","공매도수량"]) \
                     and "금액" not in col_s and "비중" not in col_s and "short_vol" not in rename_map.values():
                 rename_map[col] = "short_vol"
-            elif any(k in col_s for k in ["잔고수량", "잔고 수량", "보유잔고", "잔고"]) \
-                    and "금액" not in col_s and "비중" not in col_s and "balance" not in rename_map.values():
+            # 잔고수량 (로그에서 확인된 컬럼명)
+            elif col_s in ["잔고수량","잔고 수량","보유잔고"] and "balance" not in rename_map.values():
+                rename_map[col] = "balance"
+            elif "잔고" in col_s and "금액" not in col_s and "비중" not in col_s \
+                    and "balance" not in rename_map.values():
                 rename_map[col] = "balance"
             elif "비중" in col_s and "ratio_pct" not in rename_map.values():
                 rename_map[col] = "ratio_pct"
@@ -122,6 +137,9 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str):
         df["balance"]   = 0
 
     df = df.fillna(0)
+    if "close" not in df.columns:
+        print(f"  ✗ close 컬럼 없음 — 스킵")
+        return pd.DataFrame()
 
     # 파생 컬럼
     df["balance_m"]   = df["balance"] / 10000
@@ -146,22 +164,46 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str):
         (df["balance_chg"] > 1) & (price_chg < 0)
     ).astype(int)
 
-    # 외국인 보유비율
+    # 외국인 보유비율 — get_exhaustion_rates_of_foreign_investment_by_date
+    # market 파라미터 포함/미포함 버전 모두 시도
+    market_str = info.get("market", "KOSPI") if info else "KOSPI"
+    fr_df = pd.DataFrame()
     try:
-        fr_df = stock.get_exhaustion_rates_of_foreign_investment_by_date(start, end, ticker)
+        try:
+            fr_df = stock.get_exhaustion_rates_of_foreign_investment_by_date(
+                start, end, ticker, market_str
+            )
+        except TypeError:
+            try:
+                fr_df = stock.get_exhaustion_rates_of_foreign_investment_by_date(
+                    start, end, ticker
+                )
+            except Exception as e2:
+                print(f"  ⚠ 외국인보유율 수집 실패: {e2}")
         time.sleep(1)
-        if not fr_df.empty:
-            # 보유율 컬럼 자동 감지
+        if fr_df is not None and not fr_df.empty:
             fr_cols = fr_df.columns.tolist()
-            rate_col = next((c for c in fr_cols if "보유율" in str(c) or "비율" in str(c)), None)
-            if rate_col is None and len(fr_cols) >= 1:
-                rate_col = fr_cols[-1]
+            print(f"  외인보유율 컬럼: {fr_cols}")
+            rate_col = next(
+                (c for c in fr_cols if any(k in str(c) for k in ["보유율","비율","비중"])),
+                None
+            )
+            if rate_col is None:
+                num_cols = fr_df.select_dtypes(include="number").columns.tolist()
+                rate_col = num_cols[-1] if num_cols else None
             if rate_col:
-                fr_df = fr_df[[rate_col]].rename(columns={rate_col: "foreign_rate"})
-                df = df.join(fr_df["foreign_rate"], how="left")
-                df["foreign_rate"] = df["foreign_rate"].fillna(method="ffill").round(2)
+                df = df.join(
+                    fr_df[[rate_col]].rename(columns={rate_col: "foreign_rate"}),
+                    how="left"
+                )
+                df["foreign_rate"] = df["foreign_rate"].ffill().round(2)
+                print(f"  ✓ 외인보유율 최신: {df['foreign_rate'].iloc[-1]:.2f}%")
+            else:
+                df["foreign_rate"] = 0.0
+        else:
+            df["foreign_rate"] = 0.0
     except Exception as e:
-        print(f"  ⚠ 외국인보유율 수집 실패: {e}")
+        print(f"  ⚠ 외국인보유율 예외: {e}")
         df["foreign_rate"] = 0.0
 
     if "foreign_rate" not in df.columns:
@@ -177,7 +219,7 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str):
             if cap_col:
                 mc_df = mc_df[[cap_col]].rename(columns={cap_col: "market_cap"})
                 df = df.join(mc_df["market_cap"], how="left")
-                df["market_cap"] = df["market_cap"].fillna(method="ffill").fillna(0)
+                df["market_cap"] = df["market_cap"].ffill().fillna(0)
                 # 억원 단위로 변환
                 df["market_cap_b"] = (df["market_cap"] / 1e8).round(0)
     except Exception as e:
@@ -205,7 +247,7 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str):
                 df = df.join(fn_df, how="left")
                 for col in ["per","pbr","div_yield"]:
                     if col in df.columns:
-                        df[col] = df[col].fillna(method="ffill").fillna(0).round(2)
+                        df[col] = df[col].ffill().fillna(0).round(2)
     except Exception as e:
         print(f"  ⚠ 펀더멘털 수집 실패: {e}")
 
@@ -375,7 +417,7 @@ def main():
         data_path    = f"data/{ticker}_game.json"
 
         try:
-            df = fetch_ticker(ticker, name, total_shares, data_path)
+            df = fetch_ticker(ticker, name, total_shares, data_path, info=info)
             if df is None or df.empty:
                 print(f"  ✗ {name}: 데이터 없음")
                 errors.append(ticker)

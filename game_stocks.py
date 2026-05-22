@@ -248,16 +248,12 @@ def slice_days(df, days):
     cutoff = df.index.max() - pd.Timedelta(days=days)
     return df[df.index >= cutoff]
 
-def add_event_vlines(fig, events, d, y_offsets_paper=None, subplot_rows=None):
+def add_event_vlines(fig, events, d, y_offsets_paper=None):
     """
-    subplots에서 올바르게 동작하는 이벤트 수직선.
-    add_vline 대신 add_shape(xref="x", yref="paper") 사용.
-    subplot_rows: [(row, yref_paper_start, yref_paper_end), ...]
+    이벤트 수직선 — add_shape(xref='x', yref='paper')로 전체 차트 높이에 그림
     """
     if y_offsets_paper is None:
         y_offsets_paper = [0.94, 0.84, 0.74, 0.64, 0.54]
-    if subplot_rows is None:
-        subplot_rows = [("paper", 0.0, 1.0)]
 
     offset_idx = 0
     for ev in events:
@@ -265,20 +261,18 @@ def add_event_vlines(fig, events, d, y_offsets_paper=None, subplot_rows=None):
         if d.empty or not (d.index.min() <= ev_dt <= d.index.max()):
             continue
         ev_color = EVENT_COLORS.get(ev.get("category","기타"), "#6b7280")
-        ev_dt_ms = ev_dt.timestamp() * 1000  # plotly x축은 ms
 
-        # 각 서브플롯에 수직선
-        for (xref, y0, y1) in subplot_rows:
-            fig.add_shape(
-                type="line",
-                xref=xref, yref="paper",
-                x0=ev_dt, x1=ev_dt,
-                y0=y0, y1=y1,
-                line=dict(color=ev_color, width=1.5, dash="dash"),
-                opacity=0.75,
-            )
+        # 수직선 — paper 좌표로 전체 높이
+        fig.add_shape(
+            type="line",
+            xref="x", yref="paper",
+            x0=ev_dt, x1=ev_dt,
+            y0=0, y1=1,
+            line=dict(color=ev_color, width=1.8, dash="dash"),
+            opacity=0.7,
+        )
 
-        # annotation — y offset 순환으로 겹침 방지
+        # annotation — y offset 순환
         y_pos = y_offsets_paper[offset_idx % len(y_offsets_paper)]
         offset_idx += 1
         cat = ev.get("category","기타")
@@ -286,10 +280,10 @@ def add_event_vlines(fig, events, d, y_offsets_paper=None, subplot_rows=None):
             x=ev_dt, y=y_pos, xref="x", yref="paper",
             text=f"<b>[{cat}]</b> {ev['label']}",
             showarrow=True, arrowhead=2, arrowsize=0.7,
-            arrowcolor=ev_color, ax=15, ay=-22,
+            arrowcolor=ev_color, ax=20, ay=-25,
             font=dict(size=9, color=ev_color),
-            bgcolor="rgba(255,255,255,0.93)",
-            bordercolor=ev_color, borderwidth=1, borderpad=3,
+            bgcolor="rgba(255,255,255,0.94)",
+            bordercolor=ev_color, borderwidth=1.2, borderpad=4,
             xanchor="left",
         )
 
@@ -658,9 +652,6 @@ with tab_chart:
             add_event_vlines(
                 fig, ticker_events, d,
                 y_offsets_paper=[0.96, 0.86, 0.76, 0.66, 0.56],
-                subplot_rows=[
-                    ("x",  0.0, 1.0),   # 전체 paper에 걸쳐 수직선 하나
-                ],
             )
 
         # 거래량 (이상 거래량 하이라이트)
@@ -1256,7 +1247,6 @@ with tab_event:
             add_event_vlines(
                 fig_ev, ticker_events, d,
                 y_offsets_paper=[0.95, 0.85, 0.75, 0.65, 0.55],
-                subplot_rows=[("x", 0.0, 1.0)],
             )
 
             fig_ev.update_layout(**PLOT_LAYOUT, height=520,

@@ -248,6 +248,51 @@ def slice_days(df, days):
     cutoff = df.index.max() - pd.Timedelta(days=days)
     return df[df.index >= cutoff]
 
+def add_event_vlines(fig, events, d, y_offsets_paper=None, subplot_rows=None):
+    """
+    subplots에서 올바르게 동작하는 이벤트 수직선.
+    add_vline 대신 add_shape(xref="x", yref="paper") 사용.
+    subplot_rows: [(row, yref_paper_start, yref_paper_end), ...]
+    """
+    if y_offsets_paper is None:
+        y_offsets_paper = [0.94, 0.84, 0.74, 0.64, 0.54]
+    if subplot_rows is None:
+        subplot_rows = [("paper", 0.0, 1.0)]
+
+    offset_idx = 0
+    for ev in events:
+        ev_dt = pd.Timestamp(ev["date"])
+        if d.empty or not (d.index.min() <= ev_dt <= d.index.max()):
+            continue
+        ev_color = EVENT_COLORS.get(ev.get("category","기타"), "#6b7280")
+        ev_dt_ms = ev_dt.timestamp() * 1000  # plotly x축은 ms
+
+        # 각 서브플롯에 수직선
+        for (xref, y0, y1) in subplot_rows:
+            fig.add_shape(
+                type="line",
+                xref=xref, yref="paper",
+                x0=ev_dt, x1=ev_dt,
+                y0=y0, y1=y1,
+                line=dict(color=ev_color, width=1.5, dash="dash"),
+                opacity=0.75,
+            )
+
+        # annotation — y offset 순환으로 겹침 방지
+        y_pos = y_offsets_paper[offset_idx % len(y_offsets_paper)]
+        offset_idx += 1
+        cat = ev.get("category","기타")
+        fig.add_annotation(
+            x=ev_dt, y=y_pos, xref="x", yref="paper",
+            text=f"<b>[{cat}]</b> {ev['label']}",
+            showarrow=True, arrowhead=2, arrowsize=0.7,
+            arrowcolor=ev_color, ax=15, ay=-22,
+            font=dict(size=9, color=ev_color),
+            bgcolor="rgba(255,255,255,0.93)",
+            bordercolor=ev_color, borderwidth=1, borderpad=3,
+            xanchor="left",
+        )
+
 def period_ret(df, days):
     d = slice_days(df, days)
     if len(d) < 2: return None
@@ -609,34 +654,14 @@ with tab_chart:
         # 게임 이벤트 수직선 (카테고리별 색상)
         if show_events:
             ticker_events = [e for e in GAME_EVENTS if e["ticker"] == chart_ticker]
-            # 날짜 겹침 방지용 y offset 순환
-            y_offsets = [0.97, 0.88, 0.79, 0.70, 0.61]
-            offset_idx = 0
-            for ev in ticker_events:
-                ev_dt = pd.Timestamp(ev["date"])
-                if d.index.min() <= ev_dt <= d.index.max():
-                    ev_color = EVENT_COLORS.get(ev.get("category","기타"), "#6b7280")
-                    # 3개 서브플롯 모두 수직선
-                    for row_n in [1, 2, 3]:
-                        fig.add_vline(
-                            x=ev_dt, line_width=1.5, line_dash="dash",
-                            line_color=ev_color, opacity=0.7,
-                            row=row_n, col=1,
-                        )
-                    # 상단 annotation — y offset 순환으로 겹침 방지
-                    y_pos = y_offsets[offset_idx % len(y_offsets)]
-                    offset_idx += 1
-                    cat = ev.get("category","기타")
-                    fig.add_annotation(
-                        x=ev_dt, y=y_pos, yref="paper", xref="x",
-                        text=f"<b>{cat}</b> {ev['label']}",
-                        showarrow=True, arrowhead=2, arrowsize=0.8,
-                        arrowcolor=ev_color, ax=0, ay=-28,
-                        font=dict(size=9, color=ev_color),
-                        bgcolor="rgba(255,255,255,0.92)",
-                        bordercolor=ev_color, borderwidth=1,
-                        borderpad=3,
-                    )
+            # 3단 서브플롯 row heights [0.55, 0.22, 0.23] → paper 좌표
+            add_event_vlines(
+                fig, ticker_events, d,
+                y_offsets_paper=[0.96, 0.86, 0.76, 0.66, 0.56],
+                subplot_rows=[
+                    ("x",  0.0, 1.0),   # 전체 paper에 걸쳐 수직선 하나
+                ],
+            )
 
         # 거래량 (이상 거래량 하이라이트)
         vol_avg = d["volume"].rolling(20).mean()
@@ -1227,30 +1252,12 @@ with tab_event:
                 marker_color=vol_colors, name="거래량", showlegend=False,
             ), row=2, col=1)
 
-            # 이벤트 오버레이 — 카테고리별 색상, y offset 겹침 방지
-            y_offsets = [0.95, 0.85, 0.75, 0.65, 0.55]
-            offset_idx = 0
-            for ev in ticker_events:
-                ev_dt = pd.Timestamp(ev["date"])
-                if d.empty or d.index.min() > ev_dt or d.index.max() < ev_dt:
-                    continue
-                ev_color = EVENT_COLORS.get(ev.get("category","기타"), "#6b7280")
-                fig_ev.add_vline(x=ev_dt, line_width=1.8, line_dash="dash",
-                                  line_color=ev_color, opacity=0.8, row=1, col=1)
-                fig_ev.add_vline(x=ev_dt, line_width=1, line_dash="dash",
-                                  line_color=ev_color, opacity=0.4, row=2, col=1)
-                y_pos = y_offsets[offset_idx % len(y_offsets)]
-                offset_idx += 1
-                cat = ev.get("category","기타")
-                fig_ev.add_annotation(
-                    x=ev_dt, y=y_pos, yref="paper", xref="x",
-                    text=f"<b>[{cat}]</b> {ev['label']}",
-                    showarrow=True, arrowhead=2, arrowsize=0.7,
-                    arrowcolor=ev_color, ax=15, ay=-25,
-                    font=dict(size=9, color=ev_color),
-                    bgcolor="rgba(255,255,255,0.93)",
-                    bordercolor=ev_color, borderwidth=1, borderpad=3,
-                )
+            # 이벤트 오버레이 — add_shape으로 서브플롯 정확히 표시
+            add_event_vlines(
+                fig_ev, ticker_events, d,
+                y_offsets_paper=[0.95, 0.85, 0.75, 0.65, 0.55],
+                subplot_rows=[("x", 0.0, 1.0)],
+            )
 
             fig_ev.update_layout(**PLOT_LAYOUT, height=520,
                                   margin=dict(t=30,b=10,l=10,r=10),

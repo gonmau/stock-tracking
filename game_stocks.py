@@ -36,12 +36,84 @@ GAME_STOCKS = {
 }
 
 # 주요 게임 출시 이벤트
+# 이벤트 카테고리별 색상
+EVENT_COLORS = {
+    "출시":   "#dc2626",   # 빨강
+    "업데이트": "#f59e0b", # 주황
+    "실적":   "#16a34a",   # 초록
+    "상장":   "#4f7df3",   # 파랑
+    "공시":   "#7c3aed",   # 보라
+    "기타":   "#6b7280",   # 회색
+}
+
 GAME_EVENTS = [
-    {"date": "2024-08-29", "ticker": "462870", "label": "시프트업 상장"},
-    {"date": "2024-12-05", "ticker": "263750", "label": "크림슨데저트 공개"},
-    {"date": "2025-03-20", "ticker": "263750", "label": "크림슨데저트 출시"},
-    {"date": "2024-06-26", "ticker": "194480", "label": "쿠키런:모험의탑"},
-    {"date": "2024-04-26", "ticker": "462870", "label": "스텔라블레이드 출시"},
+    # 펄어비스 (263750)
+    {"date": "2024-02-15", "ticker": "263750", "label": "펄어비스 4Q23 실적",       "category": "실적"},
+    {"date": "2024-05-09", "ticker": "263750", "label": "펄어비스 1Q24 실적",       "category": "실적"},
+    {"date": "2024-08-08", "ticker": "263750", "label": "펄어비스 2Q24 실적",       "category": "실적"},
+    {"date": "2024-11-07", "ticker": "263750", "label": "펄어비스 3Q24 실적",       "category": "실적"},
+    {"date": "2024-12-05", "ticker": "263750", "label": "크림슨데저트 쇼케이스",    "category": "공시"},
+    {"date": "2025-01-23", "ticker": "263750", "label": "크림슨데저트 출시 확정",   "category": "공시"},
+    {"date": "2025-02-13", "ticker": "263750", "label": "펄어비스 4Q24 실적",       "category": "실적"},
+    {"date": "2025-03-20", "ticker": "263750", "label": "크림슨데저트 PC 출시",     "category": "출시"},
+    {"date": "2025-05-07", "ticker": "263750", "label": "펄어비스 1Q25 실적",       "category": "실적"},
+
+    # 크래프톤 (259960)
+    {"date": "2024-02-08", "ticker": "259960", "label": "크래프톤 4Q23 실적",       "category": "실적"},
+    {"date": "2024-05-09", "ticker": "259960", "label": "크래프톤 1Q24 실적",       "category": "실적"},
+    {"date": "2024-08-08", "ticker": "259960", "label": "크래프톤 2Q24 실적",       "category": "실적"},
+    {"date": "2024-11-14", "ticker": "259960", "label": "크래프톤 3Q24 실적",       "category": "실적"},
+    {"date": "2025-02-13", "ticker": "259960", "label": "크래프톤 4Q24 실적",       "category": "실적"},
+    {"date": "2025-03-13", "ticker": "259960", "label": "인조이 출시",               "category": "출시"},
+    {"date": "2025-05-08", "ticker": "259960", "label": "크래프톤 1Q25 실적",       "category": "실적"},
+
+    # 엔씨소프트 (036570)
+    {"date": "2024-02-08", "ticker": "036570", "label": "엔씨 4Q23 실적",           "category": "실적"},
+    {"date": "2024-05-09", "ticker": "036570", "label": "엔씨 1Q24 실적",           "category": "실적"},
+    {"date": "2024-08-08", "ticker": "036570", "label": "엔씨 2Q24 실적",           "category": "실적"},
+    {"date": "2024-11-14", "ticker": "036570", "label": "엔씨 3Q24 실적",           "category": "실적"},
+    {"date": "2024-12-19", "ticker": "036570", "label": "TL 글로벌 출시",           "category": "출시"},
+    {"date": "2025-02-13", "ticker": "036570", "label": "엔씨 4Q24 실적",           "category": "실적"},
+    {"date": "2025-05-08", "ticker": "036570", "label": "엔씨 1Q25 실적",           "category": "실적"},
+
+    # 넷마블 (251270)
+    {"date": "2024-02-08", "ticker": "251270", "label": "넷마블 4Q23 실적",         "category": "실적"},
+    {"date": "2024-05-09", "ticker": "251270", "label": "넷마블 1Q24 실적",         "category": "실적"},
+    {"date": "2024-08-08", "ticker": "251270", "label": "넷마블 2Q24 실적",         "category": "실적"},
+    {"date": "2024-11-14", "ticker": "251270", "label": "넷마블 3Q24 실적",         "category": "실적"},
+    {"date": "2025-02-13", "ticker": "251270", "label": "넷마블 4Q24 실적",         "category": "실적"},
+    {"date": "2025-05-08", "ticker": "251270", "label": "넷마블 1Q25 실적",         "category": "실적"},
+
+    # 시프트업 (462870)
+    {"date": "2024-04-26", "ticker": "462870", "label": "스텔라블레이드 출시",      "category": "출시"},
+    {"date": "2024-08-29", "ticker": "462870", "label": "시프트업 코스피 상장",     "category": "상장"},
+    {"date": "2024-11-14", "ticker": "462870", "label": "시프트업 3Q24 실적",       "category": "실적"},
+    {"date": "2025-02-13", "ticker": "462870", "label": "시프트업 4Q24 실적",       "category": "실적"},
+    {"date": "2025-05-08", "ticker": "462870", "label": "시프트업 1Q25 실적",       "category": "실적"},
+
+    # 카카오게임즈 (293490)
+    {"date": "2024-05-09", "ticker": "293490", "label": "카카오게임즈 1Q24 실적",   "category": "실적"},
+    {"date": "2024-08-08", "ticker": "293490", "label": "카카오게임즈 2Q24 실적",   "category": "실적"},
+    {"date": "2024-11-14", "ticker": "293490", "label": "카카오게임즈 3Q24 실적",   "category": "실적"},
+    {"date": "2025-02-13", "ticker": "293490", "label": "카카오게임즈 4Q24 실적",   "category": "실적"},
+    {"date": "2025-05-08", "ticker": "293490", "label": "카카오게임즈 1Q25 실적",   "category": "실적"},
+
+    # 데브시스터즈 (194480)
+    {"date": "2024-06-26", "ticker": "194480", "label": "쿠키런:모험의탑 출시",     "category": "출시"},
+    {"date": "2024-08-08", "ticker": "194480", "label": "데브시스터즈 2Q24 실적",   "category": "실적"},
+    {"date": "2024-11-14", "ticker": "194480", "label": "데브시스터즈 3Q24 실적",   "category": "실적"},
+    {"date": "2025-02-13", "ticker": "194480", "label": "데브시스터즈 4Q24 실적",   "category": "실적"},
+
+    # 위메이드 (112040)
+    {"date": "2024-08-08", "ticker": "112040", "label": "위메이드 2Q24 실적",       "category": "실적"},
+    {"date": "2024-11-14", "ticker": "112040", "label": "위메이드 3Q24 실적",       "category": "실적"},
+    {"date": "2025-02-13", "ticker": "112040", "label": "위메이드 4Q24 실적",       "category": "실적"},
+    {"date": "2025-05-08", "ticker": "112040", "label": "나이트크로우 글로벌 업데이트", "category": "업데이트"},
+
+    # 네오위즈 (095660)
+    {"date": "2024-08-08", "ticker": "095660", "label": "네오위즈 2Q24 실적",       "category": "실적"},
+    {"date": "2024-11-14", "ticker": "095660", "label": "네오위즈 3Q24 실적",       "category": "실적"},
+    {"date": "2025-02-13", "ticker": "095660", "label": "네오위즈 4Q24 실적",       "category": "실적"},
 ]
 
 # ───────────────────────────────────────────
@@ -534,24 +606,36 @@ with tab_chart:
                     line=dict(color="#f87171", width=1, dash="dot"), name="잔고5MA", opacity=0.7,
                 ), row=1, col=1, secondary_y=True)
 
-        # 게임 이벤트 수직선
+        # 게임 이벤트 수직선 (카테고리별 색상)
         if show_events:
             ticker_events = [e for e in GAME_EVENTS if e["ticker"] == chart_ticker]
+            # 날짜 겹침 방지용 y offset 순환
+            y_offsets = [0.97, 0.88, 0.79, 0.70, 0.61]
+            offset_idx = 0
             for ev in ticker_events:
                 ev_dt = pd.Timestamp(ev["date"])
                 if d.index.min() <= ev_dt <= d.index.max():
+                    ev_color = EVENT_COLORS.get(ev.get("category","기타"), "#6b7280")
+                    # 3개 서브플롯 모두 수직선
                     for row_n in [1, 2, 3]:
                         fig.add_vline(
-                            x=ev_dt, line_width=1.5, line_dash="dot",
-                            line_color="#7c3aed", row=row_n, col=1,
+                            x=ev_dt, line_width=1.5, line_dash="dash",
+                            line_color=ev_color, opacity=0.7,
+                            row=row_n, col=1,
                         )
+                    # 상단 annotation — y offset 순환으로 겹침 방지
+                    y_pos = y_offsets[offset_idx % len(y_offsets)]
+                    offset_idx += 1
+                    cat = ev.get("category","기타")
                     fig.add_annotation(
-                        x=ev_dt, y=1, yref="paper", xref="x",
-                        text=f"📌 {ev['label']}", showarrow=False,
-                        font=dict(size=10, color="#7c3aed"),
-                        bgcolor="rgba(255,255,255,0.85)",
-                        bordercolor="#7c3aed", borderwidth=1,
-                        yanchor="top",
+                        x=ev_dt, y=y_pos, yref="paper", xref="x",
+                        text=f"<b>{cat}</b> {ev['label']}",
+                        showarrow=True, arrowhead=2, arrowsize=0.8,
+                        arrowcolor=ev_color, ax=0, ay=-28,
+                        font=dict(size=9, color=ev_color),
+                        bgcolor="rgba(255,255,255,0.92)",
+                        bordercolor=ev_color, borderwidth=1,
+                        borderpad=3,
                     )
 
         # 거래량 (이상 거래량 하이라이트)
@@ -1096,10 +1180,13 @@ with tab_val:
 with tab_event:
     st.markdown('<div class="section-hdr">주요 게임 이벤트 & 주가 반응</div>', unsafe_allow_html=True)
 
+    # 카테고리 필터
+    ev_cats = sorted(set(e.get("category","기타") for e in GAME_EVENTS))
+    sel_cats = st.multiselect("카테고리 필터", ev_cats, default=ev_cats, key="ev_cat")
+
     ev_ticker = st.selectbox(
         "종목",
-        options=[t for t in selected_tickers
-                 if any(e["ticker"]==t for e in GAME_EVENTS)],
+        options=[t for t in selected_tickers if any(e["ticker"]==t for e in GAME_EVENTS)],
         format_func=lambda x: f"{GAME_STOCKS[x]['name']} ({x})",
         key="ev_sel"
     ) if any(e["ticker"] in selected_tickers for e in GAME_EVENTS) else None
@@ -1107,36 +1194,82 @@ with tab_event:
     if ev_ticker:
         df = all_data[ev_ticker]
         if not df.empty:
-            d = slice_days(df, 365)
-            fig_ev = go.Figure()
+            d = slice_days(df, selected_period)
+            ticker_events = [e for e in GAME_EVENTS
+                             if e["ticker"]==ev_ticker and e.get("category","기타") in sel_cats]
+
+            # 주가 + 이벤트 오버레이 차트
+            fig_ev = make_subplots(
+                rows=2, cols=1, shared_xaxes=True,
+                row_heights=[0.7, 0.3], vertical_spacing=0.04,
+                subplot_titles=(f"{GAME_STOCKS[ev_ticker]['name']} 주가", "거래량(천주)"),
+            )
             fig_ev.add_trace(go.Scatter(
                 x=d.index, y=d["close"],
-                line=dict(color="#4f7df3", width=2), name="주가", fill="tozeroy",
-                fillcolor="rgba(79,125,243,0.06)",
-            ))
-            ticker_events = [e for e in GAME_EVENTS if e["ticker"]==ev_ticker]
+                line=dict(color="#4f7df3", width=2.5), name="주가",
+                fill="tozeroy", fillcolor="rgba(79,125,243,0.06)",
+            ), row=1, col=1)
+
+            # 이동평균
+            for ma_col, color, lbl in [("price_5ma","#f59e0b","5MA"),("price_20ma","#ef4444","20MA")]:
+                if ma_col in d.columns:
+                    fig_ev.add_trace(go.Scatter(
+                        x=d.index, y=d[ma_col],
+                        line=dict(color=color, width=1, dash="dot"), name=lbl,
+                    ), row=1, col=1)
+
+            # 거래량
+            vol_avg = d["volume"].rolling(20).mean()
+            vol_colors = ["#ef4444" if v > avg*2 else "#93c5fd"
+                          for v, avg in zip(d["volume"], vol_avg.fillna(d["volume"]))]
+            fig_ev.add_trace(go.Bar(
+                x=d.index, y=d["volume"]/1000,
+                marker_color=vol_colors, name="거래량", showlegend=False,
+            ), row=2, col=1)
+
+            # 이벤트 오버레이 — 카테고리별 색상, y offset 겹침 방지
+            y_offsets = [0.95, 0.85, 0.75, 0.65, 0.55]
+            offset_idx = 0
             for ev in ticker_events:
                 ev_dt = pd.Timestamp(ev["date"])
-                if d.index.min() <= ev_dt <= d.index.max():
-                    fig_ev.add_vline(
-                        x=ev_dt, line_width=2, line_dash="dash", line_color="#7c3aed",
-                    )
-                    ev_price = float(df.loc[df.index>=ev_dt, "close"].iloc[0]) if any(df.index>=ev_dt) else None
-                    fig_ev.add_annotation(
-                        x=ev_dt, y=ev_price or d["close"].mean(),
-                        text=f"📌 {ev['label']}", showarrow=True,
-                        arrowhead=2, arrowcolor="#7c3aed",
-                        font=dict(size=11, color="#7c3aed"),
-                        bgcolor="rgba(255,255,255,0.9)",
-                        bordercolor="#7c3aed", borderwidth=1,
-                        ay=-40,
-                    )
-            fig_ev.update_layout(**PLOT_LAYOUT, height=400, margin=dict(t=30,b=10,l=10,r=10),
-                                  xaxis=dict(gridcolor="#e2e6ed"),
-                                  yaxis=dict(gridcolor="#e2e6ed", tickformat=",", title="주가(원)"))
+                if d.empty or d.index.min() > ev_dt or d.index.max() < ev_dt:
+                    continue
+                ev_color = EVENT_COLORS.get(ev.get("category","기타"), "#6b7280")
+                fig_ev.add_vline(x=ev_dt, line_width=1.8, line_dash="dash",
+                                  line_color=ev_color, opacity=0.8, row=1, col=1)
+                fig_ev.add_vline(x=ev_dt, line_width=1, line_dash="dash",
+                                  line_color=ev_color, opacity=0.4, row=2, col=1)
+                y_pos = y_offsets[offset_idx % len(y_offsets)]
+                offset_idx += 1
+                cat = ev.get("category","기타")
+                fig_ev.add_annotation(
+                    x=ev_dt, y=y_pos, yref="paper", xref="x",
+                    text=f"<b>[{cat}]</b> {ev['label']}",
+                    showarrow=True, arrowhead=2, arrowsize=0.7,
+                    arrowcolor=ev_color, ax=15, ay=-25,
+                    font=dict(size=9, color=ev_color),
+                    bgcolor="rgba(255,255,255,0.93)",
+                    bordercolor=ev_color, borderwidth=1, borderpad=3,
+                )
+
+            fig_ev.update_layout(**PLOT_LAYOUT, height=520,
+                                  margin=dict(t=30,b=10,l=10,r=10),
+                                  legend=dict(orientation="h", y=1.03),
+                                  xaxis2=dict(tickformat="%y/%m/%d"))
+            fig_ev.update_yaxes(gridcolor="#e2e6ed", tickformat=",", title="주가(원)", row=1, col=1)
+            fig_ev.update_yaxes(gridcolor="#e2e6ed", ticksuffix="천", row=2, col=1)
+            fig_ev.update_xaxes(gridcolor="#e2e6ed")
             st.plotly_chart(fig_ev, use_container_width=True)
 
-            # 이벤트 전후 수익률 계산
+            # 범례
+            legend_html = " &nbsp; ".join(
+                f'<span style="color:{c};font-weight:700">■ {cat}</span>'
+                for cat, c in EVENT_COLORS.items() if cat in sel_cats
+            )
+            st.markdown(f'<div style="font-size:12px;margin-bottom:12px">{legend_html}</div>',
+                        unsafe_allow_html=True)
+
+            # 이벤트 전후 수익률
             st.markdown('<div class="section-hdr">이벤트 전후 수익률</div>', unsafe_allow_html=True)
             ev_rows = []
             for ev in ticker_events:
@@ -1145,32 +1278,68 @@ with tab_event:
                 after  = df[df.index >= ev_dt]
                 if before.empty or after.empty: continue
                 p0 = float(before.iloc[-1]["close"])
-                def ret_after(days):
-                    tgt = after[after.index <= ev_dt + pd.Timedelta(days=days)]
-                    return (float(tgt.iloc[-1]["close"])/p0-1)*100 if not tgt.empty else None
+                def ret_after(days, _after=after, _ev_dt=ev_dt, _p0=p0):
+                    tgt = _after[_after.index <= _ev_dt + pd.Timedelta(days=days)]
+                    return (float(tgt.iloc[-1]["close"])/_p0-1)*100 if not tgt.empty else None
+                cat = ev.get("category","기타")
                 ev_rows.append({
+                    "카테고리": cat,
                     "이벤트":   ev["label"],
                     "날짜":     ev["date"],
-                    "이벤트 당일가": f"{float(after.iloc[0]['close']):,.0f}원",
+                    "당일가":   int(after.iloc[0]["close"]),
                     "+1주(%)":  ret_after(7),
-                    "+1개월(%)": ret_after(30),
-                    "+3개월(%)": ret_after(90),
+                    "+1M(%)":   ret_after(30),
+                    "+3M(%)":   ret_after(90),
                 })
             if ev_rows:
                 ev_df = pd.DataFrame(ev_rows)
-                ret_cols_ev = ["+1주(%)","+1개월(%)","+3개월(%)"]
+                ret_cols_ev = ["+1주(%)","+1M(%)","+3M(%)"]
+
+                def color_cat(val):
+                    c = EVENT_COLORS.get(val, "#6b7280")
+                    return f"color:{c};font-weight:700"
+
                 styled_ev = (
                     ev_df.style
+                    .applymap(color_cat, subset=["카테고리"])
                     .applymap(lambda v: color_v(v) if pd.notna(v) else "", subset=ret_cols_ev)
-                    .format({c: lambda x: f"{x:+.1f}%" if pd.notna(x) else "-" for c in ret_cols_ev})
+                    .format({
+                        "당일가": "{:,.0f}",
+                        **{c: lambda x: f"{x:+.1f}%" if pd.notna(x) else "-" for c in ret_cols_ev}
+                    })
                     .hide(axis="index")
+                    .set_properties(**{"background-color":"#ffffff","font-size":"13px"})
+                    .set_table_styles([
+                        {"selector":"th","props":[("background","#f3f4f6"),("font-weight","700"),("padding","8px 12px")]},
+                        {"selector":"td","props":[("padding","8px 12px"),("border-bottom","1px solid #f3f4f6")]},
+                    ])
                 )
                 st.dataframe(styled_ev, use_container_width=True)
     else:
-        st.info("선택된 종목 중 등록된 이벤트가 없습니다. 사이드바에서 펄어비스, 시프트업, 데브시스터즈를 추가해보세요.")
+        st.info("선택된 종목 중 등록된 이벤트가 없습니다.")
 
-    st.markdown('<div class="section-hdr">전체 이벤트 목록</div>', unsafe_allow_html=True)
-    ev_list = pd.DataFrame(GAME_EVENTS)
-    ev_list["종목명"] = ev_list["ticker"].map(lambda t: GAME_STOCKS.get(t,{}).get("name",t))
-    st.dataframe(ev_list[["date","종목명","label"]].rename(
-        columns={"date":"날짜","label":"이벤트"}), use_container_width=True)
+    # 전체 이벤트 타임라인
+    st.markdown('<div class="section-hdr">전체 이벤트 타임라인</div>', unsafe_allow_html=True)
+    all_ev = [e for e in GAME_EVENTS if e.get("category","기타") in sel_cats]
+    ev_list = pd.DataFrame(all_ev)
+    ev_list["종목명"]   = ev_list["ticker"].map(lambda t: GAME_STOCKS.get(t,{}).get("name",t))
+    ev_list["카테고리"] = ev_list["category"]
+    ev_list = ev_list.sort_values("date", ascending=False).reset_index(drop=True)
+
+    def cat_color_row(row):
+        c = EVENT_COLORS.get(row["카테고리"], "#6b7280")
+        return [f"color:{c};font-weight:700" if col=="카테고리" else "" for col in row.index]
+
+    styled_ev_list = (
+        ev_list[["date","종목명","카테고리","label"]]
+        .rename(columns={"date":"날짜","label":"이벤트"})
+        .style
+        .apply(cat_color_row, axis=1)
+        .hide(axis="index")
+        .set_properties(**{"background-color":"#ffffff","font-size":"13px"})
+        .set_table_styles([
+            {"selector":"th","props":[("background","#f3f4f6"),("font-weight","700"),("padding","8px 12px")]},
+            {"selector":"td","props":[("padding","8px 12px"),("border-bottom","1px solid #f3f4f6")]},
+        ])
+    )
+    st.dataframe(styled_ev_list, use_container_width=True, height=400)

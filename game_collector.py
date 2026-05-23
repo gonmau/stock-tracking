@@ -130,7 +130,12 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str, info
             short_df = short_df.rename(columns={numeric_cols[-1]: "balance"})
 
         available = [c for c in ["short_vol", "balance", "ratio_pct"] if c in short_df.columns]
+        print(f"  공매도 join 컬럼: {available}")
         df = price_df.join(short_df[available], how="left")
+        if "balance" in df.columns:
+            print(f"  join 후 balance 최신: {df['balance'].tail(3).tolist()}")
+        else:
+            print("  ✗ join 후 balance 컬럼 없음")
     else:
         df = price_df.copy()
         df["short_vol"] = 0

@@ -2,7 +2,7 @@
   "ticker": "078340",
   "name": "컴투스",
   "total_shares": 11367920,
-  "updated_at": "2026-05-26 08:29",
+  "updated_at": "2026-05-26 10:08",
   "records": [
     {
       "date": "2025-05-19",
@@ -3010,10 +3010,10 @@
       "date": "2026-05-21",
       "close": 27500,
       "volume": 50476,
-      "short_vol": 0.0,
-      "balance": 0.0,
-      "ratio": 0.0,
-      "balance_chg": -9.26,
+      "short_vol": 12.8,
+      "balance": 10.2,
+      "ratio": 0.897,
+      "balance_chg": 0.94,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
@@ -3035,8 +3035,8 @@
       "short_vol": 0.0,
       "balance": 0.0,
       "ratio": 0.0,
-      "balance_chg": 0.0,
-      "bal_5ma": 5.57,
+      "balance_chg": -10.2,
+      "bal_5ma": 7.61,
       "price_5ma": 28320.0,
       "price_20ma": 0,
       "foreign_rate": 0.0,
@@ -3047,7 +3047,7 @@
       "trading_value_b": 0.0,
       "turnover": 0.381,
       "vol_ratio": 0,
-      "short_cover_signal": 0,
+      "short_cover_signal": 1,
       "short_attack_signal": 0
     }
   ]

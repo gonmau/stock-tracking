@@ -10,8 +10,14 @@ import os
 import json
 import time
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pykrx import stock
+
+# GitHub Actions는 UTC 기준 실행 → KST(+9) 보정 필수
+KST = timezone(timedelta(hours=9))
+
+def now_kst():
+    return datetime.now(KST).replace(tzinfo=None)
 
 # ───────────────────────────────────────────
 # 종목 정의
@@ -39,7 +45,7 @@ DAYS_BACK = 365  # 최초 수집 시 1년치
 
 
 def get_dates():
-    end   = datetime.today() - timedelta(days=2)   # T+2 반영 (기존 collector.py 동일)
+    end   = now_kst() - timedelta(days=2)   # T+2 반영 (KST 기준)
     start = end - timedelta(days=DAYS_BACK)
     return start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
 
@@ -56,7 +62,7 @@ def get_incremental_dates(existing_path: str):
             return get_dates()
         last_date = datetime.strptime(records[-1]["date"], "%Y-%m-%d")
         start = last_date - timedelta(days=5)   # 겹침 여유
-        end   = datetime.today() - timedelta(days=2)
+        end   = now_kst() - timedelta(days=2)   # KST 기준
         return start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
     except Exception:
         return get_dates()
@@ -169,32 +175,56 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str, info
         (df["balance_chg"] > 1) & (price_chg < 0)
     ).astype(int)
 
-    # 외국인 보유비율 — get_market_cap_by_date에서 외인 컬럼 추출
+    # 외국인 보유비율 — get_exhaustion_rates_of_foreign_investment_by_ticker 사용
     try:
-        cap_df = stock.get_market_cap_by_date(start, end, ticker)
+        fr_df = stock.get_exhaustion_rates_of_foreign_investment_by_ticker(end, end)
         time.sleep(1)
-        if cap_df is not None and not cap_df.empty:
-            cap_cols = cap_df.columns.tolist()
-            # 외국인 관련 컬럼 찾기
-            fr_col = next(
-                (c for c in cap_cols if any(k in str(c) for k in ["외국인보유율","외국인비율","외국인비중"])),
+        if fr_df is not None and not fr_df.empty and ticker in fr_df.index:
+            # 컬럼: 상장주식수, 보유수량, 지분율, 한도소진률 등
+            fr_cols = fr_df.columns.tolist()
+            rate_col = next(
+                (c for c in fr_cols if any(k in str(c) for k in ["지분율","보유비율","외국인비율"])),
                 None
             )
-            if fr_col:
-                df = df.join(
-                    cap_df[[fr_col]].rename(columns={fr_col: "foreign_rate"}),
-                    how="left"
-                )
-                df["foreign_rate"] = df["foreign_rate"].ffill().round(2)
-                print(f"  ✓ 외인보유율 수집 완료: {df['foreign_rate'].iloc[-1]:.2f}%")
+            if rate_col is None and len(fr_cols) >= 3:
+                rate_col = fr_cols[2]   # 통상 세 번째 컬럼이 지분율
+            if rate_col:
+                fr_val = float(fr_df.loc[ticker, rate_col])
+                df["foreign_rate"] = fr_val
+                print(f"  ✓ 외인보유율 수집 완료 (당일): {fr_val:.2f}%")
             else:
-                print(f"  ⚠ 외인보유율 컬럼 없음 (컬럼: {cap_cols})")
-                df["foreign_rate"] = 0.0
+                raise ValueError(f"지분율 컬럼 없음: {fr_cols}")
         else:
-            df["foreign_rate"] = 0.0
+            # fallback: get_market_investor_trading_volume_and_value 방식
+            inv_df = stock.get_market_net_purchases_of_equities_by_ticker(end, end, "외국인")
+            time.sleep(1)
+            # 외국인 순매수 기반으로는 비율 계산 불가 → 히스토리 방식으로 시도
+            raise ValueError("fallback 필요")
     except Exception as e:
-        print(f"  ⚠ 외국인보유율 예외: {e}")
-        df["foreign_rate"] = 0.0
+        print(f"  ⚠ 외인보유율 (당일) 실패: {e} → 기간별 조회 시도")
+        try:
+            # 기간별 외국인 지분율 조회 (KOSPI/KOSDAQ 공통)
+            fi_df = stock.get_exhaustion_rates_of_foreign_investment_by_date(start, end, ticker)
+            time.sleep(1)
+            if fi_df is not None and not fi_df.empty:
+                fi_cols = fi_df.columns.tolist()
+                rate_col = next(
+                    (c for c in fi_cols if any(k in str(c) for k in ["지분율","보유비율"])),
+                    None
+                )
+                if rate_col is None and len(fi_cols) >= 3:
+                    rate_col = fi_cols[2]
+                if rate_col:
+                    df = df.join(fi_df[[rate_col]].rename(columns={rate_col: "foreign_rate"}), how="left")
+                    df["foreign_rate"] = df["foreign_rate"].ffill().round(2)
+                    print(f"  ✓ 외인보유율 수집 완료 (기간): {df['foreign_rate'].iloc[-1]:.2f}%")
+                else:
+                    df["foreign_rate"] = 0.0
+            else:
+                df["foreign_rate"] = 0.0
+        except Exception as e2:
+            print(f"  ⚠ 외인보유율 최종 실패: {e2}")
+            df["foreign_rate"] = 0.0
 
     if "foreign_rate" not in df.columns:
         df["foreign_rate"] = 0.0
@@ -298,7 +328,7 @@ def upsert_json(data_path: str, new_records: list, ticker: str, name: str, total
         "ticker":       ticker,
         "name":         name,
         "total_shares": total_shares,
-        "updated_at":   datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "updated_at":   now_kst().strftime("%Y-%m-%d %H:%M"),
         "records":      final_records,
     }
 
@@ -319,7 +349,7 @@ INDICES = {
 
 def get_incremental_dates_index(data_path):
     if not os.path.exists(data_path):
-        end   = datetime.today() - timedelta(days=2)
+        end   = now_kst() - timedelta(days=2)
         start = end - timedelta(days=DAYS_BACK)
         return start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
     try:
@@ -327,15 +357,15 @@ def get_incremental_dates_index(data_path):
             meta = json.load(f)
         records = meta.get("records", [])
         if not records:
-            end   = datetime.today() - timedelta(days=2)
+            end   = now_kst() - timedelta(days=2)
             start = end - timedelta(days=DAYS_BACK)
             return start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
         last_date = datetime.strptime(records[-1]["date"], "%Y-%m-%d")
         start = last_date - timedelta(days=5)
-        end   = datetime.today() - timedelta(days=2)
+        end   = now_kst() - timedelta(days=2)
         return start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
     except Exception:
-        end   = datetime.today() - timedelta(days=2)
+        end   = now_kst() - timedelta(days=2)
         start = end - timedelta(days=DAYS_BACK)
         return start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
 

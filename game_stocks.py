@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 # ───────────────────────────────────────────
 # 상수
@@ -326,7 +326,7 @@ with st.sidebar:
     if st.button("🔄 새로고침", use_container_width=True):
         st.cache_data.clear()
         st.rerun()
-    st.caption(f"업데이트: {datetime.now().strftime('%H:%M:%S')}")
+    st.caption(f"업데이트: {datetime.now(timezone(timedelta(hours=9))).strftime('%H:%M:%S')} KST")
 
 # ───────────────────────────────────────────
 # 헤더
@@ -337,7 +337,7 @@ with c_title:
 with c_date:
     st.markdown(
         f"<div style='text-align:right;padding-top:14px;color:#6b7280;font-size:13px'>"
-        f"{datetime.today().strftime('%Y.%m.%d')} · KRX (T+2)</div>",
+        f"{datetime.now(timezone(timedelta(hours=9))).strftime('%Y.%m.%d')} · KRX (T+2)</div>",
         unsafe_allow_html=True
     )
 

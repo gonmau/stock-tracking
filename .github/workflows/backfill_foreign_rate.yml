@@ -1,0 +1,33 @@
+name: Backfill Foreign Rate (1회성)
+
+# 수동 트리거만 — Actions 탭에서 "Run workflow" 버튼으로 실행
+on:
+  workflow_dispatch:
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60   # 16종목 × 250일 기준 여유있게
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pykrx pandas
+
+      - name: Run backfill
+        run: python backfill_foreign_rate.py
+
+      - name: Commit & push updated JSON
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "backfill: foreign_rate 과거 데이터 채움"
+          git push

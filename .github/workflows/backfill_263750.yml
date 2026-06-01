@@ -1,0 +1,30 @@
+name: Backfill 펄어비스 외인보유율 (1회성)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pykrx pandas
+
+      - name: Run backfill (API 탐색 + 백필)
+        run: python backfill_263750.py
+
+      - name: Commit & push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/263750_game.json
+          git diff --cached --quiet || git commit -m "backfill: 펄어비스 외인보유율 채움"
+          git push

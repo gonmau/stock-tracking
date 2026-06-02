@@ -3,6 +3,9 @@ name: Backfill 펄어비스 외인보유율 (1회성)
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write   # git push 권한
+
 jobs:
   backfill:
     runs-on: ubuntu-latest
@@ -10,6 +13,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-python@v5
         with:
@@ -18,7 +23,10 @@ jobs:
       - name: Install dependencies
         run: pip install pykrx pandas
 
-      - name: Run backfill (API 탐색 + 백필)
+      - name: Run backfill
+        env:
+          KRX_ID: ${{ secrets.KRX_ID }}
+          KRX_PW: ${{ secrets.KRX_PW }}
         run: python backfill_263750.py
 
       - name: Commit & push

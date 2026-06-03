@@ -24,7 +24,9 @@ jobs:
         run: pip install --no-cache-dir --timeout 60 pykrx pandas
 
       - name: Run backfill
-        run: python backfill_all.py
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python -u backfill_all.py
 
       - name: Commit & push
         run: |

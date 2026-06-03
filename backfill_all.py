@@ -1,16 +1,14 @@
 """
-backfill_all.py — 전체 게임주 외인보유율 백필 v2
-- market 파라미터 명시 (KOSPI/KOSDAQ 분리)
-- 호출 간격 2초로 늘려 rate limit 회피
-- 실패 시 날짜별 루프 fallback
+backfill_all.py v3
+- 6개월 단위로 나눠서 조회 (KRX 응답 제한 회피)
+- 실패 시 3개월 → 1개월 단위로 재시도
 """
-import os, json, time
+import os, json, time, sys
 from datetime import datetime, timedelta, timezone
 from pykrx import stock
 
 KST = timezone(timedelta(hours=9))
 
-# market 정보 포함
 GAME_STOCKS = {
     "259960": ("크래프톤",    "KOSPI"),
     "263750": ("펄어비스",    "KOSDAQ"),
@@ -30,34 +28,40 @@ GAME_STOCKS = {
     "201060": ("미투온",      "KOSDAQ"),
 }
 
-def try_by_date(start_d, end_d, ticker, market):
-    """기간별 단일종목 조회 — market 명시 버전과 미명시 버전 모두 시도"""
-    attempts = [
-        lambda: stock.get_exhaustion_rates_of_foreign_investment_by_date(start_d, end_d, ticker),
-    ]
-    for fn in attempts:
-        try:
-            df = fn()
-            time.sleep(2)
-            if df is not None and not df.empty:
-                return df
-        except Exception as e:
-            print(f"    시도 실패: {e}", flush=True)
-            time.sleep(2)
-    return None
+def split_periods(start_d, end_d, months=6):
+    """날짜 범위를 N개월 단위 청크로 분할"""
+    start = datetime.strptime(start_d, "%Y%m%d")
+    end   = datetime.strptime(end_d,   "%Y%m%d")
+    chunks = []
+    cur = start
+    while cur <= end:
+        chunk_end = min(cur + timedelta(days=30*months), end)
+        chunks.append((cur.strftime("%Y%m%d"), chunk_end.strftime("%Y%m%d")))
+        cur = chunk_end + timedelta(days=1)
+    return chunks
 
-def extract_rate_map(df, ticker):
-    cols = df.columns.tolist()
-    rc = next((c for c in cols if any(k in str(c) for k in ["지분율", "보유비율"])), None)
-    if rc is None and len(cols) >= 3:
-        rc = cols[2]
-    if not rc:
-        return {}
-    rate_map = {}
-    for idx, row in df.iterrows():
-        d = idx.strftime("%Y%m%d") if hasattr(idx, "strftime") else str(idx)[:10].replace("-", "")
-        rate_map[d] = round(float(row[rc]), 2)
-    return rate_map
+def fetch_period(start_d, end_d, ticker):
+    """단일 기간 조회, 성공 시 {날짜: 지분율} dict 반환"""
+    try:
+        df = stock.get_exhaustion_rates_of_foreign_investment_by_date(start_d, end_d, ticker)
+        time.sleep(1.5)
+        if df is None or df.empty:
+            return None
+        cols = df.columns.tolist()
+        rc = next((c for c in cols if any(k in str(c) for k in ["지분율","보유비율"])), None)
+        if rc is None and len(cols) >= 3:
+            rc = cols[2]
+        if not rc:
+            return None
+        result = {}
+        for idx, row in df.iterrows():
+            d = idx.strftime("%Y%m%d") if hasattr(idx, "strftime") else str(idx)[:10].replace("-","")
+            result[d] = round(float(row[rc]), 2)
+        return result
+    except Exception as e:
+        print(f"    fetch_period({start_d}~{end_d}): {e}", flush=True)
+        time.sleep(1.5)
+        return None
 
 def backfill_ticker(ticker, name, market):
     data_path = f"data/{ticker}_game.json"
@@ -68,49 +72,43 @@ def backfill_ticker(ticker, name, market):
     with open(data_path, encoding="utf-8") as f:
         meta = json.load(f)
 
-    records  = meta.get("records", [])
-    to_fill  = [r for r in records if r.get("foreign_rate", 0.0) == 0.0]
+    records = meta.get("records", [])
+    to_fill = [r for r in records if r.get("foreign_rate", 0.0) == 0.0]
 
     if not to_fill:
         print(f"  → 이미 완료, 스킵", flush=True)
         return
 
-    start_d = to_fill[0]["date"].replace("-", "")
-    end_d   = to_fill[-1]["date"].replace("-", "")
-    print(f"  백필 대상: {len(to_fill)}일 ({start_d} ~ {end_d}), market={market}", flush=True)
+    start_d = to_fill[0]["date"].replace("-","")
+    end_d   = to_fill[-1]["date"].replace("-","")
+    print(f"  백필 대상: {len(to_fill)}일 ({start_d} ~ {end_d})", flush=True)
 
-    # ── 방법 A: 기간별 조회 ──────────────────────────────────────
     rate_map = {}
-    df = try_by_date(start_d, end_d, ticker, market)
-    if df is not None:
-        rate_map = extract_rate_map(df, ticker)
-        print(f"  기간별 조회 성공: {len(rate_map)}일", flush=True)
-    else:
-        # ── 방법 B: 날짜별 루프 (by_ticker) ──────────────────────
-        print(f"  기간별 실패 → 날짜별 루프...", flush=True)
-        all_dates = [r["date"].replace("-","") for r in to_fill]
-        for i, d in enumerate(all_dates):
-            try:
-                fr_df = stock.get_exhaustion_rates_of_foreign_investment_by_ticker(d)
-                time.sleep(1)
-                if fr_df is not None and not fr_df.empty and ticker in fr_df.index:
-                    cols = fr_df.columns.tolist()
-                    rc = next((c for c in cols if any(k in str(c) for k in ["지분율","보유비율"])), None)
-                    if rc is None and len(cols) >= 3:
-                        rc = cols[2]
-                    if rc:
-                        rate_map[d] = round(float(fr_df.loc[ticker, rc]), 2)
-                if i % 20 == 0:
-                    print(f"    {i+1}/{len(all_dates)}일 처리중... ({len(rate_map)}일 수집)", flush=True)
-            except Exception as e:
-                time.sleep(1)
-        print(f"  날짜별 루프 완료: {len(rate_map)}일", flush=True)
 
-    # ── records 업데이트 ─────────────────────────────────────────
+    # 6개월 → 3개월 → 1개월 순으로 청크 크기 줄여가며 시도
+    for months in [6, 3, 1]:
+        chunks = split_periods(start_d, end_d, months=months)
+        print(f"  [{months}개월 단위] {len(chunks)}개 청크 조회...", flush=True)
+        rate_map = {}
+        for i, (cs, ce) in enumerate(chunks):
+            result = fetch_period(cs, ce, ticker)
+            if result:
+                rate_map.update(result)
+                print(f"    청크 {i+1}/{len(chunks)} ({cs}~{ce}): {len(result)}일 수집", flush=True)
+            else:
+                print(f"    청크 {i+1}/{len(chunks)} ({cs}~{ce}): 실패", flush=True)
+
+        success_rate = len(rate_map) / len(to_fill) if to_fill else 0
+        print(f"  → {months}개월 단위 결과: {len(rate_map)}/{len(to_fill)}일 ({success_rate:.0%})", flush=True)
+
+        if success_rate >= 0.8:   # 80% 이상 수집되면 충분
+            break
+
+    # records 업데이트
     filled, ffilled = 0, 0
     last_val = None
     for r in to_fill:
-        d = r["date"].replace("-", "")
+        d = r["date"].replace("-","")
         if d in rate_map:
             r["foreign_rate"] = rate_map[d]
             last_val = rate_map[d]
@@ -128,7 +126,7 @@ def backfill_ticker(ticker, name, market):
 
 
 print("=" * 50, flush=True)
-print("전체 게임주 외인보유율 백필 v2 시작", flush=True)
+print("전체 게임주 외인보유율 백필 v3", flush=True)
 print("=" * 50, flush=True)
 
 for ticker, (name, market) in GAME_STOCKS.items():
@@ -137,7 +135,7 @@ for ticker, (name, market) in GAME_STOCKS.items():
         backfill_ticker(ticker, name, market)
     except Exception as e:
         print(f"  ✗ 예외: {e}", flush=True)
-    time.sleep(3)   # 종목간 여유
+    time.sleep(2)
 
 print("\n" + "=" * 50, flush=True)
 print("완료", flush=True)

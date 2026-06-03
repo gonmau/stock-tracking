@@ -20,26 +20,6 @@ def now_kst():
     return datetime.now(KST).replace(tzinfo=None)
 
 # ───────────────────────────────────────────
-# KRX 로그인 (외인보유율 API 필수)
-# ───────────────────────────────────────────
-def krx_login():
-    krx_id = os.environ.get("KRX_ID", "")
-    krx_pw = os.environ.get("KRX_PW", "")
-    if not krx_id or not krx_pw:
-        print("KRX 로그인 실패: KRX_ID 또는 KRX_PW 환경 변수가 설정되지 않았습니다.")
-        return False
-    try:
-        from pykrx.website.krx.market.ticker import MKD80037
-        MKD80037().fetch(id=krx_id, pw=krx_pw)
-        print("KRX 로그인 성공")
-        return True
-    except Exception as e:
-        print(f"KRX 로그인 실패 ({e}) - 로그인 없이 계속 진행")
-        return False
-
-KRX_LOGGED_IN = krx_login()
-
-# ───────────────────────────────────────────
 # 종목 정의
 # ───────────────────────────────────────────
 GAME_STOCKS = {
@@ -200,26 +180,45 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str, info
         (df["balance_chg"] > 1) & (price_chg < 0)
     ).astype(int)
 
-    # 외국인 보유비율
-    # 외인보유율 — by_ticker(단일날짜 전종목) 방식, 최대 6일 역순 시도
+    # 외국인 보유비율 — 3가지 방법 순차 시도
+    def _get_rate_from_df(fr_df, ticker):
+        if fr_df is None or fr_df.empty or ticker not in fr_df.index:
+            return None
+        cols = fr_df.columns.tolist()
+        rc = next((c for c in cols if any(k in str(c) for k in ["지분율", "보유비율"])), None)
+        if rc is None and len(cols) >= 3:
+            rc = cols[2]
+        return round(float(fr_df.loc[ticker, rc]), 2) if rc else None
+
     def _fetch_foreign_rate(date_str: str, ticker: str) -> float | None:
-        for fn in [
-            lambda d: stock.get_exhaustion_rates_of_foreign_investment_by_ticker(d),
-            lambda d: stock.get_exhaustion_rates_of_foreign_investment_by_date(d, d, ticker),
-        ]:
+        # 방법1: by_ticker (단일날짜 전종목)
+        try:
+            fr_df = stock.get_exhaustion_rates_of_foreign_investment_by_ticker(date_str)
+            time.sleep(0.5)
+            val = _get_rate_from_df(fr_df, ticker)
+            if val is not None:
+                return val
+        except Exception:
+            pass
+
+        # 방법2: by_date (기간=당일, 단일종목)
+        try:
+            fr_df = stock.get_exhaustion_rates_of_foreign_investment_by_date(date_str, date_str, ticker)
+            time.sleep(0.5)
+            val = _get_rate_from_df(fr_df, ticker)
+            if val is not None:
+                return val
+        except Exception:
+            pass
+
+        # 방법3: market 명시 (ALL → KOSPI → KOSDAQ)
+        for market in ["ALL", "KOSPI", "KOSDAQ"]:
             try:
-                fr_df = fn(date_str)
-                time.sleep(0.5)
-                if fr_df is None or fr_df.empty:
-                    continue
-                if ticker not in fr_df.index:
-                    continue
-                cols = fr_df.columns.tolist()
-                rc = next((c for c in cols if any(k in str(c) for k in ["지분율", "보유비율"])), None)
-                if rc is None and len(cols) >= 3:
-                    rc = cols[2]
-                if rc:
-                    return round(float(fr_df.loc[ticker, rc]), 2)
+                fr_df = stock.get_exhaustion_rates_of_foreign_investment(date_str, market=market)
+                time.sleep(0.3)
+                val = _get_rate_from_df(fr_df, ticker)
+                if val is not None:
+                    return val
             except Exception:
                 continue
         return None

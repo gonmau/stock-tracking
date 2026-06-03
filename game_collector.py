@@ -32,13 +32,13 @@ GAME_STOCKS = {
     "095660": {"name": "네오위즈",            "shares": 18_652_100},
     "225570": {"name": "넥슨게임즈",          "shares": 58_718_164},
     "078340": {"name": "컴투스",              "shares": 11_367_920},
-    "078630": {"name": "게임빌(컴투스홀딩스)","shares": 7_000_000},
+    "063080": {"name": "컴투스홀딩스","shares": 7_000_000},
     "069080": {"name": "웹젠",               "shares": 30_098_760},
     "194480": {"name": "데브시스터즈",        "shares": 12_988_480},
     "112040": {"name": "위메이드",            "shares": 37_600_000},
     "067000": {"name": "조이시티",            "shares": 27_000_000},
     "123420": {"name": "선데이토즈",          "shares": 14_030_000},
-    "201060": {"name": "미투온",              "shares": 20_000_000},
+    "201490": {"name": "미투온",              "shares": 20_000_000},
 }
 
 DAYS_BACK = 365  # 최초 수집 시 1년치
@@ -180,63 +180,49 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str, info
         (df["balance_chg"] > 1) & (price_chg < 0)
     ).astype(int)
 
-    # 외국인 보유비율 — 3가지 방법 순차 시도
-    def _get_rate_from_df(fr_df, ticker):
-        if fr_df is None or fr_df.empty or ticker not in fr_df.index:
-            return None
-        cols = fr_df.columns.tolist()
-        rc = next((c for c in cols if any(k in str(c) for k in ["지분율", "보유비율"])), None)
-        if rc is None and len(cols) >= 3:
-            rc = cols[2]
-        return round(float(fr_df.loc[ticker, rc]), 2) if rc else None
-
+    # 외국인 보유비율
+    # pykrx 실제 API: get_exhaustion_rates_of_foreign_investment(date, market)
+    # → 전 종목 DataFrame 반환, index = ticker
     def _fetch_foreign_rate(date_str: str, ticker: str) -> float | None:
-        # 방법1: by_ticker (단일날짜 전종목)
-        try:
-            fr_df = stock.get_exhaustion_rates_of_foreign_investment_by_ticker(date_str)
-            time.sleep(0.5)
-            val = _get_rate_from_df(fr_df, ticker)
-            if val is not None:
-                return val
-        except Exception:
-            pass
-
-        # 방법2: by_date (기간=당일, 단일종목)
-        try:
-            fr_df = stock.get_exhaustion_rates_of_foreign_investment_by_date(date_str, date_str, ticker)
-            time.sleep(0.5)
-            val = _get_rate_from_df(fr_df, ticker)
-            if val is not None:
-                return val
-        except Exception:
-            pass
-
-        # 방법3: market 명시 (ALL → KOSPI → KOSDAQ)
+        """date_str: 'YYYYMMDD' 형식. 해당 날짜 외인지분율 반환, 실패 시 None"""
         for market in ["ALL", "KOSPI", "KOSDAQ"]:
             try:
                 fr_df = stock.get_exhaustion_rates_of_foreign_investment(date_str, market=market)
-                time.sleep(0.3)
-                val = _get_rate_from_df(fr_df, ticker)
-                if val is not None:
+                time.sleep(0.5)
+                if fr_df is None or fr_df.empty:
+                    continue
+                if ticker not in fr_df.index:
+                    continue
+                fr_cols = fr_df.columns.tolist()
+                rate_col = next(
+                    (c for c in fr_cols if any(k in str(c) for k in ["지분율", "보유비율", "외국인비율"])),
+                    None
+                )
+                if rate_col is None and len(fr_cols) >= 3:
+                    rate_col = fr_cols[2]
+                if rate_col:
+                    val = float(fr_df.loc[ticker, rate_col])
+                    print(f"  ✓ 외인보유율 수집 완료 ({date_str}, {market}): {val:.2f}%")
                     return val
-            except Exception:
+            except Exception as e:
+                print(f"  ⚠ get_exhaustion_rates_of_foreign_investment({date_str}, {market}): {e}")
                 continue
         return None
 
     try:
+        # 최신 날짜(end)부터 최대 5 영업일 전까지 역순으로 시도 (휴일·지연 대비)
         end_dt = datetime.strptime(end, "%Y%m%d")
         fr_val = None
         for delta in range(0, 6):
             candidate = (end_dt - timedelta(days=delta)).strftime("%Y%m%d")
             fr_val = _fetch_foreign_rate(candidate, ticker)
             if fr_val is not None:
-                print(f"  외인보유율: {fr_val:.2f}% ({candidate})")
                 break
-        df["foreign_rate"] = fr_val if fr_val is not None else 0.0
+        df["foreign_rate"] = round(fr_val, 2) if fr_val is not None else 0.0
         if fr_val is None:
-            print(f"  외인보유율 수집 실패")
+            print(f"  ⚠ 외인보유율 최종 실패: 6일 역순 조회 모두 실패")
     except Exception as e:
-        print(f"  외인보유율 예외: {e}")
+        print(f"  ⚠ 외인보유율 예외: {e}")
         df["foreign_rate"] = 0.0
 
     if "foreign_rate" not in df.columns:

@@ -20,6 +20,26 @@ def now_kst():
     return datetime.now(KST).replace(tzinfo=None)
 
 # ───────────────────────────────────────────
+# KRX 로그인 (외인보유율 API 필수)
+# ───────────────────────────────────────────
+def krx_login():
+    krx_id = os.environ.get("KRX_ID", "")
+    krx_pw = os.environ.get("KRX_PW", "")
+    if not krx_id or not krx_pw:
+        print("KRX 로그인 실패: KRX_ID 또는 KRX_PW 환경 변수가 설정되지 않았습니다.")
+        return False
+    try:
+        from pykrx.website.krx.market.ticker import MKD80037
+        MKD80037().fetch(id=krx_id, pw=krx_pw)
+        print("KRX 로그인 성공")
+        return True
+    except Exception as e:
+        print(f"KRX 로그인 실패 ({e}) - 로그인 없이 계속 진행")
+        return False
+
+KRX_LOGGED_IN = krx_login()
+
+# ───────────────────────────────────────────
 # 종목 정의
 # ───────────────────────────────────────────
 GAME_STOCKS = {
@@ -181,48 +201,43 @@ def fetch_ticker(ticker: str, name: str, total_shares: int, data_path: str, info
     ).astype(int)
 
     # 외국인 보유비율
-    # pykrx 실제 API: get_exhaustion_rates_of_foreign_investment(date, market)
-    # → 전 종목 DataFrame 반환, index = ticker
+    # 외인보유율 — by_ticker(단일날짜 전종목) 방식, 최대 6일 역순 시도
     def _fetch_foreign_rate(date_str: str, ticker: str) -> float | None:
-        """date_str: 'YYYYMMDD' 형식. 해당 날짜 외인지분율 반환, 실패 시 None"""
-        for market in ["ALL", "KOSPI", "KOSDAQ"]:
+        for fn in [
+            lambda d: stock.get_exhaustion_rates_of_foreign_investment_by_ticker(d),
+            lambda d: stock.get_exhaustion_rates_of_foreign_investment_by_date(d, d, ticker),
+        ]:
             try:
-                fr_df = stock.get_exhaustion_rates_of_foreign_investment(date_str, market=market)
+                fr_df = fn(date_str)
                 time.sleep(0.5)
                 if fr_df is None or fr_df.empty:
                     continue
                 if ticker not in fr_df.index:
                     continue
-                fr_cols = fr_df.columns.tolist()
-                rate_col = next(
-                    (c for c in fr_cols if any(k in str(c) for k in ["지분율", "보유비율", "외국인비율"])),
-                    None
-                )
-                if rate_col is None and len(fr_cols) >= 3:
-                    rate_col = fr_cols[2]
-                if rate_col:
-                    val = float(fr_df.loc[ticker, rate_col])
-                    print(f"  ✓ 외인보유율 수집 완료 ({date_str}, {market}): {val:.2f}%")
-                    return val
-            except Exception as e:
-                print(f"  ⚠ get_exhaustion_rates_of_foreign_investment({date_str}, {market}): {e}")
+                cols = fr_df.columns.tolist()
+                rc = next((c for c in cols if any(k in str(c) for k in ["지분율", "보유비율"])), None)
+                if rc is None and len(cols) >= 3:
+                    rc = cols[2]
+                if rc:
+                    return round(float(fr_df.loc[ticker, rc]), 2)
+            except Exception:
                 continue
         return None
 
     try:
-        # 최신 날짜(end)부터 최대 5 영업일 전까지 역순으로 시도 (휴일·지연 대비)
         end_dt = datetime.strptime(end, "%Y%m%d")
         fr_val = None
         for delta in range(0, 6):
             candidate = (end_dt - timedelta(days=delta)).strftime("%Y%m%d")
             fr_val = _fetch_foreign_rate(candidate, ticker)
             if fr_val is not None:
+                print(f"  외인보유율: {fr_val:.2f}% ({candidate})")
                 break
-        df["foreign_rate"] = round(fr_val, 2) if fr_val is not None else 0.0
+        df["foreign_rate"] = fr_val if fr_val is not None else 0.0
         if fr_val is None:
-            print(f"  ⚠ 외인보유율 최종 실패: 6일 역순 조회 모두 실패")
+            print(f"  외인보유율 수집 실패")
     except Exception as e:
-        print(f"  ⚠ 외인보유율 예외: {e}")
+        print(f"  외인보유율 예외: {e}")
         df["foreign_rate"] = 0.0
 
     if "foreign_rate" not in df.columns:

@@ -2,7 +2,7 @@
   "ticker": "036570",
   "name": "엔씨소프트",
   "total_shares": 21954022,
-  "updated_at": "2026-06-03 10:29",
+  "updated_at": "2026-06-03 11:07",
   "records": [
     {
       "date": "2025-05-19",
@@ -14,7 +14,8 @@
       "balance_chg": 0,
       "bal_5ma": 0,
       "price_5ma": 0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 37.22
     },
     {
       "date": "2025-05-20",
@@ -26,7 +27,8 @@
       "balance_chg": 0.14,
       "bal_5ma": 0,
       "price_5ma": 0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 37.09
     },
     {
       "date": "2025-05-21",
@@ -38,7 +40,8 @@
       "balance_chg": 0.38,
       "bal_5ma": 0,
       "price_5ma": 0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 37.09
     },
     {
       "date": "2025-05-22",
@@ -50,7 +53,8 @@
       "balance_chg": 0.53,
       "bal_5ma": 0,
       "price_5ma": 0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 37.12
     },
     {
       "date": "2025-05-23",
@@ -62,7 +66,8 @@
       "balance_chg": 1.69,
       "bal_5ma": 17.46,
       "price_5ma": 155020.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 37.09
     },
     {
       "date": "2025-05-26",
@@ -74,7 +79,8 @@
       "balance_chg": 0.56,
       "bal_5ma": 18.12,
       "price_5ma": 153880.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 37.0
     },
     {
       "date": "2025-05-27",
@@ -86,7 +92,8 @@
       "balance_chg": -1.23,
       "bal_5ma": 18.51,
       "price_5ma": 154280.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 37.09
     },
     {
       "date": "2025-05-28",
@@ -98,7 +105,8 @@
       "balance_chg": -0.38,
       "bal_5ma": 18.74,
       "price_5ma": 154640.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 36.88
     },
     {
       "date": "2025-05-29",
@@ -110,7 +118,8 @@
       "balance_chg": 0.59,
       "bal_5ma": 18.99,
       "price_5ma": 155300.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 36.62
     },
     {
       "date": "2025-05-30",
@@ -122,7 +131,8 @@
       "balance_chg": -12.16,
       "bal_5ma": 16.46,
       "price_5ma": 155640.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 36.62
     },
     {
       "date": "2025-06-02",
@@ -134,7 +144,8 @@
       "balance_chg": -0.7,
       "bal_5ma": 13.69,
       "price_5ma": 158560.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 35.78
     },
     {
       "date": "2025-06-04",
@@ -146,7 +157,8 @@
       "balance_chg": -0.45,
       "bal_5ma": 11.07,
       "price_5ma": 160340.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 35.69
     },
     {
       "date": "2025-06-05",
@@ -158,7 +170,8 @@
       "balance_chg": -0.05,
       "bal_5ma": 8.51,
       "price_5ma": 163460.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 34.84
     },
     {
       "date": "2025-06-09",
@@ -170,7 +183,8 @@
       "balance_chg": -0.04,
       "bal_5ma": 5.84,
       "price_5ma": 166280.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 34.59
     },
     {
       "date": "2025-06-10",
@@ -182,7 +196,8 @@
       "balance_chg": -0.18,
       "bal_5ma": 5.55,
       "price_5ma": 170640.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 34.38
     },
     {
       "date": "2025-06-11",
@@ -194,7 +209,8 @@
       "balance_chg": -0.03,
       "bal_5ma": 5.4,
       "price_5ma": 172920.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 34.12
     },
     {
       "date": "2025-06-12",
@@ -206,7 +222,8 @@
       "balance_chg": -0.62,
       "bal_5ma": 5.22,
       "price_5ma": 174940.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 34.19
     },
     {
       "date": "2025-06-13",
@@ -218,7 +235,8 @@
       "balance_chg": 0.05,
       "bal_5ma": 5.05,
       "price_5ma": 175660.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 34.19
     },
     {
       "date": "2025-06-16",
@@ -230,7 +248,8 @@
       "balance_chg": -0.03,
       "bal_5ma": 4.89,
       "price_5ma": 175240.0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 34.12
     },
     {
       "date": "2025-06-17",
@@ -242,7 +261,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 4.77,
       "price_5ma": 174760.0,
-      "price_20ma": 164015.0
+      "price_20ma": 164015.0,
+      "foreign_rate": 33.75
     },
     {
       "date": "2025-06-18",
@@ -254,7 +274,8 @@
       "balance_chg": -0.45,
       "bal_5ma": 4.56,
       "price_5ma": 176560.0,
-      "price_20ma": 165480.0
+      "price_20ma": 165480.0,
+      "foreign_rate": 33.78
     },
     {
       "date": "2025-06-19",
@@ -266,7 +287,8 @@
       "balance_chg": -0.22,
       "bal_5ma": 4.43,
       "price_5ma": 179340.0,
-      "price_20ma": 167225.0
+      "price_20ma": 167225.0,
+      "foreign_rate": 33.84
     },
     {
       "date": "2025-06-20",
@@ -278,7 +300,8 @@
       "balance_chg": 0.03,
       "bal_5ma": 4.3,
       "price_5ma": 182120.0,
-      "price_20ma": 168970.0
+      "price_20ma": 168970.0,
+      "foreign_rate": 33.62
     },
     {
       "date": "2025-06-23",
@@ -290,7 +313,8 @@
       "balance_chg": -0.01,
       "bal_5ma": 4.16,
       "price_5ma": 186780.0,
-      "price_20ma": 170900.0
+      "price_20ma": 170900.0,
+      "foreign_rate": 33.41
     },
     {
       "date": "2025-06-24",
@@ -302,7 +326,8 @@
       "balance_chg": -0.24,
       "bal_5ma": 3.98,
       "price_5ma": 191220.0,
-      "price_20ma": 173065.0
+      "price_20ma": 173065.0,
+      "foreign_rate": 33.34
     },
     {
       "date": "2025-06-25",
@@ -314,7 +339,8 @@
       "balance_chg": 0.03,
       "bal_5ma": 3.9,
       "price_5ma": 192400.0,
-      "price_20ma": 175110.0
+      "price_20ma": 175110.0,
+      "foreign_rate": 33.19
     },
     {
       "date": "2025-06-26",
@@ -326,7 +352,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 3.86,
       "price_5ma": 191940.0,
-      "price_20ma": 176640.0
+      "price_20ma": 176640.0,
+      "foreign_rate": 33.06
     },
     {
       "date": "2025-06-27",
@@ -338,7 +365,8 @@
       "balance_chg": -0.16,
       "bal_5ma": 3.79,
       "price_5ma": 191000.0,
-      "price_20ma": 178060.0
+      "price_20ma": 178060.0,
+      "foreign_rate": 33.12
     },
     {
       "date": "2025-06-30",
@@ -350,7 +378,8 @@
       "balance_chg": -0.38,
       "bal_5ma": 3.64,
       "price_5ma": 193460.0,
-      "price_20ma": 180440.0
+      "price_20ma": 180440.0,
+      "foreign_rate": 33.09
     },
     {
       "date": "2025-07-01",
@@ -362,7 +391,8 @@
       "balance_chg": -0.1,
       "bal_5ma": 3.51,
       "price_5ma": 195540.0,
-      "price_20ma": 183040.0
+      "price_20ma": 183040.0,
+      "foreign_rate": 33.16
     },
     {
       "date": "2025-07-02",
@@ -374,7 +404,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 3.39,
       "price_5ma": 197280.0,
-      "price_20ma": 184790.0
+      "price_20ma": 184790.0,
+      "foreign_rate": 33.09
     },
     {
       "date": "2025-07-03",
@@ -386,7 +417,8 @@
       "balance_chg": -0.25,
       "bal_5ma": 3.21,
       "price_5ma": 200740.0,
-      "price_20ma": 186740.0
+      "price_20ma": 186740.0,
+      "foreign_rate": 33.06
     },
     {
       "date": "2025-07-04",
@@ -398,7 +430,8 @@
       "balance_chg": -0.0,
       "bal_5ma": 3.06,
       "price_5ma": 205000.0,
-      "price_20ma": 188445.0
+      "price_20ma": 188445.0,
+      "foreign_rate": 32.91
     },
     {
       "date": "2025-07-07",
@@ -410,7 +443,8 @@
       "balance_chg": -0.17,
       "bal_5ma": 2.96,
       "price_5ma": 204600.0,
-      "price_20ma": 190020.0
+      "price_20ma": 190020.0,
+      "foreign_rate": 32.81
     },
     {
       "date": "2025-07-08",
@@ -422,7 +456,8 @@
       "balance_chg": -0.05,
       "bal_5ma": 2.86,
       "price_5ma": 205600.0,
-      "price_20ma": 191780.0
+      "price_20ma": 191780.0,
+      "foreign_rate": 32.81
     },
     {
       "date": "2025-07-09",
@@ -434,7 +469,8 @@
       "balance_chg": 0.81,
       "bal_5ma": 2.93,
       "price_5ma": 206800.0,
-      "price_20ma": 193260.0
+      "price_20ma": 193260.0,
+      "foreign_rate": 32.72
     },
     {
       "date": "2025-07-10",
@@ -446,7 +482,8 @@
       "balance_chg": 0.03,
       "bal_5ma": 3.05,
       "price_5ma": 207000.0,
-      "price_20ma": 194755.0
+      "price_20ma": 194755.0,
+      "foreign_rate": 32.53
     },
     {
       "date": "2025-07-11",
@@ -458,7 +495,8 @@
       "balance_chg": -0.03,
       "bal_5ma": 3.17,
       "price_5ma": 207900.0,
-      "price_20ma": 196505.0
+      "price_20ma": 196505.0,
+      "foreign_rate": 32.47
     },
     {
       "date": "2025-07-14",
@@ -470,7 +508,8 @@
       "balance_chg": 0.13,
       "bal_5ma": 3.35,
       "price_5ma": 209400.0,
-      "price_20ma": 198560.0
+      "price_20ma": 198560.0,
+      "foreign_rate": 32.47
     },
     {
       "date": "2025-07-15",
@@ -482,7 +521,8 @@
       "balance_chg": 0.03,
       "bal_5ma": 3.54,
       "price_5ma": 210200.0,
-      "price_20ma": 200640.0
+      "price_20ma": 200640.0,
+      "foreign_rate": 32.34
     },
     {
       "date": "2025-07-16",
@@ -494,7 +534,8 @@
       "balance_chg": 0.12,
       "bal_5ma": 3.6,
       "price_5ma": 211100.0,
-      "price_20ma": 201895.0
+      "price_20ma": 201895.0,
+      "foreign_rate": 32.44
     },
     {
       "date": "2025-07-17",
@@ -506,7 +547,8 @@
       "balance_chg": -0.04,
       "bal_5ma": 3.64,
       "price_5ma": 212200.0,
-      "price_20ma": 202970.0
+      "price_20ma": 202970.0,
+      "foreign_rate": 32.47
     },
     {
       "date": "2025-07-18",
@@ -518,7 +560,8 @@
       "balance_chg": -0.28,
       "bal_5ma": 3.63,
       "price_5ma": 211800.0,
-      "price_20ma": 203925.0
+      "price_20ma": 203925.0,
+      "foreign_rate": 32.5
     },
     {
       "date": "2025-07-21",
@@ -530,7 +573,8 @@
       "balance_chg": 0.25,
       "bal_5ma": 3.65,
       "price_5ma": 211000.0,
-      "price_20ma": 204615.0
+      "price_20ma": 204615.0,
+      "foreign_rate": 32.44
     },
     {
       "date": "2025-07-22",
@@ -542,7 +586,8 @@
       "balance_chg": 0.02,
       "bal_5ma": 3.66,
       "price_5ma": 209400.0,
-      "price_20ma": 205185.0
+      "price_20ma": 205185.0,
+      "foreign_rate": 32.47
     },
     {
       "date": "2025-07-23",
@@ -554,7 +599,8 @@
       "balance_chg": 0.11,
       "bal_5ma": 3.68,
       "price_5ma": 206740.0,
-      "price_20ma": 205480.0
+      "price_20ma": 205480.0,
+      "foreign_rate": 32.47
     },
     {
       "date": "2025-07-24",
@@ -566,7 +612,8 @@
       "balance_chg": 0.35,
       "bal_5ma": 3.77,
       "price_5ma": 203160.0,
-      "price_20ma": 205775.0
+      "price_20ma": 205775.0,
+      "foreign_rate": 32.53
     },
     {
       "date": "2025-07-25",
@@ -578,7 +625,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 3.91,
       "price_5ma": 200320.0,
-      "price_20ma": 206255.0
+      "price_20ma": 206255.0,
+      "foreign_rate": 32.56
     },
     {
       "date": "2025-07-28",
@@ -590,7 +638,8 @@
       "balance_chg": 0.03,
       "bal_5ma": 4.02,
       "price_5ma": 197520.0,
-      "price_20ma": 205630.0
+      "price_20ma": 205630.0,
+      "foreign_rate": 32.59
     },
     {
       "date": "2025-07-29",
@@ -602,7 +651,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 4.12,
       "price_5ma": 194980.0,
-      "price_20ma": 205045.0
+      "price_20ma": 205045.0,
+      "foreign_rate": 32.66
     },
     {
       "date": "2025-07-30",
@@ -614,7 +664,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 4.19,
       "price_5ma": 194020.0,
-      "price_20ma": 204665.0
+      "price_20ma": 204665.0,
+      "foreign_rate": 32.66
     },
     {
       "date": "2025-07-31",
@@ -626,7 +677,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 4.2,
       "price_5ma": 193940.0,
-      "price_20ma": 204075.0
+      "price_20ma": 204075.0,
+      "foreign_rate": 32.62
     },
     {
       "date": "2025-08-01",
@@ -638,7 +690,8 @@
       "balance_chg": -0.03,
       "bal_5ma": 4.2,
       "price_5ma": 193000.0,
-      "price_20ma": 203255.0
+      "price_20ma": 203255.0,
+      "foreign_rate": 32.56
     },
     {
       "date": "2025-08-04",
@@ -650,7 +703,8 @@
       "balance_chg": 0.23,
       "bal_5ma": 4.24,
       "price_5ma": 193580.0,
-      "price_20ma": 202875.0
+      "price_20ma": 202875.0,
+      "foreign_rate": 32.53
     },
     {
       "date": "2025-08-05",
@@ -662,7 +716,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 4.28,
       "price_5ma": 194100.0,
-      "price_20ma": 202170.0
+      "price_20ma": 202170.0,
+      "foreign_rate": 32.56
     },
     {
       "date": "2025-08-06",
@@ -674,7 +729,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 4.32,
       "price_5ma": 194500.0,
-      "price_20ma": 201590.0
+      "price_20ma": 201590.0,
+      "foreign_rate": 32.53
     },
     {
       "date": "2025-08-07",
@@ -686,7 +742,8 @@
       "balance_chg": -0.03,
       "bal_5ma": 4.35,
       "price_5ma": 196460.0,
-      "price_20ma": 201440.0
+      "price_20ma": 201440.0,
+      "foreign_rate": 32.56
     },
     {
       "date": "2025-08-08",
@@ -698,7 +755,8 @@
       "balance_chg": 0.36,
       "bal_5ma": 4.46,
       "price_5ma": 198740.0,
-      "price_20ma": 200965.0
+      "price_20ma": 200965.0,
+      "foreign_rate": 32.62
     },
     {
       "date": "2025-08-11",
@@ -710,7 +768,8 @@
       "balance_chg": 0.58,
       "bal_5ma": 4.65,
       "price_5ma": 199860.0,
-      "price_20ma": 200490.0
+      "price_20ma": 200490.0,
+      "foreign_rate": 32.53
     },
     {
       "date": "2025-08-12",
@@ -722,7 +781,8 @@
       "balance_chg": -0.85,
       "bal_5ma": 4.66,
       "price_5ma": 205380.0,
-      "price_20ma": 200965.0
+      "price_20ma": 200965.0,
+      "foreign_rate": 32.56
     },
     {
       "date": "2025-08-13",
@@ -734,7 +794,8 @@
       "balance_chg": -0.29,
       "bal_5ma": 4.61,
       "price_5ma": 209100.0,
-      "price_20ma": 201090.0
+      "price_20ma": 201090.0,
+      "foreign_rate": 32.94
     },
     {
       "date": "2025-08-14",
@@ -746,7 +807,8 @@
       "balance_chg": 0.08,
       "bal_5ma": 4.59,
       "price_5ma": 210400.0,
-      "price_20ma": 200990.0
+      "price_20ma": 200990.0,
+      "foreign_rate": 32.84
     },
     {
       "date": "2025-08-18",
@@ -758,7 +820,8 @@
       "balance_chg": 0.17,
       "bal_5ma": 4.53,
       "price_5ma": 211200.0,
-      "price_20ma": 200815.0
+      "price_20ma": 200815.0,
+      "foreign_rate": 32.88
     },
     {
       "date": "2025-08-19",
@@ -770,7 +833,8 @@
       "balance_chg": 0.15,
       "bal_5ma": 4.38,
       "price_5ma": 212100.0,
-      "price_20ma": 200765.0
+      "price_20ma": 200765.0,
+      "foreign_rate": 32.75
     },
     {
       "date": "2025-08-20",
@@ -782,7 +846,8 @@
       "balance_chg": -0.2,
       "bal_5ma": 4.36,
       "price_5ma": 207480.0,
-      "price_20ma": 200485.0
+      "price_20ma": 200485.0,
+      "foreign_rate": 32.72
     },
     {
       "date": "2025-08-21",
@@ -794,7 +859,8 @@
       "balance_chg": 0.01,
       "bal_5ma": 4.41,
       "price_5ma": 204200.0,
-      "price_20ma": 200455.0
+      "price_20ma": 200455.0,
+      "foreign_rate": 32.53
     },
     {
       "date": "2025-08-22",
@@ -806,7 +872,8 @@
       "balance_chg": 0.01,
       "bal_5ma": 4.43,
       "price_5ma": 201660.0,
-      "price_20ma": 200615.0
+      "price_20ma": 200615.0,
+      "foreign_rate": 32.53
     },
     {
       "date": "2025-08-25",
@@ -818,7 +885,8 @@
       "balance_chg": 0.32,
       "bal_5ma": 4.49,
       "price_5ma": 200140.0,
-      "price_20ma": 200770.0
+      "price_20ma": 200770.0,
+      "foreign_rate": 32.53
     },
     {
       "date": "2025-08-26",
@@ -830,7 +898,8 @@
       "balance_chg": -0.83,
       "bal_5ma": 4.35,
       "price_5ma": 198840.0,
-      "price_20ma": 201095.0
+      "price_20ma": 201095.0,
+      "foreign_rate": 32.53
     },
     {
       "date": "2025-08-27",
@@ -842,7 +911,8 @@
       "balance_chg": -0.42,
       "bal_5ma": 4.17,
       "price_5ma": 199360.0,
-      "price_20ma": 201580.0
+      "price_20ma": 201580.0,
+      "foreign_rate": 32.56
     },
     {
       "date": "2025-08-28",
@@ -854,7 +924,8 @@
       "balance_chg": 0.13,
       "bal_5ma": 4.01,
       "price_5ma": 200640.0,
-      "price_20ma": 202110.0
+      "price_20ma": 202110.0,
+      "foreign_rate": 32.56
     },
     {
       "date": "2025-08-29",
@@ -866,7 +937,8 @@
       "balance_chg": -0.11,
       "bal_5ma": 3.83,
       "price_5ma": 201780.0,
-      "price_20ma": 202575.0
+      "price_20ma": 202575.0,
+      "foreign_rate": 32.5
     },
     {
       "date": "2025-09-01",
@@ -878,7 +950,8 @@
       "balance_chg": 0.09,
       "bal_5ma": 3.6,
       "price_5ma": 200740.0,
-      "price_20ma": 202705.0
+      "price_20ma": 202705.0,
+      "foreign_rate": 32.41
     },
     {
       "date": "2025-09-02",
@@ -890,7 +963,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 3.54,
       "price_5ma": 198560.0,
-      "price_20ma": 202340.0
+      "price_20ma": 202340.0,
+      "foreign_rate": 32.38
     },
     {
       "date": "2025-09-03",
@@ -902,7 +976,8 @@
       "balance_chg": -0.36,
       "bal_5ma": 3.49,
       "price_5ma": 196360.0,
-      "price_20ma": 202145.0
+      "price_20ma": 202145.0,
+      "foreign_rate": 32.47
     },
     {
       "date": "2025-09-04",
@@ -914,7 +989,8 @@
       "balance_chg": 0.08,
       "bal_5ma": 3.43,
       "price_5ma": 194540.0,
-      "price_20ma": 202120.0
+      "price_20ma": 202120.0,
+      "foreign_rate": 32.56
     },
     {
       "date": "2025-09-05",
@@ -926,7 +1002,8 @@
       "balance_chg": 0.23,
       "bal_5ma": 3.43,
       "price_5ma": 193540.0,
-      "price_20ma": 201845.0
+      "price_20ma": 201845.0,
+      "foreign_rate": 32.66
     },
     {
       "date": "2025-09-08",
@@ -938,7 +1015,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 3.42,
       "price_5ma": 194460.0,
-      "price_20ma": 201635.0
+      "price_20ma": 201635.0,
+      "foreign_rate": 32.75
     },
     {
       "date": "2025-09-09",
@@ -950,7 +1028,8 @@
       "balance_chg": 0.42,
       "bal_5ma": 3.5,
       "price_5ma": 196540.0,
-      "price_20ma": 201510.0
+      "price_20ma": 201510.0,
+      "foreign_rate": 32.72
     },
     {
       "date": "2025-09-10",
@@ -962,7 +1041,8 @@
       "balance_chg": -0.16,
       "bal_5ma": 3.61,
       "price_5ma": 198340.0,
-      "price_20ma": 200385.0
+      "price_20ma": 200385.0,
+      "foreign_rate": 32.78
     },
     {
       "date": "2025-09-11",
@@ -974,7 +1054,8 @@
       "balance_chg": 0.19,
       "bal_5ma": 3.75,
       "price_5ma": 199660.0,
-      "price_20ma": 199760.0
+      "price_20ma": 199760.0,
+      "foreign_rate": 32.78
     },
     {
       "date": "2025-09-12",
@@ -986,7 +1067,8 @@
       "balance_chg": -0.94,
       "bal_5ma": 3.65,
       "price_5ma": 204060.0,
-      "price_20ma": 200260.0
+      "price_20ma": 200260.0,
+      "foreign_rate": 32.84
     },
     {
       "date": "2025-09-15",
@@ -998,7 +1080,8 @@
       "balance_chg": -0.86,
       "bal_5ma": 3.38,
       "price_5ma": 209900.0,
-      "price_20ma": 201310.0
+      "price_20ma": 201310.0,
+      "foreign_rate": 32.78
     },
     {
       "date": "2025-09-16",
@@ -1010,7 +1093,8 @@
       "balance_chg": -0.97,
       "bal_5ma": 2.83,
       "price_5ma": 215300.0,
-      "price_20ma": 202310.0
+      "price_20ma": 202310.0,
+      "foreign_rate": 32.72
     },
     {
       "date": "2025-09-17",
@@ -1022,7 +1106,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 2.32,
       "price_5ma": 223200.0,
-      "price_20ma": 204315.0
+      "price_20ma": 204315.0,
+      "foreign_rate": 32.91
     },
     {
       "date": "2025-09-18",
@@ -1034,7 +1119,8 @@
       "balance_chg": -0.01,
       "bal_5ma": 1.76,
       "price_5ma": 230600.0,
-      "price_20ma": 206360.0
+      "price_20ma": 206360.0,
+      "foreign_rate": 32.88
     },
     {
       "date": "2025-09-19",
@@ -1046,7 +1132,8 @@
       "balance_chg": 0.37,
       "bal_5ma": 1.47,
       "price_5ma": 234300.0,
-      "price_20ma": 208420.0
+      "price_20ma": 208420.0,
+      "foreign_rate": 32.81
     },
     {
       "date": "2025-09-22",
@@ -1058,7 +1145,8 @@
       "balance_chg": 0.47,
       "bal_5ma": 1.44,
       "price_5ma": 236000.0,
-      "price_20ma": 210275.0
+      "price_20ma": 210275.0,
+      "foreign_rate": 32.78
     },
     {
       "date": "2025-09-23",
@@ -1070,7 +1158,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 1.6,
       "price_5ma": 236600.0,
-      "price_20ma": 211750.0
+      "price_20ma": 211750.0,
+      "foreign_rate": 32.78
     },
     {
       "date": "2025-09-24",
@@ -1082,7 +1171,8 @@
       "balance_chg": 0.09,
       "bal_5ma": 1.79,
       "price_5ma": 234100.0,
-      "price_20ma": 213000.0
+      "price_20ma": 213000.0,
+      "foreign_rate": 32.91
     },
     {
       "date": "2025-09-25",
@@ -1094,7 +1184,8 @@
       "balance_chg": -0.37,
       "bal_5ma": 1.9,
       "price_5ma": 231000.0,
-      "price_20ma": 213950.0
+      "price_20ma": 213950.0,
+      "foreign_rate": 33.03
     },
     {
       "date": "2025-09-26",
@@ -1106,7 +1197,8 @@
       "balance_chg": -0.05,
       "bal_5ma": 1.93,
       "price_5ma": 227200.0,
-      "price_20ma": 214775.0
+      "price_20ma": 214775.0,
+      "foreign_rate": 33.0
     },
     {
       "date": "2025-09-29",
@@ -1118,7 +1210,8 @@
       "balance_chg": -0.0,
       "bal_5ma": 1.86,
       "price_5ma": 224400.0,
-      "price_20ma": 216190.0
+      "price_20ma": 216190.0,
+      "foreign_rate": 33.03
     },
     {
       "date": "2025-09-30",
@@ -1130,7 +1223,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 1.79,
       "price_5ma": 221600.0,
-      "price_20ma": 217510.0
+      "price_20ma": 217510.0,
+      "foreign_rate": 32.78
     },
     {
       "date": "2025-10-01",
@@ -1142,7 +1236,8 @@
       "balance_chg": 0.79,
       "bal_5ma": 1.87,
       "price_5ma": 218600.0,
-      "price_20ma": 218560.0
+      "price_20ma": 218560.0,
+      "foreign_rate": 32.81
     },
     {
       "date": "2025-10-02",
@@ -1154,7 +1249,8 @@
       "balance_chg": 2.48,
       "bal_5ma": 2.51,
       "price_5ma": 217000.0,
-      "price_20ma": 219565.0
+      "price_20ma": 219565.0,
+      "foreign_rate": 32.88
     },
     {
       "date": "2025-10-10",
@@ -1166,7 +1262,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 3.17,
       "price_5ma": 216500.0,
-      "price_20ma": 220515.0
+      "price_20ma": 220515.0,
+      "foreign_rate": 33.0
     },
     {
       "date": "2025-10-13",
@@ -1178,7 +1275,8 @@
       "balance_chg": -0.03,
       "bal_5ma": 3.82,
       "price_5ma": 214900.0,
-      "price_20ma": 221300.0
+      "price_20ma": 221300.0,
+      "foreign_rate": 33.06
     },
     {
       "date": "2025-10-14",
@@ -1190,7 +1288,8 @@
       "balance_chg": -0.0,
       "bal_5ma": 4.47,
       "price_5ma": 213200.0,
-      "price_20ma": 221675.0
+      "price_20ma": 221675.0,
+      "foreign_rate": 32.94
     },
     {
       "date": "2025-10-15",
@@ -1202,7 +1301,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 4.96,
       "price_5ma": 212000.0,
-      "price_20ma": 221975.0
+      "price_20ma": 221975.0,
+      "foreign_rate": 33.0
     },
     {
       "date": "2025-10-16",
@@ -1214,7 +1314,8 @@
       "balance_chg": -0.01,
       "bal_5ma": 4.95,
       "price_5ma": 211000.0,
-      "price_20ma": 222400.0
+      "price_20ma": 222400.0,
+      "foreign_rate": 32.88
     },
     {
       "date": "2025-10-17",
@@ -1226,7 +1327,8 @@
       "balance_chg": 0.3,
       "bal_5ma": 5.0,
       "price_5ma": 208000.0,
-      "price_20ma": 221500.0
+      "price_20ma": 221500.0,
+      "foreign_rate": 32.59
     },
     {
       "date": "2025-10-20",
@@ -1238,7 +1340,8 @@
       "balance_chg": 0.4,
       "bal_5ma": 5.14,
       "price_5ma": 205700.0,
-      "price_20ma": 220250.0
+      "price_20ma": 220250.0,
+      "foreign_rate": 32.38
     },
     {
       "date": "2025-10-21",
@@ -1250,7 +1353,8 @@
       "balance_chg": -0.28,
       "bal_5ma": 5.22,
       "price_5ma": 205300.0,
-      "price_20ma": 219175.0
+      "price_20ma": 219175.0,
+      "foreign_rate": 32.5
     },
     {
       "date": "2025-10-22",
@@ -1262,7 +1366,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 5.3,
       "price_5ma": 205300.0,
-      "price_20ma": 217500.0
+      "price_20ma": 217500.0,
+      "foreign_rate": 32.62
     },
     {
       "date": "2025-10-23",
@@ -1274,7 +1379,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 5.39,
       "price_5ma": 203900.0,
-      "price_20ma": 215725.0
+      "price_20ma": 215725.0,
+      "foreign_rate": 32.38
     },
     {
       "date": "2025-10-24",
@@ -1286,7 +1392,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 5.41,
       "price_5ma": 204200.0,
-      "price_20ma": 213975.0
+      "price_20ma": 213975.0,
+      "foreign_rate": 32.28
     },
     {
       "date": "2025-10-27",
@@ -1298,7 +1405,8 @@
       "balance_chg": 0.27,
       "bal_5ma": 5.41,
       "price_5ma": 206400.0,
-      "price_20ma": 212850.0
+      "price_20ma": 212850.0,
+      "foreign_rate": 32.16
     },
     {
       "date": "2025-10-28",
@@ -1310,7 +1418,8 @@
       "balance_chg": -1.15,
       "bal_5ma": 5.23,
       "price_5ma": 208800.0,
-      "price_20ma": 212225.0
+      "price_20ma": 212225.0,
+      "foreign_rate": 32.16
     },
     {
       "date": "2025-10-29",
@@ -1322,7 +1431,8 @@
       "balance_chg": -0.06,
       "bal_5ma": 5.04,
       "price_5ma": 211700.0,
-      "price_20ma": 211900.0
+      "price_20ma": 211900.0,
+      "foreign_rate": 32.03
     },
     {
       "date": "2025-10-30",
@@ -1334,7 +1444,8 @@
       "balance_chg": 0.17,
       "bal_5ma": 4.89,
       "price_5ma": 215300.0,
-      "price_20ma": 211800.0
+      "price_20ma": 211800.0,
+      "foreign_rate": 31.84
     },
     {
       "date": "2025-10-31",
@@ -1346,7 +1457,8 @@
       "balance_chg": 1.07,
       "bal_5ma": 4.95,
       "price_5ma": 218700.0,
-      "price_20ma": 211850.0
+      "price_20ma": 211850.0,
+      "foreign_rate": 31.75
     },
     {
       "date": "2025-11-03",
@@ -1358,7 +1470,8 @@
       "balance_chg": 0.87,
       "bal_5ma": 5.13,
       "price_5ma": 221000.0,
-      "price_20ma": 212000.0
+      "price_20ma": 212000.0,
+      "foreign_rate": 31.7
     },
     {
       "date": "2025-11-04",
@@ -1370,7 +1483,8 @@
       "balance_chg": -0.91,
       "bal_5ma": 5.36,
       "price_5ma": 221600.0,
-      "price_20ma": 212225.0
+      "price_20ma": 212225.0,
+      "foreign_rate": 31.7
     },
     {
       "date": "2025-11-05",
@@ -1382,7 +1496,8 @@
       "balance_chg": -0.01,
       "bal_5ma": 5.59,
       "price_5ma": 220300.0,
-      "price_20ma": 212325.0
+      "price_20ma": 212325.0,
+      "foreign_rate": 31.75
     },
     {
       "date": "2025-11-06",
@@ -1394,7 +1509,8 @@
       "balance_chg": 0.11,
       "bal_5ma": 5.82,
       "price_5ma": 219300.0,
-      "price_20ma": 212375.0
+      "price_20ma": 212375.0,
+      "foreign_rate": 31.81
     },
     {
       "date": "2025-11-07",
@@ -1406,7 +1522,8 @@
       "balance_chg": -0.04,
       "bal_5ma": 5.82,
       "price_5ma": 219400.0,
-      "price_20ma": 212575.0
+      "price_20ma": 212575.0,
+      "foreign_rate": 31.62
     },
     {
       "date": "2025-11-10",
@@ -1418,7 +1535,8 @@
       "balance_chg": 0.35,
       "bal_5ma": 5.72,
       "price_5ma": 219900.0,
-      "price_20ma": 213250.0
+      "price_20ma": 213250.0,
+      "foreign_rate": 31.47
     },
     {
       "date": "2025-11-11",
@@ -1430,7 +1548,8 @@
       "balance_chg": -0.15,
       "bal_5ma": 5.77,
       "price_5ma": 221700.0,
-      "price_20ma": 214350.0
+      "price_20ma": 214350.0,
+      "foreign_rate": 31.33
     },
     {
       "date": "2025-11-12",
@@ -1442,7 +1561,8 @@
       "balance_chg": 0.26,
       "bal_5ma": 5.88,
       "price_5ma": 227200.0,
-      "price_20ma": 216125.0
+      "price_20ma": 216125.0,
+      "foreign_rate": 31.38
     },
     {
       "date": "2025-11-13",
@@ -1454,7 +1574,8 @@
       "balance_chg": 0.02,
       "bal_5ma": 5.97,
       "price_5ma": 230500.0,
-      "price_20ma": 217250.0
+      "price_20ma": 217250.0,
+      "foreign_rate": 31.55
     },
     {
       "date": "2025-11-14",
@@ -1466,7 +1587,8 @@
       "balance_chg": 0.67,
       "bal_5ma": 6.2,
       "price_5ma": 232600.0,
-      "price_20ma": 218725.0
+      "price_20ma": 218725.0,
+      "foreign_rate": 31.53
     },
     {
       "date": "2025-11-17",
@@ -1478,7 +1600,8 @@
       "balance_chg": 1.5,
       "bal_5ma": 6.66,
       "price_5ma": 232600.0,
-      "price_20ma": 219975.0
+      "price_20ma": 219975.0,
+      "foreign_rate": 31.44
     },
     {
       "date": "2025-11-18",
@@ -1490,7 +1613,8 @@
       "balance_chg": 0.28,
       "bal_5ma": 7.21,
       "price_5ma": 231600.0,
-      "price_20ma": 220925.0
+      "price_20ma": 220925.0,
+      "foreign_rate": 31.3
     },
     {
       "date": "2025-11-19",
@@ -1502,7 +1626,8 @@
       "balance_chg": 8.58,
       "bal_5ma": 9.42,
       "price_5ma": 221540.0,
-      "price_20ma": 220185.0
+      "price_20ma": 220185.0,
+      "foreign_rate": 31.41
     },
     {
       "date": "2025-11-20",
@@ -1514,7 +1639,8 @@
       "balance_chg": -3.24,
       "bal_5ma": 10.98,
       "price_5ma": 212340.0,
-      "price_20ma": 219360.0
+      "price_20ma": 219360.0,
+      "foreign_rate": 30.41
     },
     {
       "date": "2025-11-21",
@@ -1526,7 +1652,8 @@
       "balance_chg": -2.26,
       "bal_5ma": 11.95,
       "price_5ma": 204300.0,
-      "price_20ma": 218750.0
+      "price_20ma": 218750.0,
+      "foreign_rate": 30.55
     },
     {
       "date": "2025-11-24",
@@ -1538,7 +1665,8 @@
       "balance_chg": -1.72,
       "bal_5ma": 12.28,
       "price_5ma": 199400.0,
-      "price_20ma": 218225.0
+      "price_20ma": 218225.0,
+      "foreign_rate": 30.34
     },
     {
       "date": "2025-11-25",
@@ -1550,7 +1678,8 @@
       "balance_chg": -1.26,
       "bal_5ma": 12.3,
       "price_5ma": 196100.0,
-      "price_20ma": 217750.0
+      "price_20ma": 217750.0,
+      "foreign_rate": 30.98
     },
     {
       "date": "2025-11-26",
@@ -1562,7 +1691,8 @@
       "balance_chg": 0.33,
       "bal_5ma": 10.67,
       "price_5ma": 200460.0,
-      "price_20ma": 217375.0
+      "price_20ma": 217375.0,
+      "foreign_rate": 31.09
     },
     {
       "date": "2025-11-27",
@@ -1574,7 +1704,8 @@
       "balance_chg": 1.52,
       "bal_5ma": 9.99,
       "price_5ma": 205760.0,
-      "price_20ma": 216975.0
+      "price_20ma": 216975.0,
+      "foreign_rate": 31.44
     },
     {
       "date": "2025-11-28",
@@ -1586,7 +1717,8 @@
       "balance_chg": 1.32,
       "bal_5ma": 10.03,
       "price_5ma": 209500.0,
-      "price_20ma": 216450.0
+      "price_20ma": 216450.0,
+      "foreign_rate": 31.38
     },
     {
       "date": "2025-12-01",
@@ -1598,7 +1730,8 @@
       "balance_chg": 1.4,
       "bal_5ma": 10.69,
       "price_5ma": 209600.0,
-      "price_20ma": 215375.0
+      "price_20ma": 215375.0,
+      "foreign_rate": 31.56
     },
     {
       "date": "2025-12-02",
@@ -1610,7 +1743,8 @@
       "balance_chg": 0.56,
       "bal_5ma": 11.71,
       "price_5ma": 209800.0,
-      "price_20ma": 214800.0
+      "price_20ma": 214800.0,
+      "foreign_rate": 31.59
     },
     {
       "date": "2025-12-03",
@@ -1622,7 +1756,8 @@
       "balance_chg": -2.55,
       "bal_5ma": 12.17,
       "price_5ma": 210300.0,
-      "price_20ma": 214875.0
+      "price_20ma": 214875.0,
+      "foreign_rate": 31.73
     },
     {
       "date": "2025-12-04",
@@ -1634,7 +1769,8 @@
       "balance_chg": -1.32,
       "bal_5ma": 12.05,
       "price_5ma": 210600.0,
-      "price_20ma": 214800.0
+      "price_20ma": 214800.0,
+      "foreign_rate": 31.95
     },
     {
       "date": "2025-12-05",
@@ -1646,7 +1782,8 @@
       "balance_chg": 0.75,
       "bal_5ma": 11.82,
       "price_5ma": 211000.0,
-      "price_20ma": 214350.0
+      "price_20ma": 214350.0,
+      "foreign_rate": 32.0
     },
     {
       "date": "2025-12-08",
@@ -1658,7 +1795,8 @@
       "balance_chg": 1.94,
       "bal_5ma": 11.69,
       "price_5ma": 210800.0,
-      "price_20ma": 213100.0
+      "price_20ma": 213100.0,
+      "foreign_rate": 32.12
     },
     {
       "date": "2025-12-09",
@@ -1670,7 +1808,8 @@
       "balance_chg": 2.34,
       "bal_5ma": 11.92,
       "price_5ma": 209600.0,
-      "price_20ma": 211775.0
+      "price_20ma": 211775.0,
+      "foreign_rate": 32.31
     },
     {
       "date": "2025-12-10",
@@ -1682,7 +1821,8 @@
       "balance_chg": 1.74,
       "bal_5ma": 13.01,
       "price_5ma": 206500.0,
-      "price_20ma": 209700.0
+      "price_20ma": 209700.0,
+      "foreign_rate": 32.34
     },
     {
       "date": "2025-12-11",
@@ -1694,7 +1834,8 @@
       "balance_chg": 0.96,
       "bal_5ma": 14.56,
       "price_5ma": 202120.0,
-      "price_20ma": 207705.0
+      "price_20ma": 207705.0,
+      "foreign_rate": 32.47
     },
     {
       "date": "2025-12-12",
@@ -1706,7 +1847,8 @@
       "balance_chg": 0.69,
       "bal_5ma": 16.09,
       "price_5ma": 198720.0,
-      "price_20ma": 205880.0
+      "price_20ma": 205880.0,
+      "foreign_rate": 32.59
     },
     {
       "date": "2025-12-15",
@@ -1718,7 +1860,8 @@
       "balance_chg": 0.41,
       "bal_5ma": 17.32,
       "price_5ma": 197760.0,
-      "price_20ma": 204390.0
+      "price_20ma": 204390.0,
+      "foreign_rate": 32.62
     },
     {
       "date": "2025-12-16",
@@ -1730,7 +1873,8 @@
       "balance_chg": -0.09,
       "bal_5ma": 18.06,
       "price_5ma": 196400.0,
-      "price_20ma": 202975.0
+      "price_20ma": 202975.0,
+      "foreign_rate": 32.66
     },
     {
       "date": "2025-12-17",
@@ -1742,7 +1886,8 @@
       "balance_chg": -0.22,
       "bal_5ma": 18.4,
       "price_5ma": 195760.0,
-      "price_20ma": 203255.0
+      "price_20ma": 203255.0,
+      "foreign_rate": 32.75
     },
     {
       "date": "2025-12-18",
@@ -1754,7 +1899,8 @@
       "balance_chg": 0.67,
       "bal_5ma": 18.69,
       "price_5ma": 196660.0,
-      "price_20ma": 203785.0
+      "price_20ma": 203785.0,
+      "foreign_rate": 32.72
     },
     {
       "date": "2025-12-19",
@@ -1766,7 +1912,8 @@
       "balance_chg": -0.01,
       "bal_5ma": 18.84,
       "price_5ma": 196560.0,
-      "price_20ma": 203945.0
+      "price_20ma": 203945.0,
+      "foreign_rate": 32.84
     },
     {
       "date": "2025-12-22",
@@ -1778,7 +1925,8 @@
       "balance_chg": -1.01,
       "bal_5ma": 18.71,
       "price_5ma": 196800.0,
-      "price_20ma": 203740.0
+      "price_20ma": 203740.0,
+      "foreign_rate": 32.81
     },
     {
       "date": "2025-12-23",
@@ -1790,7 +1938,8 @@
       "balance_chg": -0.68,
       "bal_5ma": 18.46,
       "price_5ma": 197540.0,
-      "price_20ma": 203335.0
+      "price_20ma": 203335.0,
+      "foreign_rate": 32.84
     },
     {
       "date": "2025-12-24",
@@ -1802,7 +1951,8 @@
       "balance_chg": -2.36,
       "bal_5ma": 17.78,
       "price_5ma": 199880.0,
-      "price_20ma": 203110.0
+      "price_20ma": 203110.0,
+      "foreign_rate": 32.94
     },
     {
       "date": "2025-12-26",
@@ -1814,7 +1964,8 @@
       "balance_chg": 0.69,
       "bal_5ma": 17.11,
       "price_5ma": 201260.0,
-      "price_20ma": 202660.0
+      "price_20ma": 202660.0,
+      "foreign_rate": 33.12
     },
     {
       "date": "2025-12-29",
@@ -1826,7 +1977,8 @@
       "balance_chg": 0.49,
       "bal_5ma": 16.53,
       "price_5ma": 202660.0,
-      "price_20ma": 202235.0
+      "price_20ma": 202235.0,
+      "foreign_rate": 33.25
     },
     {
       "date": "2025-12-30",
@@ -1838,7 +1990,8 @@
       "balance_chg": -0.57,
       "bal_5ma": 16.05,
       "price_5ma": 203280.0,
-      "price_20ma": 202160.0
+      "price_20ma": 202160.0,
+      "foreign_rate": 33.31
     },
     {
       "date": "2026-01-02",
@@ -1850,7 +2003,8 @@
       "balance_chg": -1.87,
       "bal_5ma": 15.32,
       "price_5ma": 206600.0,
-      "price_20ma": 202535.0
+      "price_20ma": 202535.0,
+      "foreign_rate": 33.41
     },
     {
       "date": "2026-01-05",
@@ -1862,7 +2016,8 @@
       "balance_chg": 0.13,
       "bal_5ma": 15.1,
       "price_5ma": 207600.0,
-      "price_20ma": 202435.0
+      "price_20ma": 202435.0,
+      "foreign_rate": 33.84
     },
     {
       "date": "2026-01-06",
@@ -1874,7 +2029,8 @@
       "balance_chg": -0.88,
       "bal_5ma": 14.56,
       "price_5ma": 209800.0,
-      "price_20ma": 202460.0
+      "price_20ma": 202460.0,
+      "foreign_rate": 33.78
     },
     {
       "date": "2026-01-07",
@@ -1886,7 +2042,8 @@
       "balance_chg": 0.01,
       "bal_5ma": 13.93,
       "price_5ma": 212400.0,
-      "price_20ma": 202585.0
+      "price_20ma": 202585.0,
+      "foreign_rate": 33.97
     },
     {
       "date": "2026-01-08",
@@ -1898,7 +2055,8 @@
       "balance_chg": -1.16,
       "bal_5ma": 13.18,
       "price_5ma": 217500.0,
-      "price_20ma": 203835.0
+      "price_20ma": 203835.0,
+      "foreign_rate": 33.88
     },
     {
       "date": "2026-01-09",
@@ -1910,7 +2068,8 @@
       "balance_chg": -1.36,
       "bal_5ma": 12.53,
       "price_5ma": 218800.0,
-      "price_20ma": 204835.0
+      "price_20ma": 204835.0,
+      "foreign_rate": 34.12
     },
     {
       "date": "2026-01-12",
@@ -1922,7 +2081,8 @@
       "balance_chg": 1.29,
       "bal_5ma": 12.11,
       "price_5ma": 220700.0,
-      "price_20ma": 205985.0
+      "price_20ma": 205985.0,
+      "foreign_rate": 33.88
     },
     {
       "date": "2026-01-13",
@@ -1934,7 +2094,8 @@
       "balance_chg": -3.43,
       "bal_5ma": 11.18,
       "price_5ma": 226900.0,
-      "price_20ma": 208655.0
+      "price_20ma": 208655.0,
+      "foreign_rate": 34.03
     },
     {
       "date": "2026-01-14",
@@ -1946,7 +2107,8 @@
       "balance_chg": -1.15,
       "bal_5ma": 10.02,
       "price_5ma": 233500.0,
-      "price_20ma": 211280.0
+      "price_20ma": 211280.0,
+      "foreign_rate": 34.5
     },
     {
       "date": "2026-01-15",
@@ -1958,7 +2120,8 @@
       "balance_chg": -0.42,
       "bal_5ma": 9.01,
       "price_5ma": 236900.0,
-      "price_20ma": 213620.0
+      "price_20ma": 213620.0,
+      "foreign_rate": 34.47
     },
     {
       "date": "2026-01-16",
@@ -1970,7 +2133,8 @@
       "balance_chg": -1.28,
       "bal_5ma": 8.01,
       "price_5ma": 239600.0,
-      "price_20ma": 215635.0
+      "price_20ma": 215635.0,
+      "foreign_rate": 34.5
     },
     {
       "date": "2026-01-19",
@@ -1982,7 +2146,8 @@
       "balance_chg": 0.05,
       "bal_5ma": 6.76,
       "price_5ma": 242000.0,
-      "price_20ma": 217545.0
+      "price_20ma": 217545.0,
+      "foreign_rate": 34.62
     },
     {
       "date": "2026-01-20",
@@ -1994,7 +2159,8 @@
       "balance_chg": -0.02,
       "bal_5ma": 6.2,
       "price_5ma": 239500.0,
-      "price_20ma": 219365.0
+      "price_20ma": 219365.0,
+      "foreign_rate": 34.69
     },
     {
       "date": "2026-01-21",
@@ -2006,7 +2172,8 @@
       "balance_chg": 1.75,
       "bal_5ma": 6.22,
       "price_5ma": 234500.0,
-      "price_20ma": 220765.0
+      "price_20ma": 220765.0,
+      "foreign_rate": 34.75
     },
     {
       "date": "2026-01-22",
@@ -2018,7 +2185,8 @@
       "balance_chg": -0.19,
       "bal_5ma": 6.28,
       "price_5ma": 231400.0,
-      "price_20ma": 222270.0
+      "price_20ma": 222270.0,
+      "foreign_rate": 34.75
     },
     {
       "date": "2026-01-23",
@@ -2030,7 +2198,8 @@
       "balance_chg": -0.01,
       "bal_5ma": 6.6,
       "price_5ma": 229500.0,
-      "price_20ma": 223625.0
+      "price_20ma": 223625.0,
+      "foreign_rate": 34.81
     },
     {
       "date": "2026-01-26",
@@ -2042,7 +2211,8 @@
       "balance_chg": -0.13,
       "bal_5ma": 6.88,
       "price_5ma": 228400.0,
-      "price_20ma": 224675.0
+      "price_20ma": 224675.0,
+      "foreign_rate": 34.84
     },
     {
       "date": "2026-01-27",
@@ -2054,7 +2224,8 @@
       "balance_chg": -0.26,
       "bal_5ma": 7.12,
       "price_5ma": 228300.0,
-      "price_20ma": 226125.0
+      "price_20ma": 226125.0,
+      "foreign_rate": 34.88
     },
     {
       "date": "2026-01-28",
@@ -2066,7 +2237,8 @@
       "balance_chg": -0.45,
       "bal_5ma": 6.91,
       "price_5ma": 230300.0,
-      "price_20ma": 227675.0
+      "price_20ma": 227675.0,
+      "foreign_rate": 34.88
     },
     {
       "date": "2026-01-29",
@@ -2078,7 +2250,8 @@
       "balance_chg": -0.37,
       "bal_5ma": 6.67,
       "price_5ma": 231800.0,
-      "price_20ma": 229400.0
+      "price_20ma": 229400.0,
+      "foreign_rate": 34.78
     },
     {
       "date": "2026-01-30",
@@ -2090,7 +2263,8 @@
       "balance_chg": 0.01,
       "bal_5ma": 6.43,
       "price_5ma": 233300.0,
-      "price_20ma": 230300.0
+      "price_20ma": 230300.0,
+      "foreign_rate": 34.81
     },
     {
       "date": "2026-02-02",
@@ -2102,7 +2276,8 @@
       "balance_chg": -0.7,
       "bal_5ma": 6.07,
       "price_5ma": 231300.0,
-      "price_20ma": 230600.0
+      "price_20ma": 230600.0,
+      "foreign_rate": 34.81
     },
     {
       "date": "2026-02-03",
@@ -2114,7 +2289,8 @@
       "balance_chg": -0.19,
       "bal_5ma": 5.73,
       "price_5ma": 227300.0,
-      "price_20ma": 230500.0
+      "price_20ma": 230500.0,
+      "foreign_rate": 34.69
     },
     {
       "date": "2026-02-04",
@@ -2126,7 +2302,8 @@
       "balance_chg": 0.48,
       "bal_5ma": 5.58,
       "price_5ma": 223600.0,
-      "price_20ma": 230475.0
+      "price_20ma": 230475.0,
+      "foreign_rate": 34.62
     },
     {
       "date": "2026-02-05",
@@ -2138,7 +2315,8 @@
       "balance_chg": 0.1,
       "bal_5ma": 5.52,
       "price_5ma": 218500.0,
-      "price_20ma": 229650.0
+      "price_20ma": 229650.0,
+      "foreign_rate": 34.59
     },
     {
       "date": "2026-02-06",
@@ -2150,7 +2328,8 @@
       "balance_chg": -0.92,
       "bal_5ma": 5.28,
       "price_5ma": 214900.0,
-      "price_20ma": 229325.0
+      "price_20ma": 229325.0,
+      "foreign_rate": 34.59
     },
     {
       "date": "2026-02-09",
@@ -2162,7 +2341,8 @@
       "balance_chg": 3.06,
       "bal_5ma": 5.78,
       "price_5ma": 211500.0,
-      "price_20ma": 228300.0
+      "price_20ma": 228300.0,
+      "foreign_rate": 34.5
     },
     {
       "date": "2026-02-10",
@@ -2174,7 +2354,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 6.32,
       "price_5ma": 209500.0,
-      "price_20ma": 226150.0
+      "price_20ma": 226150.0,
+      "foreign_rate": 33.88
     },
     {
       "date": "2026-02-11",
@@ -2186,7 +2367,8 @@
       "balance_chg": 0.19,
       "bal_5ma": 6.81,
       "price_5ma": 209400.0,
-      "price_20ma": 224450.0
+      "price_20ma": 224450.0,
+      "foreign_rate": 33.97
     },
     {
       "date": "2026-02-12",
@@ -2198,7 +2380,8 @@
       "balance_chg": 0.02,
       "bal_5ma": 7.28,
       "price_5ma": 210400.0,
-      "price_20ma": 223025.0
+      "price_20ma": 223025.0,
+      "foreign_rate": 34.41
     },
     {
       "date": "2026-02-13",
@@ -2210,7 +2393,8 @@
       "balance_chg": 0.44,
       "bal_5ma": 8.02,
       "price_5ma": 209500.0,
-      "price_20ma": 221800.0
+      "price_20ma": 221800.0,
+      "foreign_rate": 34.34
     },
     {
       "date": "2026-02-19",
@@ -2222,7 +2406,8 @@
       "balance_chg": -1.79,
       "bal_5ma": 7.79,
       "price_5ma": 214300.0,
-      "price_20ma": 221375.0
+      "price_20ma": 221375.0,
+      "foreign_rate": 34.38
     },
     {
       "date": "2026-02-20",
@@ -2234,7 +2419,8 @@
       "balance_chg": 0.42,
       "bal_5ma": 7.65,
       "price_5ma": 220000.0,
-      "price_20ma": 221275.0
+      "price_20ma": 221275.0,
+      "foreign_rate": 34.72
     },
     {
       "date": "2026-02-23",
@@ -2246,7 +2432,8 @@
       "balance_chg": 0.79,
       "bal_5ma": 7.62,
       "price_5ma": 223200.0,
-      "price_20ma": 221625.0
+      "price_20ma": 221625.0,
+      "foreign_rate": 34.81
     },
     {
       "date": "2026-02-24",
@@ -2258,7 +2445,8 @@
       "balance_chg": 0.76,
       "bal_5ma": 7.75,
       "price_5ma": 226100.0,
-      "price_20ma": 221700.0
+      "price_20ma": 221700.0,
+      "foreign_rate": 34.91
     },
     {
       "date": "2026-02-25",
@@ -2270,7 +2458,8 @@
       "balance_chg": 0.48,
       "bal_5ma": 7.88,
       "price_5ma": 231200.0,
-      "price_20ma": 222225.0
+      "price_20ma": 222225.0,
+      "foreign_rate": 34.81
     },
     {
       "date": "2026-02-26",
@@ -2282,7 +2471,8 @@
       "balance_chg": 0.52,
       "bal_5ma": 8.48,
       "price_5ma": 232100.0,
-      "price_20ma": 222300.0
+      "price_20ma": 222300.0,
+      "foreign_rate": 34.91
     },
     {
       "date": "2026-02-27",
@@ -2294,7 +2484,8 @@
       "balance_chg": -0.75,
       "bal_5ma": 8.84,
       "price_5ma": 231900.0,
-      "price_20ma": 222175.0
+      "price_20ma": 222175.0,
+      "foreign_rate": 35.0
     },
     {
       "date": "2026-03-03",
@@ -2306,7 +2497,8 @@
       "balance_chg": -1.69,
       "bal_5ma": 8.7,
       "price_5ma": 229900.0,
-      "price_20ma": 221525.0
+      "price_20ma": 221525.0,
+      "foreign_rate": 34.94
     },
     {
       "date": "2026-03-04",
@@ -2318,7 +2510,8 @@
       "balance_chg": -2.21,
       "bal_5ma": 7.97,
       "price_5ma": 223020.0,
-      "price_20ma": 219505.0
+      "price_20ma": 219505.0,
+      "foreign_rate": 35.16
     },
     {
       "date": "2026-03-05",
@@ -2330,7 +2523,8 @@
       "balance_chg": -0.71,
       "bal_5ma": 7.0,
       "price_5ma": 216420.0,
-      "price_20ma": 218005.0
+      "price_20ma": 218005.0,
+      "foreign_rate": 35.25
     },
     {
       "date": "2026-03-06",
@@ -2342,7 +2536,8 @@
       "balance_chg": -0.82,
       "bal_5ma": 5.77,
       "price_5ma": 213020.0,
-      "price_20ma": 217730.0
+      "price_20ma": 217730.0,
+      "foreign_rate": 35.19
     },
     {
       "date": "2026-03-09",
@@ -2354,7 +2549,8 @@
       "balance_chg": 1.81,
       "bal_5ma": 5.04,
       "price_5ma": 209520.0,
-      "price_20ma": 217730.0
+      "price_20ma": 217730.0,
+      "foreign_rate": 35.31
     },
     {
       "date": "2026-03-10",
@@ -2366,7 +2562,8 @@
       "balance_chg": -1.27,
       "bal_5ma": 4.4,
       "price_5ma": 209520.0,
-      "price_20ma": 218005.0
+      "price_20ma": 218005.0,
+      "foreign_rate": 35.34
     },
     {
       "date": "2026-03-11",
@@ -2378,7 +2575,8 @@
       "balance_chg": 1.14,
       "bal_5ma": 4.43,
       "price_5ma": 212400.0,
-      "price_20ma": 217980.0
+      "price_20ma": 217980.0,
+      "foreign_rate": 35.5
     },
     {
       "date": "2026-03-12",
@@ -2390,7 +2588,8 @@
       "balance_chg": -0.01,
       "bal_5ma": 4.61,
       "price_5ma": 213900.0,
-      "price_20ma": 217755.0
+      "price_20ma": 217755.0,
+      "foreign_rate": 35.28
     },
     {
       "date": "2026-03-13",
@@ -2402,7 +2601,8 @@
       "balance_chg": -1.55,
       "bal_5ma": 4.63,
       "price_5ma": 216700.0,
-      "price_20ma": 219030.0
+      "price_20ma": 219030.0,
+      "foreign_rate": 35.47
     },
     {
       "date": "2026-03-16",
@@ -2414,7 +2614,8 @@
       "balance_chg": -0.82,
       "bal_5ma": 4.13,
       "price_5ma": 219200.0,
-      "price_20ma": 220155.0
+      "price_20ma": 220155.0,
+      "foreign_rate": 35.78
     },
     {
       "date": "2026-03-17",
@@ -2426,7 +2627,8 @@
       "balance_chg": -0.02,
       "bal_5ma": 3.88,
       "price_5ma": 220200.0,
-      "price_20ma": 220705.0
+      "price_20ma": 220705.0,
+      "foreign_rate": 35.78
     },
     {
       "date": "2026-03-18",
@@ -2438,7 +2640,8 @@
       "balance_chg": 0.01,
       "bal_5ma": 3.4,
       "price_5ma": 224200.0,
-      "price_20ma": 221430.0
+      "price_20ma": 221430.0,
+      "foreign_rate": 35.81
     },
     {
       "date": "2026-03-19",
@@ -2450,7 +2653,8 @@
       "balance_chg": 0.24,
       "bal_5ma": 2.97,
       "price_5ma": 226000.0,
-      "price_20ma": 221880.0
+      "price_20ma": 221880.0,
+      "foreign_rate": 35.81
     },
     {
       "date": "2026-03-20",
@@ -2462,7 +2666,8 @@
       "balance_chg": 0.23,
       "bal_5ma": 2.9,
       "price_5ma": 225900.0,
-      "price_20ma": 221930.0
+      "price_20ma": 221930.0,
+      "foreign_rate": 35.72
     },
     {
       "date": "2026-03-23",
@@ -2474,7 +2679,8 @@
       "balance_chg": -0.07,
       "bal_5ma": 2.98,
       "price_5ma": 223500.0,
-      "price_20ma": 221030.0
+      "price_20ma": 221030.0,
+      "foreign_rate": 35.88
     },
     {
       "date": "2026-03-24",
@@ -2486,7 +2692,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 3.06,
       "price_5ma": 222100.0,
-      "price_20ma": 220430.0
+      "price_20ma": 220430.0,
+      "foreign_rate": 35.84
     },
     {
       "date": "2026-03-25",
@@ -2498,7 +2705,8 @@
       "balance_chg": -0.17,
       "bal_5ma": 3.1,
       "price_5ma": 221600.0,
-      "price_20ma": 220305.0
+      "price_20ma": 220305.0,
+      "foreign_rate": 35.81
     },
     {
       "date": "2026-03-26",
@@ -2510,7 +2718,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 3.1,
       "price_5ma": 222500.0,
-      "price_20ma": 219705.0
+      "price_20ma": 219705.0,
+      "foreign_rate": 35.97
     },
     {
       "date": "2026-03-27",
@@ -2522,7 +2731,8 @@
       "balance_chg": 0.18,
       "bal_5ma": 3.09,
       "price_5ma": 222900.0,
-      "price_20ma": 219630.0
+      "price_20ma": 219630.0,
+      "foreign_rate": 35.84
     },
     {
       "date": "2026-03-30",
@@ -2534,7 +2744,8 @@
       "balance_chg": -0.02,
       "bal_5ma": 3.09,
       "price_5ma": 224500.0,
-      "price_20ma": 219180.0
+      "price_20ma": 219180.0,
+      "foreign_rate": 35.81
     },
     {
       "date": "2026-03-31",
@@ -2546,7 +2757,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 3.09,
       "price_5ma": 225800.0,
-      "price_20ma": 219405.0
+      "price_20ma": 219405.0,
+      "foreign_rate": 35.66
     },
     {
       "date": "2026-04-01",
@@ -2558,7 +2770,8 @@
       "balance_chg": 0.13,
       "bal_5ma": 3.15,
       "price_5ma": 226200.0,
-      "price_20ma": 221100.0
+      "price_20ma": 221100.0,
+      "foreign_rate": 35.66
     },
     {
       "date": "2026-04-02",
@@ -2570,7 +2783,8 @@
       "balance_chg": -0.12,
       "bal_5ma": 3.18,
       "price_5ma": 223700.0,
-      "price_20ma": 221525.0
+      "price_20ma": 221525.0,
+      "foreign_rate": 35.62
     },
     {
       "date": "2026-04-03",
@@ -2582,7 +2796,8 @@
       "balance_chg": 0.35,
       "bal_5ma": 3.25,
       "price_5ma": 220000.0,
-      "price_20ma": 221375.0
+      "price_20ma": 221375.0,
+      "foreign_rate": 35.34
     },
     {
       "date": "2026-04-06",
@@ -2594,7 +2809,8 @@
       "balance_chg": 0.06,
       "bal_5ma": 3.34,
       "price_5ma": 218200.0,
-      "price_20ma": 221350.0
+      "price_20ma": 221350.0,
+      "foreign_rate": 35.22
     },
     {
       "date": "2026-04-07",
@@ -2606,7 +2822,8 @@
       "balance_chg": 0.02,
       "bal_5ma": 3.43,
       "price_5ma": 215400.0,
-      "price_20ma": 220875.0
+      "price_20ma": 220875.0,
+      "foreign_rate": 35.22
     },
     {
       "date": "2026-04-08",
@@ -2618,7 +2835,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 3.49,
       "price_5ma": 213100.0,
-      "price_20ma": 221275.0
+      "price_20ma": 221275.0,
+      "foreign_rate": 35.19
     },
     {
       "date": "2026-04-09",
@@ -2630,7 +2848,8 @@
       "balance_chg": -0.14,
       "bal_5ma": 3.55,
       "price_5ma": 217300.0,
-      "price_20ma": 222375.0
+      "price_20ma": 222375.0,
+      "foreign_rate": 35.16
     },
     {
       "date": "2026-04-10",
@@ -2642,7 +2861,8 @@
       "balance_chg": -0.91,
       "bal_5ma": 3.36,
       "price_5ma": 223000.0,
-      "price_20ma": 222950.0
+      "price_20ma": 222950.0,
+      "foreign_rate": 35.56
     },
     {
       "date": "2026-04-13",
@@ -2654,7 +2874,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 3.15,
       "price_5ma": 228200.0,
-      "price_20ma": 223600.0
+      "price_20ma": 223600.0,
+      "foreign_rate": 35.72
     },
     {
       "date": "2026-04-14",
@@ -2666,7 +2887,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 2.94,
       "price_5ma": 235900.0,
-      "price_20ma": 224800.0
+      "price_20ma": 224800.0,
+      "foreign_rate": 35.66
     },
     {
       "date": "2026-04-15",
@@ -2678,7 +2900,8 @@
       "balance_chg": -0.0,
       "bal_5ma": 2.73,
       "price_5ma": 241800.0,
-      "price_20ma": 225675.0
+      "price_20ma": 225675.0,
+      "foreign_rate": 35.53
     },
     {
       "date": "2026-04-16",
@@ -2690,7 +2913,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 2.55,
       "price_5ma": 248300.0,
-      "price_20ma": 227950.0
+      "price_20ma": 227950.0,
+      "foreign_rate": 35.56
     },
     {
       "date": "2026-04-17",
@@ -2702,7 +2926,8 @@
       "balance_chg": 0.59,
       "bal_5ma": 2.67,
       "price_5ma": 252800.0,
-      "price_20ma": 229675.0
+      "price_20ma": 229675.0,
+      "foreign_rate": 35.56
     },
     {
       "date": "2026-04-20",
@@ -2714,7 +2939,8 @@
       "balance_chg": 0.01,
       "bal_5ma": 2.79,
       "price_5ma": 258500.0,
-      "price_20ma": 232350.0
+      "price_20ma": 232350.0,
+      "foreign_rate": 35.47
     },
     {
       "date": "2026-04-21",
@@ -2726,7 +2952,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 2.91,
       "price_5ma": 260800.0,
-      "price_20ma": 234475.0
+      "price_20ma": 234475.0,
+      "foreign_rate": 35.25
     },
     {
       "date": "2026-04-22",
@@ -2738,7 +2965,8 @@
       "balance_chg": -0.91,
       "bal_5ma": 2.85,
       "price_5ma": 266300.0,
-      "price_20ma": 236850.0
+      "price_20ma": 236850.0,
+      "foreign_rate": 35.25
     },
     {
       "date": "2026-04-23",
@@ -2750,7 +2978,8 @@
       "balance_chg": 0.28,
       "bal_5ma": 2.84,
       "price_5ma": 267200.0,
-      "price_20ma": 239125.0
+      "price_20ma": 239125.0,
+      "foreign_rate": 35.09
     },
     {
       "date": "2026-04-24",
@@ -2762,7 +2991,8 @@
       "balance_chg": 0.02,
       "bal_5ma": 2.72,
       "price_5ma": 268800.0,
-      "price_20ma": 241150.0
+      "price_20ma": 241150.0,
+      "foreign_rate": 35.0
     },
     {
       "date": "2026-04-27",
@@ -2774,7 +3004,8 @@
       "balance_chg": -0.01,
       "bal_5ma": 2.59,
       "price_5ma": 267600.0,
-      "price_20ma": 243125.0
+      "price_20ma": 243125.0,
+      "foreign_rate": 34.91
     },
     {
       "date": "2026-04-28",
@@ -2786,7 +3017,8 @@
       "balance_chg": 0.06,
       "bal_5ma": 2.48,
       "price_5ma": 269100.0,
-      "price_20ma": 245300.0
+      "price_20ma": 245300.0,
+      "foreign_rate": 34.84
     },
     {
       "date": "2026-04-29",
@@ -2798,7 +3030,8 @@
       "balance_chg": -1.09,
       "bal_5ma": 2.33,
       "price_5ma": 269600.0,
-      "price_20ma": 247700.0
+      "price_20ma": 247700.0,
+      "foreign_rate": 35.03
     },
     {
       "date": "2026-04-30",
@@ -2810,7 +3043,8 @@
       "balance_chg": 0.0,
       "bal_5ma": 2.13,
       "price_5ma": 269500.0,
-      "price_20ma": 250575.0
+      "price_20ma": 250575.0,
+      "foreign_rate": 35.5
     },
     {
       "date": "2026-05-04",
@@ -2822,7 +3056,8 @@
       "balance_chg": -0.07,
       "bal_5ma": 1.9,
       "price_5ma": 268900.0,
-      "price_20ma": 253375.0
+      "price_20ma": 253375.0,
+      "foreign_rate": 35.41
     },
     {
       "date": "2026-05-06",
@@ -2834,7 +3069,8 @@
       "balance_chg": 0.45,
       "bal_5ma": 1.77,
       "price_5ma": 268900.0,
-      "price_20ma": 255800.0
+      "price_20ma": 255800.0,
+      "foreign_rate": 35.31
     },
     {
       "date": "2026-05-07",
@@ -2846,7 +3082,8 @@
       "balance_chg": 0.13,
       "bal_5ma": 1.66,
       "price_5ma": 266000.0,
-      "price_20ma": 257950.0
+      "price_20ma": 257950.0,
+      "foreign_rate": 35.38
     },
     {
       "date": "2026-05-08",
@@ -2858,7 +3095,8 @@
       "balance_chg": 0.01,
       "bal_5ma": 1.76,
       "price_5ma": 261600.0,
-      "price_20ma": 259825.0
+      "price_20ma": 259825.0,
+      "foreign_rate": 35.44
     },
     {
       "date": "2026-05-11",
@@ -2870,7 +3108,8 @@
       "balance_chg": 0.01,
       "bal_5ma": 1.87,
       "price_5ma": 257700.0,
-      "price_20ma": 260675.0
+      "price_20ma": 260675.0,
+      "foreign_rate": 35.44
     },
     {
       "date": "2026-05-12",
@@ -2882,7 +3121,8 @@
       "balance_chg": -0.04,
       "bal_5ma": 1.98,
       "price_5ma": 254200.0,
-      "price_20ma": 261175.0
+      "price_20ma": 261175.0,
+      "foreign_rate": 35.53
     },
     {
       "date": "2026-05-13",
@@ -2894,7 +3134,8 @@
       "balance_chg": 0,
       "bal_5ma": 0,
       "price_5ma": 0,
-      "price_20ma": 0
+      "price_20ma": 0,
+      "foreign_rate": 35.66
     },
     {
       "date": "2026-05-14",
@@ -2907,7 +3148,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0,
+      "foreign_rate": 35.12,
       "market_cap_b": 60108,
       "per": 15.61,
       "pbr": 1.61,
@@ -2929,7 +3170,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0,
+      "foreign_rate": 35.59,
       "market_cap_b": 58492,
       "per": 15.19,
       "pbr": 1.56,
@@ -2951,7 +3192,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0,
+      "foreign_rate": 35.69,
       "market_cap_b": 55691,
       "per": 14.46,
       "pbr": 1.49,
@@ -2973,7 +3214,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0,
+      "foreign_rate": 35.62,
       "market_cap_b": 57092,
       "per": 14.82,
       "pbr": 1.53,
@@ -2995,7 +3236,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0,
+      "foreign_rate": 35.66,
       "market_cap_b": 56122,
       "per": 14.57,
       "pbr": 1.5,
@@ -3017,7 +3258,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0,
+      "foreign_rate": 35.84,
       "market_cap_b": 56661,
       "per": 14.71,
       "pbr": 1.52,
@@ -3039,7 +3280,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 0.0,
+      "foreign_rate": 36.09,
       "market_cap_b": 59462,
       "per": 15.44,
       "pbr": 1.59,

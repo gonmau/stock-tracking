@@ -21,7 +21,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install pykrx pandas
+        run: pip install --no-cache-dir --timeout 60 pykrx pandas
 
       - name: Run backfill
         run: python backfill_all.py

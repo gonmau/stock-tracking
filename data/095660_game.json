@@ -2,7 +2,7 @@
   "ticker": "095660",
   "name": "네오위즈",
   "total_shares": 18652100,
-  "updated_at": "2026-06-11 17:40",
+  "updated_at": "2026-06-11 18:10",
   "records": [
     {
       "date": "2025-05-19",
@@ -3493,10 +3493,10 @@
       "date": "2026-06-09",
       "close": 19070,
       "volume": 84014,
-      "short_vol": 29.1,
-      "balance": 6.59,
-      "ratio": 0.353,
-      "balance_chg": 0.0,
+      "short_vol": 17.5,
+      "balance": 6.71,
+      "ratio": 0.36,
+      "balance_chg": 0.13,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,

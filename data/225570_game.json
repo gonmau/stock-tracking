@@ -2,7 +2,7 @@
   "ticker": "225570",
   "name": "넥슨게임즈",
   "total_shares": 58718164,
-  "updated_at": "2026-06-12 12:43",
+  "updated_at": "2026-06-12 14:57",
   "records": [
     {
       "date": "2025-05-19",
@@ -3452,7 +3452,7 @@
       "short_vol": 18.7,
       "balance": 134.48,
       "ratio": 2.29,
-      "balance_chg": 0.55,
+      "balance_chg": 0,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
@@ -3519,8 +3519,8 @@
       "balance": 139.0,
       "ratio": 2.367,
       "balance_chg": 0.0,
-      "bal_5ma": 136.72,
-      "price_5ma": 9802.0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
       "price_20ma": 0,
       "foreign_rate": 2.69,
       "market_cap_b": 6158,

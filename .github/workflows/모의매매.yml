@@ -1,0 +1,51 @@
+name: 모의매매 자동실행
+
+on:
+  schedule:
+    # 10분마다 (평일 KST 08:00~20:10 = UTC 23:00~11:10)
+    - cron: '*/10 23 * * 0-4'   # UTC 23:00~23:50 → KST 08:00~08:50
+    - cron: '*/10 0-10 * * 1-5' # UTC 00:00~10:50 → KST 09:00~19:50
+    - cron: '*/10 11 * * 1-5'   # UTC 11:00~11:10 → KST 20:00~20:10
+  workflow_dispatch:
+    inputs:
+      force_run:
+        description: '장 시간 무관 강제 실행'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+jobs:
+  run-trading:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Seoul
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run 모의매매
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          python 모의매매.py
+
+      - name: Commit data updates
+        run: |
+          git config user.name "모의매매봇"
+          git config user.email "actions@github.com"
+          git add data/
+          git diff --staged --quiet || git commit -m "모의매매 데이터 업데이트 $(date '+%Y-%m-%d %H:%M')"
+          git push
+        continue-on-error: true

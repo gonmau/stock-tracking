@@ -1,0 +1,9 @@
+[
+  {
+    "ticker": "263750",
+    "name": "펄어비스",
+    "active": true,
+    "strategy": "rsi_ma",
+    "memo": ""
+  }
+]

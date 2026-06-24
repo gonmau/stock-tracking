@@ -1,0 +1,19 @@
+{
+  "last_updated": "2026-06-24 19:54:49",
+  "cash": 10000000,
+  "total_value": 10000000,
+  "initial_cash": 10000000,
+  "total_pnl": 0,
+  "total_pnl_pct": 0.0,
+  "realized_pnl": 0,
+  "positions": [],
+  "trade_count": 0,
+  "settings": {
+    "fee_rate": 0.00015,
+    "tax_rate": 0.0018,
+    "stop_loss_pct": -5.0,
+    "take_profit_pct": 10.0,
+    "use_nxt": true,
+    "max_position_ratio": 0.3
+  }
+}

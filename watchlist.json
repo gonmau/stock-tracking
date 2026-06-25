@@ -4,6 +4,9 @@
     "name": "펄어비스",
     "active": true,
     "strategy": "rsi_ma",
+    "condition_logic": "OR",
+    "buy_conditions": [],
+    "sell_conditions": [],
     "memo": ""
   }
 ]

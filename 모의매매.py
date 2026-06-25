@@ -1,57 +1,83 @@
 """
-모의매매.py - 자동 모의 매매 시스템
-- pykrx + Naver Finance로 실시간/장외 가격 조회 (NXT 포함)
-- 매매 조건 자동 판단 및 체결
+모의매매.py - 자동 모의 매매 시스템 v2
+- pykrx + Naver Finance 실시간/NXT 가격 조회
+- 자동 전략: RSI, MA, RSI+MA 복합
+- 수동 조건: 지정가 / 변동률(직전 대비 ±%) / 등락률(전일 대비 ±%)
 - 수수료/세금 반영 손익 계산
+- 5분 간격 GitHub Actions 실행
 - 디스코드 알림
-- GitHub Actions 10분 간격 실행
 """
 
-import os
-import json
-import time
-import datetime
-import requests
-import traceback
+import os, json, time, datetime, requests, traceback
 from pathlib import Path
 
 # ─────────────────────────────────────────
-# 설정
+# 경로
 # ─────────────────────────────────────────
-DATA_DIR = Path("data")
+DATA_DIR       = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
+PORTFOLIO_FILE = DATA_DIR / "portfolio.json"
+TRADES_FILE    = DATA_DIR / "trades.json"
+WATCHLIST_FILE = DATA_DIR / "watchlist.json"
+SETTINGS_FILE  = DATA_DIR / "settings.json"
+PRICE_FILE     = DATA_DIR / "last_prices.json"   # 직전 실행 가격 저장
 
-PORTFOLIO_FILE   = DATA_DIR / "portfolio.json"
-TRADES_FILE      = DATA_DIR / "trades.json"
-WATCHLIST_FILE   = DATA_DIR / "watchlist.json"
-SETTINGS_FILE    = DATA_DIR / "settings.json"
+DISCORD_WEBHOOK = os.environ.get("DISCORD_WEBHOOK", "")
 
-DISCORD_WEBHOOK  = os.environ.get("DISCORD_WEBHOOK", "")
-
-# 기본 설정 (settings.json 없을 때 초기값)
+# ─────────────────────────────────────────
+# 기본 설정
+# ─────────────────────────────────────────
 DEFAULT_SETTINGS = {
-    "initial_cash": 10_000_000,          # 초기 현금 (원)
-    "fee_rate": 0.00015,                 # 매매 수수료 0.015%
-    "tax_rate": 0.0018,                  # 증권거래세 0.18% (코스피)
-    "use_nxt": True,                     # NXT 장외 거래 허용
-    "nxt_fee_extra": 0.0001,             # NXT 추가 수수료 (0.01%)
-    "max_position_ratio": 0.3,           # 종목당 최대 비중 30%
-    "stop_loss_pct": -5.0,               # 손절 -5%
-    "take_profit_pct": 10.0,             # 익절 +10%
-    "rsi_period": 14,
-    "rsi_oversold": 30,
-    "rsi_overbought": 70,
-    "ma_short": 5,
-    "ma_long": 20,
+    "initial_cash":        10_000_000,
+    "fee_rate":            0.00015,    # 수수료 0.015%
+    "tax_rate":            0.0018,     # 증권거래세 0.18%
+    "use_nxt":             True,
+    "nxt_fee_extra":       0.0001,
+    "max_position_ratio":  0.3,        # 종목당 최대 비중
+    "buy_amount_ratio":    0.5,        # 1회 매수 현금 비율
+    "stop_loss_pct":      -5.0,
+    "take_profit_pct":    10.0,
+    "rsi_period":         14,
+    "rsi_oversold":       30,
+    "rsi_overbought":     70,
+    "ma_short":            5,
+    "ma_long":            20,
 }
+
+# ─────────────────────────────────────────
+# 감시종목 조건 스키마 예시
+# ─────────────────────────────────────────
+# {
+#   "ticker": "263750",
+#   "name": "펄어비스",
+#   "active": true,
+#   "strategy": "manual",          # rsi / ma / rsi_ma / manual
+#
+#   ── 수동 조건 (strategy=manual 또는 어떤 전략이든 함께 사용 가능) ──
+#   "buy_conditions": [
+#     {"type": "price_below",   "value": 22000},          # 현재가 ≤ 22000원
+#     {"type": "price_above",   "value": 20000},          # 현재가 ≥ 20000원
+#     {"type": "change_down",   "value": 3.0},            # 직전 실행 대비 -3% 이하 하락
+#     {"type": "change_up",     "value": 3.0},            # 직전 실행 대비 +3% 이상 상승
+#     {"type": "day_change_down","value": 5.0},           # 전일 종가 대비 -5% 이하
+#     {"type": "day_change_up", "value": 5.0},            # 전일 종가 대비 +5% 이상
+#   ],
+#   "sell_conditions": [
+#     {"type": "price_above",   "value": 25000},
+#     {"type": "change_up",     "value": 2.0},
+#     {"type": "day_change_up", "value": 8.0},
+#   ],
+#   "condition_logic": "OR"   # OR(하나라도) / AND(모두) - 기본 OR
+# }
 
 
 # ─────────────────────────────────────────
 # 유틸
 # ─────────────────────────────────────────
 def load_json(path, default):
-    if Path(path).exists():
-        with open(path, encoding="utf-8") as f:
+    p = Path(path)
+    if p.exists():
+        with open(p, encoding="utf-8") as f:
             return json.load(f)
     return default
 
@@ -62,572 +88,494 @@ def save_json(path, data):
 def now_str():
     return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-def today_str():
-    return datetime.datetime.now().strftime("%Y-%m-%d")
-
 def is_krx_open():
-    """한국 장 시간 여부 (09:00~15:30, 평일)"""
     now = datetime.datetime.now()
-    if now.weekday() >= 5:  # 토/일
-        return False
+    if now.weekday() >= 5: return False
     t = now.time()
     return datetime.time(9, 0) <= t <= datetime.time(15, 30)
 
 def is_nxt_open():
-    """NXT 장외 시간 여부 (08:00~09:00, 15:40~20:00, 평일)"""
     now = datetime.datetime.now()
-    if now.weekday() >= 5:
-        return False
+    if now.weekday() >= 5: return False
     t = now.time()
-    morning = datetime.time(8, 0) <= t < datetime.time(9, 0)
-    evening = datetime.time(15, 40) <= t <= datetime.time(20, 0)
-    return morning or evening
+    return (datetime.time(8, 0) <= t < datetime.time(9, 0)) or \
+           (datetime.time(15, 40) <= t <= datetime.time(20, 0))
 
 
 # ─────────────────────────────────────────
 # 가격 조회
 # ─────────────────────────────────────────
 def get_price_naver(ticker: str) -> dict:
-    """
-    Naver Finance API - 실시간 + NXT 장외 가격
-    overMarketPriceInfo 포함
-    """
     url = f"https://m.stock.naver.com/api/stock/{ticker}/integration"
-    headers = {"User-Agent": "Mozilla/5.0"}
     try:
-        r = requests.get(url, headers=headers, timeout=5)
+        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5)
         r.raise_for_status()
         d = r.json()
 
-        # 현재가
-        current_price = int(d.get("dealTrendInfos", [{}])[0].get("closePrice", 0) or 0)
-        if not current_price:
-            current_price = int(d.get("stockEndQuoteInfos", {}).get("closePrice", 0) or 0)
+        current = 0
+        prev_close = 0  # 전일 종가
 
-        # NXT 장외가 (overMarketPriceInfo)
+        # 현재가
+        deal = d.get("dealTrendInfos", [])
+        if deal:
+            current = int(deal[0].get("closePrice", 0) or 0)
+
+        # 전일 종가 (기준가)
+        end_info = d.get("stockEndQuoteInfos", {})
+        if not current:
+            current = int(end_info.get("closePrice", 0) or 0)
+        prev_close = int(end_info.get("basePrice", 0) or 0)
+
+        # NXT 장외가
         nxt_price = 0
-        nxt_change_rate = 0.0
-        over_info = d.get("overMarketPriceInfo", {})
-        if over_info:
-            nxt_price = int(over_info.get("price", 0) or 0)
-            nxt_change_rate = float(over_info.get("changeRate", 0) or 0)
+        over = d.get("overMarketPriceInfo", {})
+        if over:
+            nxt_price = int(over.get("price", 0) or 0)
 
         return {
             "ticker": ticker,
-            "price": current_price,
+            "price": current,
+            "prev_close": prev_close,
             "nxt_price": nxt_price,
-            "nxt_change_rate": nxt_change_rate,
-            "source": "naver",
             "ts": now_str(),
         }
     except Exception as e:
-        print(f"[WARN] Naver price fetch failed for {ticker}: {e}")
-        return {"ticker": ticker, "price": 0, "nxt_price": 0, "source": "error", "ts": now_str()}
-
-def get_price_pykrx(ticker: str) -> int:
-    """pykrx로 당일 종가 조회 (장 마감 후 fallback)"""
-    try:
-        from pykrx import stock as krx
-        today = datetime.datetime.now().strftime("%Y%m%d")
-        df = krx.get_market_ohlcv_by_date(today, today, ticker)
-        if not df.empty:
-            return int(df["종가"].iloc[-1])
-    except Exception as e:
-        print(f"[WARN] pykrx price failed for {ticker}: {e}")
-    return 0
-
-def get_ohlcv_history(ticker: str, days: int = 60) -> list:
-    """pykrx로 OHLCV 히스토리 (기술 지표 계산용)"""
-    try:
-        from pykrx import stock as krx
-        end = datetime.datetime.now()
-        start = end - datetime.timedelta(days=days * 2)  # 주말 여유
-        df = krx.get_market_ohlcv_by_date(
-            start.strftime("%Y%m%d"), end.strftime("%Y%m%d"), ticker
-        )
-        if df.empty:
-            return []
-        result = []
-        for idx, row in df.iterrows():
-            result.append({
-                "date": str(idx.date()),
-                "open": int(row["시가"]),
-                "high": int(row["고가"]),
-                "low": int(row["저가"]),
-                "close": int(row["종가"]),
-                "volume": int(row["거래량"]),
-            })
-        return result[-days:]
-    except Exception as e:
-        print(f"[WARN] OHLCV history failed for {ticker}: {e}")
-        return []
+        print(f"[WARN] Naver {ticker}: {e}")
+        return {"ticker": ticker, "price": 0, "prev_close": 0, "nxt_price": 0, "ts": now_str()}
 
 def get_effective_price(ticker: str, settings: dict) -> dict:
-    """
-    현재 유효 가격 결정:
-    - 정규장 중: Naver 현재가
-    - NXT 시간 + use_nxt=True: Naver NXT가
-    - 그 외: pykrx 종가
-    반환: {price, source, is_nxt, ts}
-    """
     nav = get_price_naver(ticker)
     is_nxt_time = is_nxt_open() and settings.get("use_nxt", True)
 
     if is_krx_open() and nav["price"] > 0:
-        return {"price": nav["price"], "source": "naver_realtime", "is_nxt": False, "ts": nav["ts"]}
-
+        return {**nav, "source": "realtime", "is_nxt": False}
     if is_nxt_time and nav["nxt_price"] > 0:
-        return {"price": nav["nxt_price"], "source": "naver_nxt", "is_nxt": True, "ts": nav["ts"]}
-
-    # fallback: pykrx 종가
-    krx_price = get_price_pykrx(ticker)
-    if krx_price > 0:
-        return {"price": krx_price, "source": "pykrx_close", "is_nxt": False, "ts": now_str()}
-
-    # 마지막 fallback: naver 현재가라도
+        return {**nav, "price": nav["nxt_price"], "source": "nxt", "is_nxt": True}
     if nav["price"] > 0:
-        return {"price": nav["price"], "source": "naver_fallback", "is_nxt": False, "ts": nav["ts"]}
+        return {**nav, "source": "naver_close", "is_nxt": False}
+    return {**nav, "price": 0, "source": "unavailable", "is_nxt": False}
 
-    return {"price": 0, "source": "unavailable", "is_nxt": False, "ts": now_str()}
+def get_ohlcv(ticker: str, days: int = 60) -> list:
+    try:
+        from pykrx import stock as krx
+        end = datetime.datetime.now()
+        start = end - datetime.timedelta(days=days * 2)
+        df = krx.get_market_ohlcv_by_date(
+            start.strftime("%Y%m%d"), end.strftime("%Y%m%d"), ticker)
+        if df.empty: return []
+        return [{"date": str(i.date()), "close": int(r["종가"])}
+                for i, r in df.iterrows()][-days:]
+    except Exception as e:
+        print(f"[WARN] OHLCV {ticker}: {e}")
+        return []
 
 
 # ─────────────────────────────────────────
 # 기술 지표
 # ─────────────────────────────────────────
-def calc_rsi(closes: list, period: int = 14) -> float:
-    if len(closes) < period + 1:
-        return 50.0
-    gains, losses = [], []
-    for i in range(1, len(closes)):
-        diff = closes[i] - closes[i-1]
-        gains.append(max(diff, 0))
-        losses.append(max(-diff, 0))
-    avg_gain = sum(gains[-period:]) / period
-    avg_loss = sum(losses[-period:]) / period
-    if avg_loss == 0:
-        return 100.0
-    rs = avg_gain / avg_loss
-    return round(100 - 100 / (1 + rs), 2)
+def calc_rsi(closes, period=14):
+    if len(closes) < period + 1: return 50.0
+    gains = [max(closes[i]-closes[i-1], 0) for i in range(1, len(closes))]
+    losses = [max(closes[i-1]-closes[i], 0) for i in range(1, len(closes))]
+    ag = sum(gains[-period:]) / period
+    al = sum(losses[-period:]) / period
+    if al == 0: return 100.0
+    return round(100 - 100 / (1 + ag / al), 2)
 
-def calc_ma(closes: list, period: int) -> float:
-    if len(closes) < period:
-        return 0.0
+def calc_ma(closes, period):
+    if len(closes) < period: return 0.0
     return round(sum(closes[-period:]) / period, 2)
 
-def get_indicators(ticker: str, settings: dict) -> dict:
-    history = get_ohlcv_history(ticker, days=60)
-    if not history:
-        return {"rsi": 50, "ma_short": 0, "ma_long": 0, "price_history": []}
-    closes = [h["close"] for h in history]
-    rsi = calc_rsi(closes, settings["rsi_period"])
-    ma_s = calc_ma(closes, settings["ma_short"])
-    ma_l = calc_ma(closes, settings["ma_long"])
+def get_indicators(ticker, settings):
+    hist = get_ohlcv(ticker, 60)
+    if not hist:
+        return {"rsi": 50, "ma_short": 0, "ma_long": 0}
+    closes = [h["close"] for h in hist]
     return {
-        "rsi": rsi,
-        "ma_short": ma_s,
-        "ma_long": ma_l,
-        "price_history": history[-30:],  # 최근 30일
+        "rsi": calc_rsi(closes, settings["rsi_period"]),
+        "ma_short": calc_ma(closes, settings["ma_short"]),
+        "ma_long": calc_ma(closes, settings["ma_long"]),
     }
 
 
 # ─────────────────────────────────────────
-# 매매 조건 판단
+# 수동 조건 판단
 # ─────────────────────────────────────────
-def should_buy(ticker: str, watchlist_item: dict, portfolio: dict, settings: dict) -> tuple[bool, str]:
+def check_conditions(conditions: list, logic: str,
+                     current_price: int, prev_price: int, prev_close: int) -> tuple[bool, list]:
     """
-    매수 조건:
-    1. 사용자 정의 조건 (watchlist_item에 strategy 포함)
-    2. RSI 과매도 (<30)
-    3. MA 골든크로스 (단기 > 장기)
+    conditions: watchlist의 buy_conditions / sell_conditions
+    logic: "OR" | "AND"
+    prev_price: 직전 실행 시 가격 (last_prices.json)
+    prev_close: 전일 종가 (Naver API)
+    반환: (충족여부, 충족된 조건 설명 리스트)
     """
-    strategy = watchlist_item.get("strategy", "rsi_ma")  # default: rsi+ma 복합
-    cash = portfolio.get("cash", 0)
-    total_value = portfolio_total_value(portfolio)
-    max_invest = total_value * settings["max_position_ratio"]
+    if not conditions:
+        return False, []
 
-    # 이미 보유 중이면 추가 매수 안 함 (단순 전략)
-    positions = portfolio.get("positions", {})
-    if ticker in positions and positions[ticker]["qty"] > 0:
-        # 보유 중: 손절/익절만 체크
-        return False, "already_holding"
+    matched = []
+    for cond in conditions:
+        t = cond.get("type", "")
+        v = float(cond.get("value", 0))
+        hit = False
+        desc = ""
 
-    if cash < 100_000:
-        return False, "insufficient_cash"
+        if t == "price_below" and current_price > 0:
+            hit = current_price <= v
+            desc = f"현재가({current_price:,}) ≤ 지정가({int(v):,})"
 
-    ind = get_indicators(ticker, settings)
-    rsi = ind["rsi"]
-    ma_s = ind["ma_short"]
-    ma_l = ind["ma_long"]
+        elif t == "price_above" and current_price > 0:
+            hit = current_price >= v
+            desc = f"현재가({current_price:,}) ≥ 지정가({int(v):,})"
 
-    reasons = []
-    buy_signal = False
+        elif t == "change_down" and prev_price > 0:
+            chg = (current_price - prev_price) / prev_price * 100
+            hit = chg <= -abs(v)
+            desc = f"직전대비 {chg:+.2f}% (기준 -{abs(v):.1f}%)"
 
-    if strategy in ("rsi", "rsi_ma"):
-        if rsi < settings["rsi_oversold"]:
-            reasons.append(f"RSI={rsi:.1f}(과매도)")
-            buy_signal = True
+        elif t == "change_up" and prev_price > 0:
+            chg = (current_price - prev_price) / prev_price * 100
+            hit = chg >= abs(v)
+            desc = f"직전대비 {chg:+.2f}% (기준 +{abs(v):.1f}%)"
+
+        elif t == "day_change_down" and prev_close > 0:
+            chg = (current_price - prev_close) / prev_close * 100
+            hit = chg <= -abs(v)
+            desc = f"전일대비 {chg:+.2f}% (기준 -{abs(v):.1f}%)"
+
+        elif t == "day_change_up" and prev_close > 0:
+            chg = (current_price - prev_close) / prev_close * 100
+            hit = chg >= abs(v)
+            desc = f"전일대비 {chg:+.2f}% (기준 +{abs(v):.1f}%)"
+
+        if hit:
+            matched.append(desc)
+
+    if logic == "AND":
+        satisfied = len(matched) == len(conditions)
+    else:  # OR
+        satisfied = len(matched) > 0
+
+    return satisfied, matched
+
+
+# ─────────────────────────────────────────
+# 자동 전략 판단
+# ─────────────────────────────────────────
+def auto_buy_signal(strategy: str, ind: dict, settings: dict) -> tuple[bool, str]:
+    if strategy == "rsi":
+        ok = ind["rsi"] < settings["rsi_oversold"]
+        return ok, f"RSI={ind['rsi']:.1f}(과매도<{settings['rsi_oversold']})"
+
+    if strategy == "ma":
+        ok = ind["ma_short"] > ind["ma_long"] > 0
+        return ok, f"골든크로스(MA{settings['ma_short']}={ind['ma_short']:.0f}>MA{settings['ma_long']}={ind['ma_long']:.0f})"
+
+    if strategy == "rsi_ma":
+        rsi_ok = ind["rsi"] < settings["rsi_oversold"]
+        ma_ok  = ind["ma_short"] > ind["ma_long"] > 0
+        ok = rsi_ok and ma_ok
+        parts = []
+        if rsi_ok: parts.append(f"RSI={ind['rsi']:.1f}")
+        if ma_ok:  parts.append(f"골든크로스")
+        return ok, " + ".join(parts)
+
+    return False, ""
+
+def auto_sell_signal(strategy: str, ind: dict, settings: dict) -> tuple[bool, str]:
+    if strategy == "rsi":
+        ok = ind["rsi"] > settings["rsi_overbought"]
+        return ok, f"RSI={ind['rsi']:.1f}(과매수>{settings['rsi_overbought']})"
 
     if strategy in ("ma", "rsi_ma"):
-        if ma_s > ma_l > 0:
-            reasons.append(f"골든크로스(MA{settings['ma_short']}={ma_s:.0f}>MA{settings['ma_long']}={ma_l:.0f})")
-            if strategy == "rsi_ma":
-                # rsi_ma 전략: 두 조건 모두 필요
-                buy_signal = buy_signal and True
-            else:
-                buy_signal = True
+        ok = 0 < ind["ma_short"] < ind["ma_long"]
+        return ok, f"데드크로스(MA{settings['ma_short']}={ind['ma_short']:.0f}<MA{settings['ma_long']}={ind['ma_long']:.0f})"
 
-    if strategy == "manual":
-        return False, "manual_only"
-
-    return buy_signal, " + ".join(reasons) if reasons else "no_signal"
-
-def should_sell(ticker: str, position: dict, current_price: int, settings: dict) -> tuple[bool, str]:
-    """
-    매도 조건:
-    1. 손절 (stop_loss_pct)
-    2. 익절 (take_profit_pct)
-    3. RSI 과매수 (>70)
-    4. MA 데드크로스
-    """
-    avg_cost = position.get("avg_cost", 0)
-    if avg_cost == 0:
-        return False, "no_position"
-
-    pnl_pct = (current_price - avg_cost) / avg_cost * 100
-
-    # 손절
-    if pnl_pct <= settings["stop_loss_pct"]:
-        return True, f"손절({pnl_pct:.2f}% ≤ {settings['stop_loss_pct']}%)"
-
-    # 익절
-    if pnl_pct >= settings["take_profit_pct"]:
-        return True, f"익절({pnl_pct:.2f}% ≥ {settings['take_profit_pct']}%)"
-
-    # 기술적 매도 (캐시된 지표 사용)
-    if "_indicators" in position:
-        ind = position["_indicators"]
-        rsi = ind.get("rsi", 50)
-        ma_s = ind.get("ma_short", 0)
-        ma_l = ind.get("ma_long", 0)
-
-        if rsi > settings["rsi_overbought"]:
-            return True, f"RSI={rsi:.1f}(과매수)"
-
-        if ma_s < ma_l and ma_l > 0:
-            return True, f"데드크로스(MA{settings['ma_short']}={ma_s:.0f}<MA{settings['ma_long']}={ma_l:.0f})"
-
-    return False, f"보유중({pnl_pct:.2f}%)"
+    return False, ""
 
 
 # ─────────────────────────────────────────
-# 손익 계산 (수수료/세금 포함)
+# 손익 계산
 # ─────────────────────────────────────────
-def calc_buy_cost(price: int, qty: int, settings: dict, is_nxt: bool = False) -> dict:
+def calc_buy_cost(price, qty, settings, is_nxt=False):
     gross = price * qty
-    fee_rate = settings["fee_rate"] + (settings["nxt_fee_extra"] if is_nxt else 0)
-    fee = round(gross * fee_rate)
-    total = gross + fee
-    return {"gross": gross, "fee": fee, "tax": 0, "total": total}
+    fee = round(gross * (settings["fee_rate"] + (settings["nxt_fee_extra"] if is_nxt else 0)))
+    return {"gross": gross, "fee": fee, "tax": 0, "total": gross + fee}
 
-def calc_sell_proceeds(price: int, qty: int, settings: dict, is_nxt: bool = False) -> dict:
+def calc_sell_proceeds(price, qty, settings, is_nxt=False):
     gross = price * qty
-    fee_rate = settings["fee_rate"] + (settings["nxt_fee_extra"] if is_nxt else 0)
-    fee = round(gross * fee_rate)
+    fee = round(gross * (settings["fee_rate"] + (settings["nxt_fee_extra"] if is_nxt else 0)))
     tax = round(gross * settings["tax_rate"])
-    total = gross - fee - tax
-    return {"gross": gross, "fee": fee, "tax": tax, "total": total}
+    return {"gross": gross, "fee": fee, "tax": tax, "total": gross - fee - tax}
 
-def portfolio_total_value(portfolio: dict) -> float:
-    cash = portfolio.get("cash", 0)
-    pos_value = sum(
+def portfolio_total_value(portfolio):
+    return portfolio.get("cash", 0) + sum(
         p.get("qty", 0) * p.get("last_price", p.get("avg_cost", 0))
         for p in portfolio.get("positions", {}).values()
     )
-    return cash + pos_value
 
 
 # ─────────────────────────────────────────
-# 포트폴리오 초기화
-# ─────────────────────────────────────────
-def init_portfolio(settings: dict) -> dict:
-    return {
-        "cash": settings["initial_cash"],
-        "positions": {},
-        "created_at": now_str(),
-        "last_updated": now_str(),
-    }
-
-
-# ─────────────────────────────────────────
-# 디스코드 알림
+# 디스코드
 # ─────────────────────────────────────────
 def discord_notify(msg: str):
     if not DISCORD_WEBHOOK:
         print(f"[Discord] {msg}")
         return
     try:
-        payload = {"content": msg, "username": "모의매매봇"}
-        r = requests.post(DISCORD_WEBHOOK, json=payload, timeout=5)
-        r.raise_for_status()
+        requests.post(DISCORD_WEBHOOK, json={"content": msg, "username": "모의매매봇"}, timeout=5)
     except Exception as e:
-        print(f"[WARN] Discord notify failed: {e}")
+        print(f"[WARN] Discord: {e}")
 
 
 # ─────────────────────────────────────────
 # 매매 실행
 # ─────────────────────────────────────────
-def execute_buy(ticker: str, price: int, reason: str,
-                portfolio: dict, trades: list, settings: dict,
-                is_nxt: bool = False, ticker_name: str = ""):
-    total_value = portfolio_total_value(portfolio)
-    max_invest = total_value * settings["max_position_ratio"]
-    invest = min(portfolio["cash"] * 0.5, max_invest)  # 현금 50% 또는 max_position 중 작은 값
-    invest = max(invest, 100_000)  # 최소 10만원
+def execute_buy(ticker, price, reason, portfolio, trades, settings,
+                is_nxt=False, name=""):
+    tv = portfolio_total_value(portfolio)
+    max_inv = tv * settings["max_position_ratio"]
+    invest  = min(portfolio["cash"] * settings["buy_amount_ratio"], max_inv)
     qty = int(invest // price)
-
-    if qty <= 0:
-        print(f"[SKIP] {ticker} 매수 수량 0 (invest={invest:,}, price={price:,})")
-        return False
+    if qty <= 0: return False
 
     cost = calc_buy_cost(price, qty, settings, is_nxt)
     if cost["total"] > portfolio["cash"]:
-        qty = int((portfolio["cash"] * 0.99) // (price * (1 + settings["fee_rate"])))
-        if qty <= 0:
-            return False
+        qty = int(portfolio["cash"] * 0.99 // (price * (1 + settings["fee_rate"])))
+        if qty <= 0: return False
         cost = calc_buy_cost(price, qty, settings, is_nxt)
 
     portfolio["cash"] -= cost["total"]
-
     pos = portfolio["positions"].get(ticker, {"qty": 0, "avg_cost": 0, "total_cost": 0})
-    new_total_cost = pos["total_cost"] + cost["total"]
-    new_qty = pos["qty"] + qty
+    new_qty  = pos["qty"] + qty
+    new_cost = pos["total_cost"] + cost["total"]
     portfolio["positions"][ticker] = {
-        "qty": new_qty,
-        "avg_cost": round(new_total_cost / new_qty),
-        "total_cost": new_total_cost,
-        "last_price": price,
-        "name": ticker_name or ticker,
+        "qty": new_qty, "avg_cost": round(new_cost / new_qty),
+        "total_cost": new_cost, "last_price": price, "name": name or ticker,
     }
 
-    trade = {
-        "id": f"{ticker}_{int(time.time())}",
-        "ticker": ticker,
-        "name": ticker_name or ticker,
-        "type": "BUY",
-        "price": price,
-        "qty": qty,
-        "gross": cost["gross"],
-        "fee": cost["fee"],
-        "tax": 0,
-        "net": cost["total"],
-        "reason": reason,
-        "is_nxt": is_nxt,
-        "ts": now_str(),
-    }
-    trades.append(trade)
+    trades.append({
+        "id": f"{ticker}_{int(time.time())}", "ticker": ticker, "name": name or ticker,
+        "type": "BUY", "price": price, "qty": qty,
+        "gross": cost["gross"], "fee": cost["fee"], "tax": 0, "net": cost["total"],
+        "reason": reason, "is_nxt": is_nxt, "ts": now_str(),
+    })
 
-    nxt_tag = " [NXT]" if is_nxt else ""
-    msg = (
-        f"📈 **모의매매 매수{nxt_tag}**\n"
-        f"종목: {ticker_name or ticker} ({ticker})\n"
+    nxt = " [NXT]" if is_nxt else ""
+    discord_notify(
+        f"📈 **모의매매 매수{nxt}**\n"
+        f"종목: {name or ticker} ({ticker})\n"
         f"가격: {price:,}원 × {qty}주 = {cost['gross']:,}원\n"
         f"수수료: {cost['fee']:,}원 | 총비용: {cost['total']:,}원\n"
         f"사유: {reason}\n"
-        f"잔여 현금: {portfolio['cash']:,.0f}원"
+        f"잔여현금: {portfolio['cash']:,.0f}원"
     )
-    discord_notify(msg)
-    print(f"[BUY] {ticker} {qty}주 @ {price:,} | {reason}")
+    print(f"[BUY]  {ticker} {qty}주 @ {price:,} | {reason}")
     return True
 
-def execute_sell(ticker: str, price: int, reason: str,
-                 portfolio: dict, trades: list, settings: dict,
-                 is_nxt: bool = False):
+def execute_sell(ticker, price, reason, portfolio, trades, settings, is_nxt=False):
     pos = portfolio["positions"].get(ticker)
-    if not pos or pos["qty"] <= 0:
-        return False
+    if not pos or pos["qty"] <= 0: return False
 
     qty = pos["qty"]
-    proceeds = calc_sell_proceeds(price, qty, settings, is_nxt)
-    avg_cost = pos["avg_cost"]
-    realized_pnl = proceeds["total"] - pos["total_cost"]
-    pnl_pct = realized_pnl / pos["total_cost"] * 100
+    proc = calc_sell_proceeds(price, qty, settings, is_nxt)
+    pnl  = proc["total"] - pos["total_cost"]
+    pct  = pnl / pos["total_cost"] * 100
 
-    portfolio["cash"] += proceeds["total"]
+    portfolio["cash"] += proc["total"]
     del portfolio["positions"][ticker]
 
-    trade = {
-        "id": f"{ticker}_{int(time.time())}",
-        "ticker": ticker,
-        "name": pos.get("name", ticker),
-        "type": "SELL",
-        "price": price,
-        "qty": qty,
-        "gross": proceeds["gross"],
-        "fee": proceeds["fee"],
-        "tax": proceeds["tax"],
-        "net": proceeds["total"],
-        "realized_pnl": realized_pnl,
-        "pnl_pct": round(pnl_pct, 2),
-        "reason": reason,
-        "is_nxt": is_nxt,
-        "ts": now_str(),
-    }
-    trades.append(trade)
+    trades.append({
+        "id": f"{ticker}_{int(time.time())}", "ticker": ticker, "name": pos.get("name", ticker),
+        "type": "SELL", "price": price, "qty": qty,
+        "gross": proc["gross"], "fee": proc["fee"], "tax": proc["tax"], "net": proc["total"],
+        "realized_pnl": round(pnl), "pnl_pct": round(pct, 2),
+        "reason": reason, "is_nxt": is_nxt, "ts": now_str(),
+    })
 
-    emoji = "✅" if realized_pnl >= 0 else "🔴"
-    nxt_tag = " [NXT]" if is_nxt else ""
-    msg = (
-        f"{emoji} **모의매매 매도{nxt_tag}**\n"
+    emoji = "✅" if pnl >= 0 else "🔴"
+    nxt = " [NXT]" if is_nxt else ""
+    discord_notify(
+        f"{emoji} **모의매매 매도{nxt}**\n"
         f"종목: {pos.get('name', ticker)} ({ticker})\n"
-        f"가격: {price:,}원 × {qty}주 = {proceeds['gross']:,}원\n"
-        f"수수료: {proceeds['fee']:,}원 | 세금: {proceeds['tax']:,}원\n"
-        f"실현 손익: {realized_pnl:+,.0f}원 ({pnl_pct:+.2f}%)\n"
+        f"가격: {price:,}원 × {qty}주 = {proc['gross']:,}원\n"
+        f"수수료: {proc['fee']:,}원 | 세금: {proc['tax']:,}원\n"
+        f"실현손익: {pnl:+,.0f}원 ({pct:+.2f}%)\n"
         f"사유: {reason}\n"
-        f"잔여 현금: {portfolio['cash']:,.0f}원"
+        f"잔여현금: {portfolio['cash']:,.0f}원"
     )
-    discord_notify(msg)
-    print(f"[SELL] {ticker} {qty}주 @ {price:,} | pnl={realized_pnl:+,.0f} | {reason}")
+    print(f"[SELL] {ticker} {qty}주 @ {price:,} | pnl={pnl:+,.0f} | {reason}")
     return True
 
 
 # ─────────────────────────────────────────
-# 메인 실행
+# summary.json 생성
+# ─────────────────────────────────────────
+def write_summary(portfolio, trades, settings):
+    tv = portfolio_total_value(portfolio)
+    initial = settings["initial_cash"]
+    realized = sum(t.get("realized_pnl", 0) for t in trades if t["type"] == "SELL")
+
+    positions_out = []
+    for ticker, pos in portfolio.get("positions", {}).items():
+        lp = pos.get("last_price", pos["avg_cost"])
+        unreal = (lp - pos["avg_cost"]) * pos["qty"]
+        positions_out.append({
+            "ticker": ticker, "name": pos.get("name", ticker),
+            "qty": pos["qty"], "avg_cost": pos["avg_cost"],
+            "last_price": lp, "market_value": lp * pos["qty"],
+            "unrealized_pnl": round(unreal),
+            "unrealized_pnl_pct": round((lp - pos["avg_cost"]) / pos["avg_cost"] * 100, 2),
+        })
+
+    save_json(DATA_DIR / "summary.json", {
+        "last_updated": now_str(),
+        "cash": round(portfolio["cash"]),
+        "total_value": round(tv),
+        "initial_cash": initial,
+        "total_pnl": round(tv - initial),
+        "total_pnl_pct": round((tv - initial) / initial * 100, 2),
+        "realized_pnl": round(realized),
+        "positions": positions_out,
+        "trade_count": len(trades),
+        "settings": {k: settings[k] for k in DEFAULT_SETTINGS},
+    })
+
+
+# ─────────────────────────────────────────
+# 메인
 # ─────────────────────────────────────────
 def run():
-    print(f"========== 모의매매 실행: {now_str()} ==========")
+    print(f"===== 모의매매 v2 실행: {now_str()} =====")
 
-    settings  = load_json(SETTINGS_FILE, DEFAULT_SETTINGS)
-    # 누락된 설정 키 기본값으로 보완
-    for k, v in DEFAULT_SETTINGS.items():
-        settings.setdefault(k, v)
-
-    portfolio = load_json(PORTFOLIO_FILE, None)
-    if portfolio is None:
-        portfolio = init_portfolio(settings)
-        print("[INFO] 포트폴리오 초기화")
-
-    trades   = load_json(TRADES_FILE, [])
+    settings  = {**DEFAULT_SETTINGS, **load_json(SETTINGS_FILE, {})}
+    portfolio = load_json(PORTFOLIO_FILE, None) or \
+                {"cash": settings["initial_cash"], "positions": {}, "created_at": now_str()}
+    trades    = load_json(TRADES_FILE, [])
     watchlist = load_json(WATCHLIST_FILE, [])
-
-    if not watchlist:
-        print("[INFO] 감시 종목 없음. watchlist.json 추가 필요")
-        # 대시보드에서 추가 가능하므로 종료하지 않고 계속
+    last_prices = load_json(PRICE_FILE, {})   # {ticker: {price, ts}}
 
     open_krx = is_krx_open()
     open_nxt = is_nxt_open() and settings.get("use_nxt", True)
 
     if not open_krx and not open_nxt:
-        print("[INFO] 장 닫힘 (정규장 + NXT 모두 비활성). 종료")
-        # 마지막 가격만 업데이트하고 저장
-        for ticker, pos in portfolio["positions"].items():
+        print("[INFO] 장 마감 (정규장 + NXT 모두 비활성). 가격만 업데이트.")
+        for ticker, pos in portfolio.get("positions", {}).items():
             pi = get_effective_price(ticker, settings)
             if pi["price"] > 0:
                 pos["last_price"] = pi["price"]
         portfolio["last_updated"] = now_str()
         save_json(PORTFOLIO_FILE, portfolio)
-        save_json(TRADES_FILE, trades)
-        _write_summary(portfolio, trades, settings)
+        write_summary(portfolio, trades, settings)
         return
 
-    print(f"[INFO] 정규장={open_krx}, NXT={open_nxt}")
+    print(f"[INFO] 정규장={open_krx} | NXT={open_nxt}")
+
+    new_last_prices = dict(last_prices)
 
     for item in watchlist:
-        ticker = item.get("ticker", "").strip()
-        ticker_name = item.get("name", ticker)
-        if not ticker:
-            continue
-        if not item.get("active", True):
+        ticker   = item.get("ticker", "").strip()
+        name     = item.get("name", ticker)
+        strategy = item.get("strategy", "rsi_ma")
+        logic    = item.get("condition_logic", "OR").upper()
+
+        if not ticker or not item.get("active", True):
             continue
 
-        print(f"\n--- {ticker_name}({ticker}) ---")
+        print(f"\n--- {name}({ticker}) | 전략={strategy} ---")
 
         # 가격 조회
         pi = get_effective_price(ticker, settings)
-        current_price = pi["price"]
-        is_nxt = pi["is_nxt"]
-
-        if current_price == 0:
-            print(f"[WARN] {ticker} 가격 조회 실패, 건너뜀")
+        price = pi["price"]
+        if price == 0:
+            print(f"  [WARN] 가격 조회 실패")
             continue
 
-        print(f"  가격: {current_price:,}원 (소스={pi['source']}, NXT={is_nxt})")
+        prev_price  = last_prices.get(ticker, {}).get("price", 0)
+        prev_close  = pi.get("prev_close", 0)
+        is_nxt      = pi.get("is_nxt", False)
 
-        # NXT 허용 여부 재확인
-        if is_nxt and not settings.get("use_nxt", True):
-            print(f"  NXT 비활성화, 건너뜀")
-            continue
+        # 직전 대비 변동률 계산
+        chg_from_prev = (price - prev_price) / prev_price * 100 if prev_price else 0
+        chg_from_day  = (price - prev_close) / prev_close * 100 if prev_close else 0
+        print(f"  가격: {price:,}원 | 직전대비: {chg_from_prev:+.2f}% | 전일대비: {chg_from_day:+.2f}% | NXT={is_nxt}")
 
-        # 기술 지표
-        ind = get_indicators(ticker, settings)
-        print(f"  RSI={ind['rsi']:.1f}, MA{settings['ma_short']}={ind['ma_short']:.0f}, MA{settings['ma_long']}={ind['ma_long']:.0f}")
+        # 가격 저장 (이번 실행분)
+        new_last_prices[ticker] = {"price": price, "ts": now_str()}
 
-        # 포지션 업데이트
+        # 포지션 현재가 업데이트
         if ticker in portfolio["positions"]:
-            portfolio["positions"][ticker]["last_price"] = current_price
-            portfolio["positions"][ticker]["_indicators"] = ind
+            portfolio["positions"][ticker]["last_price"] = price
 
-        # 매도 조건 체크
-        if ticker in portfolio["positions"] and portfolio["positions"][ticker]["qty"] > 0:
-            sell_flag, sell_reason = should_sell(ticker, portfolio["positions"][ticker], current_price, settings)
-            if sell_flag:
-                execute_sell(ticker, current_price, sell_reason, portfolio, trades, settings, is_nxt)
-                continue  # 매도 후 매수 판단 불필요
+        # ── 매도 판단 ──
+        pos = portfolio["positions"].get(ticker)
+        if pos and pos["qty"] > 0:
+            avg_cost = pos["avg_cost"]
+            pnl_pct  = (price - avg_cost) / avg_cost * 100
 
-        # 매수 조건 체크
-        buy_flag, buy_reason = should_buy(ticker, item, portfolio, settings)
-        if buy_flag:
-            execute_buy(ticker, current_price, buy_reason, portfolio, trades, settings, is_nxt, ticker_name)
+            sell_reason = None
+
+            # 1) 손절/익절 (항상 최우선)
+            if pnl_pct <= settings["stop_loss_pct"]:
+                sell_reason = f"손절({pnl_pct:.2f}%)"
+            elif pnl_pct >= settings["take_profit_pct"]:
+                sell_reason = f"익절({pnl_pct:.2f}%)"
+
+            # 2) 수동 매도 조건
+            if not sell_reason and item.get("sell_conditions"):
+                ok, matched = check_conditions(
+                    item["sell_conditions"], logic, price, prev_price, prev_close)
+                if ok:
+                    sell_reason = "수동조건: " + " / ".join(matched)
+
+            # 3) 자동 전략 매도
+            if not sell_reason and strategy != "manual":
+                ind = get_indicators(ticker, settings)
+                ok, sig = auto_sell_signal(strategy, ind, settings)
+                if ok:
+                    sell_reason = f"[{strategy.upper()}] {sig}"
+
+            if sell_reason:
+                execute_sell(ticker, price, sell_reason, portfolio, trades, settings, is_nxt)
+                continue
+
+            print(f"  보유중 ({pnl_pct:+.2f}%) — 매도 조건 미충족")
+            continue  # 이미 보유 중이면 매수 판단 불필요
+
+        # ── 매수 판단 ──
+        if portfolio["cash"] < 100_000:
+            print(f"  현금 부족 ({portfolio['cash']:,.0f}원)")
+            continue
+
+        buy_reason = None
+
+        # 1) 수동 매수 조건
+        if item.get("buy_conditions"):
+            ok, matched = check_conditions(
+                item["buy_conditions"], logic, price, prev_price, prev_close)
+            if ok:
+                buy_reason = "수동조건: " + " / ".join(matched)
+
+        # 2) 자동 전략 매수 (수동 조건이 없거나 수동이 아닐 때)
+        if not buy_reason and strategy != "manual":
+            ind = get_indicators(ticker, settings)
+            ok, sig = auto_buy_signal(strategy, ind, settings)
+            if ok:
+                buy_reason = f"[{strategy.upper()}] {sig}"
+
+        if buy_reason:
+            execute_buy(ticker, price, buy_reason, portfolio, trades,
+                        settings, is_nxt, name)
+        else:
+            print(f"  매수 조건 미충족")
 
     # 저장
     portfolio["last_updated"] = now_str()
     save_json(PORTFOLIO_FILE, portfolio)
     save_json(TRADES_FILE, trades)
-    _write_summary(portfolio, trades, settings)
+    save_json(PRICE_FILE, new_last_prices)
+    write_summary(portfolio, trades, settings)
     print("\n[INFO] 저장 완료")
-
-
-def _write_summary(portfolio: dict, trades: list, settings: dict):
-    """대시보드용 summary.json 생성"""
-    total_value = portfolio_total_value(portfolio)
-    initial = settings["initial_cash"]
-    total_pnl = total_value - initial
-    total_pnl_pct = total_pnl / initial * 100
-
-    realized = sum(t.get("realized_pnl", 0) for t in trades if t["type"] == "SELL")
-
-    positions_out = []
-    for ticker, pos in portfolio.get("positions", {}).items():
-        last_p = pos.get("last_price", pos["avg_cost"])
-        unreal = (last_p - pos["avg_cost"]) * pos["qty"]
-        unreal_pct = (last_p - pos["avg_cost"]) / pos["avg_cost"] * 100
-        positions_out.append({
-            "ticker": ticker,
-            "name": pos.get("name", ticker),
-            "qty": pos["qty"],
-            "avg_cost": pos["avg_cost"],
-            "last_price": last_p,
-            "market_value": last_p * pos["qty"],
-            "unrealized_pnl": round(unreal),
-            "unrealized_pnl_pct": round(unreal_pct, 2),
-        })
-
-    summary = {
-        "last_updated": now_str(),
-        "cash": portfolio["cash"],
-        "total_value": round(total_value),
-        "initial_cash": initial,
-        "total_pnl": round(total_pnl),
-        "total_pnl_pct": round(total_pnl_pct, 2),
-        "realized_pnl": round(realized),
-        "positions": positions_out,
-        "trade_count": len(trades),
-        "settings": {
-            k: settings[k] for k in
-            ["fee_rate", "tax_rate", "stop_loss_pct", "take_profit_pct",
-             "use_nxt", "max_position_ratio"]
-        },
-    }
-    save_json(DATA_DIR / "summary.json", summary)
 
 
 if __name__ == "__main__":
@@ -635,5 +583,5 @@ if __name__ == "__main__":
         run()
     except Exception:
         traceback.print_exc()
-        discord_notify(f"⚠️ 모의매매 오류 발생\n```\n{traceback.format_exc()[-500:]}\n```")
+        discord_notify(f"⚠️ 모의매매 오류\n```\n{traceback.format_exc()[-500:]}\n```")
         raise

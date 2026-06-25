@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-25 18:50:00",
+  "last_updated": "2026-06-25 19:56:24",
   "cash": 10000000,
   "total_value": 10000000,
   "initial_cash": 10000000,
@@ -9,11 +9,19 @@
   "positions": [],
   "trade_count": 0,
   "settings": {
+    "initial_cash": 10000000,
     "fee_rate": 0.00015,
     "tax_rate": 0.0018,
+    "use_nxt": true,
+    "nxt_fee_extra": 0.0001,
+    "max_position_ratio": 0.3,
+    "buy_amount_ratio": 0.5,
     "stop_loss_pct": -5.0,
     "take_profit_pct": 10.0,
-    "use_nxt": true,
-    "max_position_ratio": 0.3
+    "rsi_period": 14,
+    "rsi_oversold": 30,
+    "rsi_overbought": 70,
+    "ma_short": 5,
+    "ma_long": 20
   }
 }

@@ -2,7 +2,7 @@
   "ticker": "201490",
   "name": "미투온",
   "total_shares": 20000000,
-  "updated_at": "2026-06-25 12:01",
+  "updated_at": "2026-06-25 14:15",
   "records": [
     {
       "date": "2025-06-02",
@@ -5599,7 +5599,7 @@
       "short_vol": 9.3,
       "balance": 62.36,
       "ratio": 3.118,
-      "balance_chg": -0.79,
+      "balance_chg": 0,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
@@ -5666,8 +5666,8 @@
       "balance": 58.64,
       "ratio": 2.932,
       "balance_chg": 0.0,
-      "bal_5ma": 61.05,
-      "price_5ma": 2189.0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
       "price_20ma": 0,
       "foreign_rate": 2.33,
       "market_cap_b": 654,

@@ -2,7 +2,7 @@
   "ticker": "078340",
   "name": "컴투스",
   "total_shares": 11367920,
-  "updated_at": "2026-07-09 17:22",
+  "updated_at": "2026-07-09 18:51",
   "records": [
     {
       "date": "2025-05-19",
@@ -3933,10 +3933,10 @@
       "date": "2026-07-07",
       "close": 26250,
       "volume": 31892,
-      "short_vol": 3.0,
-      "balance": 6.65,
-      "ratio": 0.585,
-      "balance_chg": 0.0,
+      "short_vol": 2.1,
+      "balance": 7.04,
+      "ratio": 0.619,
+      "balance_chg": 0.39,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,

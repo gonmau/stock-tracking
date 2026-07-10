@@ -2,7 +2,7 @@
   "ticker": "194480",
   "name": "데브시스터즈",
   "total_shares": 12988480,
-  "updated_at": "2026-07-10 11:49",
+  "updated_at": "2026-07-10 14:03",
   "records": [
     {
       "date": "2025-05-19",
@@ -3892,7 +3892,7 @@
       "short_vol": 9.2,
       "balance": 23.71,
       "ratio": 1.825,
-      "balance_chg": 0.16,
+      "balance_chg": 0,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
@@ -3959,8 +3959,8 @@
       "balance": 25.54,
       "ratio": 1.966,
       "balance_chg": 0.0,
-      "bal_5ma": 24.57,
-      "price_5ma": 17072.0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
       "price_20ma": 0,
       "foreign_rate": 2.21,
       "market_cap_b": 2053,

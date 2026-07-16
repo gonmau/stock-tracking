@@ -2,7 +2,7 @@
   "ticker": "067000",
   "name": "조이시티",
   "total_shares": 27000000,
-  "updated_at": "2026-07-16 11:27",
+  "updated_at": "2026-07-16 13:17",
   "records": [
     {
       "date": "2025-05-19",
@@ -3980,7 +3980,7 @@
       "short_vol": 8.8,
       "balance": 22.16,
       "ratio": 0.821,
-      "balance_chg": 0.37,
+      "balance_chg": 0,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
@@ -4047,8 +4047,8 @@
       "balance": 22.16,
       "ratio": 0.821,
       "balance_chg": 0.0,
-      "bal_5ma": 22.09,
-      "price_5ma": 1054.0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
       "price_20ma": 0,
       "foreign_rate": 3.25,
       "market_cap_b": 733,

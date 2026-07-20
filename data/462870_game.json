@@ -2,7 +2,7 @@
   "ticker": "462870",
   "name": "시프트업",
   "total_shares": 50000000,
-  "updated_at": "2026-07-20 11:44",
+  "updated_at": "2026-07-20 13:43",
   "records": [
     {
       "date": "2025-05-19",
@@ -4024,7 +4024,7 @@
       "short_vol": 30.4,
       "balance": 47.91,
       "ratio": 0.958,
-      "balance_chg": 2.85,
+      "balance_chg": 0,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
@@ -4037,7 +4037,7 @@
       "turnover": 0.415,
       "vol_ratio": 0,
       "short_cover_signal": 0,
-      "short_attack_signal": 1
+      "short_attack_signal": 0
     },
     {
       "date": "2026-07-14",
@@ -4091,8 +4091,8 @@
       "balance": 48.98,
       "ratio": 0.98,
       "balance_chg": 0.0,
-      "bal_5ma": 47.98,
-      "price_5ma": 33330.0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
       "price_20ma": 0,
       "foreign_rate": 36.91,
       "market_cap_b": 19062,

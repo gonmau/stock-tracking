@@ -2,7 +2,7 @@
   "ticker": "112040",
   "name": "위메이드",
   "total_shares": 37600000,
-  "updated_at": "2026-07-23 18:23",
+  "updated_at": "2026-07-24 11:30",
   "records": [
     {
       "date": "2025-05-19",
@@ -4094,7 +4094,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 8.41,
+      "foreign_rate": 8.33,
       "market_cap_b": 5649,
       "per": 0.0,
       "pbr": 1.38,
@@ -4116,7 +4116,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 8.41,
+      "foreign_rate": 8.33,
       "market_cap_b": 5255,
       "per": 0.0,
       "pbr": 1.29,
@@ -4138,7 +4138,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 8.41,
+      "foreign_rate": 8.33,
       "market_cap_b": 5225,
       "per": 0.0,
       "pbr": 1.28,
@@ -4148,6 +4148,28 @@
       "vol_ratio": 0,
       "short_cover_signal": 0,
       "short_attack_signal": 1
+    },
+    {
+      "date": "2026-07-22",
+      "close": 15160,
+      "volume": 141797,
+      "short_vol": 47.1,
+      "balance": 131.89,
+      "ratio": 3.508,
+      "balance_chg": 0.0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0,
+      "foreign_rate": 8.33,
+      "market_cap_b": 5147,
+      "per": 0.0,
+      "pbr": 1.26,
+      "div_yield": 1.95,
+      "trading_value_b": 0.0,
+      "turnover": 0.377,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     }
   ]
 }

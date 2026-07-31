@@ -2,7 +2,7 @@
   "ticker": "194480",
   "name": "데브시스터즈",
   "total_shares": 12988480,
-  "updated_at": "2026-07-30 18:28",
+  "updated_at": "2026-07-31 11:36",
   "records": [
     {
       "date": "2025-05-19",
@@ -4182,7 +4182,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 1.98,
+      "foreign_rate": 1.82,
       "market_cap_b": 2079,
       "per": 17.99,
       "pbr": 1.13,
@@ -4204,7 +4204,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 1.98,
+      "foreign_rate": 1.82,
       "market_cap_b": 2079,
       "per": 17.99,
       "pbr": 1.13,
@@ -4226,7 +4226,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 1.98,
+      "foreign_rate": 1.82,
       "market_cap_b": 2098,
       "per": 18.15,
       "pbr": 1.14,
@@ -4248,7 +4248,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 1.98,
+      "foreign_rate": 1.82,
       "market_cap_b": 2039,
       "per": 17.64,
       "pbr": 1.11,
@@ -4258,6 +4258,28 @@
       "vol_ratio": 0,
       "short_cover_signal": 0,
       "short_attack_signal": 1
+    },
+    {
+      "date": "2026-07-29",
+      "close": 15930,
+      "volume": 117306,
+      "short_vol": 5.4,
+      "balance": 27.92,
+      "ratio": 2.15,
+      "balance_chg": 0.0,
+      "bal_5ma": 27.61,
+      "price_5ma": 16864.0,
+      "price_20ma": 0,
+      "foreign_rate": 1.82,
+      "market_cap_b": 1932,
+      "per": 16.72,
+      "pbr": 1.05,
+      "div_yield": 0.0,
+      "trading_value_b": 0.0,
+      "turnover": 0.903,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     }
   ]
 }

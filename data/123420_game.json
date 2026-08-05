@@ -2,7 +2,7 @@
   "ticker": "123420",
   "name": "선데이토즈",
   "total_shares": 14030000,
-  "updated_at": "2026-08-05 17:46",
+  "updated_at": "2026-08-05 18:34",
   "records": [
     {
       "date": "2025-05-19",
@@ -4329,10 +4329,10 @@
       "date": "2026-08-03",
       "close": 5720,
       "volume": 11102,
-      "short_vol": 1.6,
-      "balance": 11.55,
-      "ratio": 0.823,
-      "balance_chg": 0.0,
+      "short_vol": 0.5,
+      "balance": 9.8,
+      "ratio": 0.698,
+      "balance_chg": -1.75,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,

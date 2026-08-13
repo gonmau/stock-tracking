@@ -2,7 +2,7 @@
   "ticker": "063080",
   "name": "컴투스홀딩스",
   "total_shares": 7000000,
-  "updated_at": "2026-08-13 10:47",
+  "updated_at": "2026-08-13 12:32",
   "records": [
     {
       "date": "2025-06-02",
@@ -6347,7 +6347,7 @@
       "short_vol": 0.5,
       "balance": 3.66,
       "ratio": 0.523,
-      "balance_chg": 0.03,
+      "balance_chg": 0,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
@@ -6414,8 +6414,8 @@
       "balance": 3.71,
       "ratio": 0.53,
       "balance_chg": 0.0,
-      "bal_5ma": 3.68,
-      "price_5ma": 12782.0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
       "price_20ma": 0,
       "foreign_rate": 1.99,
       "market_cap_b": 866,

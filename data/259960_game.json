@@ -2,7 +2,7 @@
   "ticker": "259960",
   "name": "크래프톤",
   "total_shares": 44039000,
-  "updated_at": "2026-08-27 23:55",
+  "updated_at": "2026-08-28 01:02",
   "records": [
     {
       "date": "2025-05-19",
@@ -4600,7 +4600,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 43.75,
+      "foreign_rate": 43.72,
       "market_cap_b": 102657,
       "per": 13.52,
       "pbr": 1.41,
@@ -4622,7 +4622,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 43.75,
+      "foreign_rate": 43.72,
       "market_cap_b": 102426,
       "per": 13.49,
       "pbr": 1.41,
@@ -4644,7 +4644,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 43.75,
+      "foreign_rate": 43.72,
       "market_cap_b": 103349,
       "per": 13.61,
       "pbr": 1.42,
@@ -4666,7 +4666,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 43.75,
+      "foreign_rate": 43.72,
       "market_cap_b": 102016,
       "per": 13.55,
       "pbr": 1.41,
@@ -4676,6 +4676,28 @@
       "vol_ratio": 0,
       "short_cover_signal": 0,
       "short_attack_signal": 1
+    },
+    {
+      "date": "2026-08-26",
+      "close": 228000,
+      "volume": 75031,
+      "short_vol": 7.3,
+      "balance": 53.71,
+      "ratio": 1.22,
+      "balance_chg": 0.0,
+      "bal_5ma": 52.72,
+      "price_5ma": 223900.0,
+      "price_20ma": 0,
+      "foreign_rate": 43.72,
+      "market_cap_b": 104304,
+      "per": 13.86,
+      "pbr": 1.45,
+      "div_yield": 0.98,
+      "trading_value_b": 0.0,
+      "turnover": 0.17,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     }
   ]
 }

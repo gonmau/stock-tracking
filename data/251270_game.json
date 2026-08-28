@@ -2,7 +2,7 @@
   "ticker": "251270",
   "name": "넷마블",
   "total_shares": 84739137,
-  "updated_at": "2026-08-28 23:52",
+  "updated_at": "2026-08-29 00:51",
   "records": [
     {
       "date": "2025-05-19",
@@ -4695,6 +4695,28 @@
       "div_yield": 2.33,
       "trading_value_b": 0.0,
       "turnover": 0.11,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
+    },
+    {
+      "date": "2026-08-27",
+      "close": 36300,
+      "volume": 144115,
+      "short_vol": 13.0,
+      "balance": 3.88,
+      "ratio": 0.046,
+      "balance_chg": 0.0,
+      "bal_5ma": 3.74,
+      "price_5ma": 37190.0,
+      "price_20ma": 0,
+      "foreign_rate": 27.44,
+      "market_cap_b": 30187,
+      "per": 13.22,
+      "pbr": 0.55,
+      "div_yield": 2.41,
+      "trading_value_b": 0.0,
+      "turnover": 0.17,
       "vol_ratio": 0,
       "short_cover_signal": 0,
       "short_attack_signal": 0

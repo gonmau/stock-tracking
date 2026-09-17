@@ -2,7 +2,7 @@
   "ticker": "263750",
   "name": "펄어비스",
   "total_shares": 64250000,
-  "updated_at": "2026-09-17 09:45",
+  "updated_at": "2026-09-17 11:20",
   "records": [
     {
       "date": "2025-09-15",
@@ -2919,6 +2919,18 @@
       "bal_5ma": 151.56,
       "price_5ma": 35210.0,
       "price_20ma": 32798.0
+    },
+    {
+      "date": "2026-09-15",
+      "close": 35500,
+      "volume": 274724,
+      "short_vol": 25.4,
+      "balance": 149.22,
+      "ratio": 2.322,
+      "balance_chg": -3.46,
+      "bal_5ma": 151.04,
+      "price_5ma": 35260.0,
+      "price_20ma": 33045.0
     }
   ]
 }

@@ -2,7 +2,7 @@
   "ticker": "225570",
   "name": "넥슨게임즈",
   "total_shares": 58718164,
-  "updated_at": "2026-09-23 21:29",
+  "updated_at": "2026-09-24 12:06",
   "records": [
     {
       "date": "2025-05-19",
@@ -5018,7 +5018,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 2.68,
+      "foreign_rate": 2.58,
       "market_cap_b": 7627,
       "per": 0.0,
       "pbr": 2.86,
@@ -5040,7 +5040,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 2.68,
+      "foreign_rate": 2.58,
       "market_cap_b": 7541,
       "per": 0.0,
       "pbr": 2.83,
@@ -5062,7 +5062,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 2.68,
+      "foreign_rate": 2.58,
       "market_cap_b": 7449,
       "per": 0.0,
       "pbr": 2.79,
@@ -5084,7 +5084,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 2.68,
+      "foreign_rate": 2.58,
       "market_cap_b": 7113,
       "per": 0.0,
       "pbr": 2.67,
@@ -5094,6 +5094,28 @@
       "vol_ratio": 0,
       "short_cover_signal": 0,
       "short_attack_signal": 1
+    },
+    {
+      "date": "2026-09-22",
+      "close": 10830,
+      "volume": 119406,
+      "short_vol": 5.0,
+      "balance": 78.65,
+      "ratio": 1.339,
+      "balance_chg": 0.0,
+      "bal_5ma": 71.24,
+      "price_5ma": 11186.0,
+      "price_20ma": 0,
+      "foreign_rate": 2.58,
+      "market_cap_b": 7172,
+      "per": 0.0,
+      "pbr": 2.69,
+      "div_yield": 0.0,
+      "trading_value_b": 0.0,
+      "turnover": 0.203,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     }
   ]
 }

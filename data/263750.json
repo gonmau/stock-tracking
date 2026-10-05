@@ -2,44 +2,8 @@
   "ticker": "263750",
   "name": "펄어비스",
   "total_shares": 64250000,
-  "updated_at": "2026-10-02 13:23",
+  "updated_at": "2026-10-05 03:58",
   "records": [
-    {
-      "date": "2025-09-30",
-      "close": 35450,
-      "volume": 209934,
-      "short_vol": 25.7,
-      "balance": 105.53,
-      "ratio": 1.643,
-      "balance_chg": 0,
-      "bal_5ma": 0,
-      "price_5ma": 0,
-      "price_20ma": 0
-    },
-    {
-      "date": "2025-10-01",
-      "close": 34900,
-      "volume": 110474,
-      "short_vol": 15.6,
-      "balance": 105.94,
-      "ratio": 1.649,
-      "balance_chg": 0.41,
-      "bal_5ma": 0,
-      "price_5ma": 0,
-      "price_20ma": 0
-    },
-    {
-      "date": "2025-10-02",
-      "close": 34550,
-      "volume": 143910,
-      "short_vol": 20.7,
-      "balance": 105.72,
-      "ratio": 1.646,
-      "balance_chg": -0.22,
-      "bal_5ma": 0,
-      "price_5ma": 0,
-      "price_20ma": 0
-    },
     {
       "date": "2025-10-10",
       "close": 35400,
@@ -47,7 +11,7 @@
       "short_vol": 10.3,
       "balance": 106.84,
       "ratio": 1.663,
-      "balance_chg": 1.11,
+      "balance_chg": 0,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0
@@ -60,8 +24,8 @@
       "balance": 106.46,
       "ratio": 1.657,
       "balance_chg": -0.38,
-      "bal_5ma": 106.1,
-      "price_5ma": 35250.0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
       "price_20ma": 0
     },
     {
@@ -72,8 +36,8 @@
       "balance": 108.84,
       "ratio": 1.694,
       "balance_chg": 2.38,
-      "bal_5ma": 106.76,
-      "price_5ma": 35320.0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
       "price_20ma": 0
     },
     {
@@ -84,8 +48,8 @@
       "balance": 109.71,
       "ratio": 1.708,
       "balance_chg": 0.87,
-      "bal_5ma": 107.51,
-      "price_5ma": 35490.0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
       "price_20ma": 0
     },
     {
@@ -242,7 +206,7 @@
       "balance_chg": 0.16,
       "bal_5ma": 105.4,
       "price_5ma": 34580.0,
-      "price_20ma": 35318.0
+      "price_20ma": 0
     },
     {
       "date": "2025-11-04",
@@ -254,7 +218,7 @@
       "balance_chg": -1.37,
       "bal_5ma": 105.65,
       "price_5ma": 34730.0,
-      "price_20ma": 35328.0
+      "price_20ma": 0
     },
     {
       "date": "2025-11-05",
@@ -266,7 +230,7 @@
       "balance_chg": 3.29,
       "bal_5ma": 105.94,
       "price_5ma": 34830.0,
-      "price_20ma": 35322.0
+      "price_20ma": 0
     },
     {
       "date": "2025-11-06",

@@ -2,7 +2,7 @@
   "ticker": "293490",
   "name": "카카오게임즈",
   "total_shares": 134986390,
-  "updated_at": "2026-10-08 23:15",
+  "updated_at": "2026-10-09 13:31",
   "records": [
     {
       "date": "2025-05-19",
@@ -5216,7 +5216,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 4.59,
+      "foreign_rate": 4.51,
       "market_cap_b": 10621,
       "per": 0.0,
       "pbr": 0.75,
@@ -5238,7 +5238,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 4.59,
+      "foreign_rate": 4.51,
       "market_cap_b": 10824,
       "per": 0.0,
       "pbr": 0.76,
@@ -5260,7 +5260,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 4.59,
+      "foreign_rate": 4.51,
       "market_cap_b": 10685,
       "per": 0.0,
       "pbr": 0.75,
@@ -5270,6 +5270,28 @@
       "vol_ratio": 0,
       "short_cover_signal": 0,
       "short_attack_signal": 1
+    },
+    {
+      "date": "2026-10-07",
+      "close": 10090,
+      "volume": 289156,
+      "short_vol": 33.9,
+      "balance": 168.15,
+      "ratio": 1.246,
+      "balance_chg": 0.0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0,
+      "foreign_rate": 4.51,
+      "market_cap_b": 10792,
+      "per": 0.0,
+      "pbr": 0.76,
+      "div_yield": 0.0,
+      "trading_value_b": 0.0,
+      "turnover": 0.214,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     }
   ]
 }

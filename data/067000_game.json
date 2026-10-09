@@ -2,7 +2,7 @@
   "ticker": "067000",
   "name": "조이시티",
   "total_shares": 27000000,
-  "updated_at": "2026-10-08 23:17",
+  "updated_at": "2026-10-09 13:33",
   "records": [
     {
       "date": "2025-05-19",
@@ -5216,7 +5216,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 2.14,
+      "foreign_rate": 2.17,
       "market_cap_b": 854,
       "per": 0.0,
       "pbr": 0.99,
@@ -5238,7 +5238,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 2.14,
+      "foreign_rate": 2.17,
       "market_cap_b": 856,
       "per": 0.0,
       "pbr": 0.99,
@@ -5260,7 +5260,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 2.14,
+      "foreign_rate": 2.17,
       "market_cap_b": 842,
       "per": 0.0,
       "pbr": 0.97,
@@ -5270,6 +5270,28 @@
       "vol_ratio": 0,
       "short_cover_signal": 0,
       "short_attack_signal": 1
+    },
+    {
+      "date": "2026-10-07",
+      "close": 1188,
+      "volume": 298834,
+      "short_vol": 1.5,
+      "balance": 18.34,
+      "ratio": 0.679,
+      "balance_chg": 0.0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0,
+      "foreign_rate": 2.17,
+      "market_cap_b": 831,
+      "per": 0.0,
+      "pbr": 0.96,
+      "div_yield": 0.0,
+      "trading_value_b": 0.0,
+      "turnover": 1.107,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     }
   ]
 }

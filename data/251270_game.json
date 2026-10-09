@@ -2,7 +2,7 @@
   "ticker": "251270",
   "name": "넷마블",
   "total_shares": 84739137,
-  "updated_at": "2026-10-08 23:15",
+  "updated_at": "2026-10-09 13:30",
   "records": [
     {
       "date": "2025-05-19",
@@ -5216,7 +5216,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 14.03,
+      "foreign_rate": 14.0,
       "market_cap_b": 29022,
       "per": 12.71,
       "pbr": 0.53,
@@ -5238,7 +5238,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 14.03,
+      "foreign_rate": 14.0,
       "market_cap_b": 29397,
       "per": 12.87,
       "pbr": 0.53,
@@ -5260,7 +5260,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 14.03,
+      "foreign_rate": 14.0,
       "market_cap_b": 28648,
       "per": 12.55,
       "pbr": 0.52,
@@ -5270,6 +5270,28 @@
       "vol_ratio": 0,
       "short_cover_signal": 0,
       "short_attack_signal": 1
+    },
+    {
+      "date": "2026-10-07",
+      "close": 34450,
+      "volume": 150710,
+      "short_vol": 38.6,
+      "balance": 9.57,
+      "ratio": 0.113,
+      "balance_chg": 0.0,
+      "bal_5ma": 0,
+      "price_5ma": 0,
+      "price_20ma": 0,
+      "foreign_rate": 14.0,
+      "market_cap_b": 28731,
+      "per": 12.58,
+      "pbr": 0.52,
+      "div_yield": 2.54,
+      "trading_value_b": 0.0,
+      "turnover": 0.178,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     }
   ]
 }

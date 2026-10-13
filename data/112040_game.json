@@ -2,7 +2,7 @@
   "ticker": "112040",
   "name": "위메이드",
   "total_shares": 37600000,
-  "updated_at": "2026-10-13 19:08",
+  "updated_at": "2026-10-13 20:24",
   "records": [
     {
       "date": "2025-05-19",
@@ -5297,10 +5297,10 @@
       "date": "2026-10-08",
       "close": 15480,
       "volume": 202739,
-      "short_vol": 33.4,
-      "balance": 96.14,
-      "ratio": 2.557,
-      "balance_chg": 0.0,
+      "short_vol": 60.9,
+      "balance": 93.51,
+      "ratio": 2.487,
+      "balance_chg": -2.63,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,

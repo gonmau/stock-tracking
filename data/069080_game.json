@@ -2,7 +2,7 @@
   "ticker": "069080",
   "name": "웹젠",
   "total_shares": 30098760,
-  "updated_at": "2026-10-14 12:31",
+  "updated_at": "2026-10-14 15:02",
   "records": [
     {
       "date": "2025-05-19",
@@ -5278,7 +5278,7 @@
       "short_vol": 2.1,
       "balance": 11.03,
       "ratio": 0.367,
-      "balance_chg": -0.87,
+      "balance_chg": 0,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,

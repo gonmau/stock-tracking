@@ -2,7 +2,7 @@
   "ticker": "036570",
   "name": "엔씨소프트",
   "total_shares": 21954022,
-  "updated_at": "2026-11-12 23:54",
+  "updated_at": "2026-11-13 00:42",
   "records": [
     {
       "date": "2025-05-19",
@@ -5722,7 +5722,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 38.88,
+      "foreign_rate": 38.91,
       "market_cap_b": 45135,
       "per": 11.72,
       "pbr": 1.21,
@@ -5744,7 +5744,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 38.88,
+      "foreign_rate": 38.91,
       "market_cap_b": 44919,
       "per": 11.66,
       "pbr": 1.2,
@@ -5766,7 +5766,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 38.88,
+      "foreign_rate": 38.91,
       "market_cap_b": 45027,
       "per": 11.69,
       "pbr": 1.2,
@@ -5788,7 +5788,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 38.88,
+      "foreign_rate": 38.91,
       "market_cap_b": 45996,
       "per": 11.94,
       "pbr": 1.23,
@@ -5798,6 +5798,28 @@
       "vol_ratio": 0,
       "short_cover_signal": 0,
       "short_attack_signal": 1
+    },
+    {
+      "date": "2026-11-11",
+      "close": 209500,
+      "volume": 132243,
+      "short_vol": 18.7,
+      "balance": 2.34,
+      "ratio": 0.107,
+      "balance_chg": 0.0,
+      "bal_5ma": 1.42,
+      "price_5ma": 209700.0,
+      "price_20ma": 0,
+      "foreign_rate": 38.91,
+      "market_cap_b": 45027,
+      "per": 11.69,
+      "pbr": 1.2,
+      "div_yield": 0.55,
+      "trading_value_b": 0.0,
+      "turnover": 0.602,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     }
   ]
 }

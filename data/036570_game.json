@@ -2,7 +2,7 @@
   "ticker": "036570",
   "name": "엔씨소프트",
   "total_shares": 21954022,
-  "updated_at": "2026-11-20 19:53",
+  "updated_at": "2026-11-20 21:25",
   "records": [
     {
       "date": "2025-05-19",
@@ -5913,10 +5913,10 @@
       "date": "2026-11-18",
       "close": 190200,
       "volume": 110706,
-      "short_vol": 16.2,
-      "balance": 5.93,
-      "ratio": 0.27,
-      "balance_chg": 0.0,
+      "short_vol": 9.9,
+      "balance": 5.32,
+      "ratio": 0.242,
+      "balance_chg": -0.61,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,

@@ -2,7 +2,7 @@
   "ticker": "293490",
   "name": "카카오게임즈",
   "total_shares": 134986390,
-  "updated_at": "2026-11-25 19:47",
+  "updated_at": "2026-11-25 21:06",
   "records": [
     {
       "date": "2025-05-19",
@@ -5979,10 +5979,10 @@
       "date": "2026-11-23",
       "close": 12660,
       "volume": 574385,
-      "short_vol": 48.9,
-      "balance": 126.2,
-      "ratio": 0.935,
-      "balance_chg": 0.0,
+      "short_vol": 92.6,
+      "balance": 126.62,
+      "ratio": 0.938,
+      "balance_chg": 0.42,
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,

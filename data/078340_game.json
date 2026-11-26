@@ -2,7 +2,7 @@
   "ticker": "078340",
   "name": "컴투스",
   "total_shares": 11367920,
-  "updated_at": "2026-11-26 23:39",
+  "updated_at": "2026-11-27 01:41",
   "records": [
     {
       "date": "2025-05-19",
@@ -5942,7 +5942,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 15.2,
+      "foreign_rate": 14.97,
       "market_cap_b": 3531,
       "per": 9.15,
       "pbr": 0.34,
@@ -5964,7 +5964,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 15.2,
+      "foreign_rate": 14.97,
       "market_cap_b": 3355,
       "per": 8.69,
       "pbr": 0.32,
@@ -5986,7 +5986,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 15.2,
+      "foreign_rate": 14.97,
       "market_cap_b": 3204,
       "per": 8.3,
       "pbr": 0.3,
@@ -6008,7 +6008,7 @@
       "bal_5ma": 0,
       "price_5ma": 0,
       "price_20ma": 0,
-      "foreign_rate": 15.2,
+      "foreign_rate": 14.97,
       "market_cap_b": 3150,
       "per": 8.16,
       "pbr": 0.3,
@@ -6018,6 +6018,28 @@
       "vol_ratio": 0,
       "short_cover_signal": 0,
       "short_attack_signal": 1
+    },
+    {
+      "date": "2026-11-25",
+      "close": 27050,
+      "volume": 83354,
+      "short_vol": 12.6,
+      "balance": 2.3,
+      "ratio": 0.202,
+      "balance_chg": 0.0,
+      "bal_5ma": 0.92,
+      "price_5ma": 27280.0,
+      "price_20ma": 0,
+      "foreign_rate": 14.97,
+      "market_cap_b": 3337,
+      "per": 8.65,
+      "pbr": 0.32,
+      "div_yield": 4.71,
+      "trading_value_b": 0.0,
+      "turnover": 0.733,
+      "vol_ratio": 0,
+      "short_cover_signal": 0,
+      "short_attack_signal": 0
     }
   ]
 }
